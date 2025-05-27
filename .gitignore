@@ -1,0 +1,7 @@
+__pycache__
+datasets
+legacy
+preprocessed_output
+.env
+babylm_datasets
+output
