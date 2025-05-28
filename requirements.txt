@@ -11,5 +11,7 @@ ftfy>=6.1.0
 # HuggingFace dependencies
 huggingface-hub>=0.16.0
 datasets>=2.12.0
-pyarrow>=11.0.0
+pyarrow>=11.0.0  # For parquet support
+
+# Optional but recommended
 lxml>=4.9.0  # Better XML parsing performance

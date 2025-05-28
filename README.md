@@ -5,17 +5,19 @@ A modular pipeline for processing various data sources into standardized BabyLM 
 ## Overview
 
 This pipeline provides a flexible framework for:
-1. Processing data from various sources (OpenSubtitles, CHILDES, educational content, etc.)
-2. Converting to standardized BabyLM format
+1. Processing text data from any source into BabyLM format
+2. Applying various preprocessing strategies (including LLM-based filtering)
 3. Uploading to HuggingFace Hub
 
 ## Project Structure
 
 ```
-├── opensubtitles_processor.py   # OpenSubtitles-specific processing
-├── babylm_dataset_builder.py    # General BabyLM dataset builder
+├── main_pipeline.py             # Main generic pipeline
+├── babylm_dataset_builder.py    # BabyLM dataset builder
+├── text_preprocessor.py         # Text preprocessing utilities
 ├── hf_uploader.py              # HuggingFace upload utilities
-├── main_pipeline.py            # Main entry point
+├── process_opensubtitles.py    # OpenSubtitles-specific wrapper
+├── opensubtitles_processor.py  # OpenSubtitles processing module
 ├── requirements.txt            # Python dependencies
 └── example_usage.sh           # Usage examples
 ```
@@ -49,37 +51,82 @@ All datasets follow the BabyLM standard format:
 
 ## Usage
 
-### Processing OpenSubtitles Data
+### Basic Usage (Any Text Source)
 
 ```bash
-python main_pipeline.py opensubtitles \
-    --language afr \
+python main_pipeline.py \
+    --language eng \
+    --data-source "MyDataSource" \
+    --category "educational" \
+    --texts-dir "./path/to/texts" \
+    --script latin \
+    --age-estimate "6-12" \
+    --license "cc-by"
+```
+
+### With Preprocessing
+
+The pipeline supports multiple preprocessing strategies:
+
+#### Basic Text Preprocessing
+```bash
+python main_pipeline.py \
+    --language fra \
+    --data-source "FrenchTexts" \
+    --category "child-books" \
+    --texts-dir "./texts" \
+    --script latin \
+    --age-estimate "4-8" \
+    --license "cc-by" \
+    --preprocess \
+    --lowercase \
+    --fix-unicode
+```
+
+#### Subtitle-Specific Preprocessing
+```bash
+python main_pipeline.py \
+    --language deu \
+    --data-source "GermanSubtitles" \
+    --category "subtitles" \
+    --texts-dir "./subtitles" \
     --script latin \
     --age-estimate "n/a" \
     --license "cc-by" \
+    --preprocess \
+    --preprocessor-type subtitle \
+    --remove-timestamps \
+    --remove-stage-directions
+```
+
+#### LLM-Based Filtering
+```bash
+python main_pipeline.py \
+    --language spa \
+    --data-source "WebTexts" \
+    --category "child-available-speech" \
+    --texts-dir "./web_texts" \
+    --script latin \
+    --age-estimate "8-14" \
+    --license "cc-by" \
+    --preprocess \
+    --preprocessor-type llm \
+    --llm-model "llama3.2" \
+    --llm-prompt "Your custom filtering prompt here" \
+    --llm-filter-threshold 0.8
+```
+
+### Processing OpenSubtitles Data
+
+For OpenSubtitles specifically, use the dedicated wrapper script:
+
+```bash
+python process_opensubtitles.py \
+    --language afr \
+    --script latin \
     --batch-size 100 \
     --upload \
     --repo-id "username/babylm-afr"
-```
-
-### Processing Custom Sources
-
-1. Prepare your text files in a directory
-2. Optionally create a metadata JSON file mapping document IDs to metadata
-3. Run the pipeline:
-
-```bash
-python main_pipeline.py custom \
-    --language nld \
-    --script latin \
-    --age-estimate "2-5" \
-    --license "cc-by-sa" \
-    --data-source "CHILDES-Dutch" \
-    --category "child-directed-speech" \
-    --texts-dir "./your_texts" \
-    --metadata-file "./metadata.json" \
-    --upload \
-    --repo-id "username/babylm-nld"
 ```
 
 ## Module Details

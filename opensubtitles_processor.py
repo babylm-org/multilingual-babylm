@@ -13,6 +13,7 @@ from tqdm.auto import tqdm
 import xml.etree.ElementTree as ET
 import pandas as pd
 from typing import Dict, List, Tuple, Optional
+from text_preprocessor import BasePreprocessor
 
 BASE_URL = ("https://object.pouta.csc.fi/OPUS-OpenSubtitles/"
             "v2024/xml/{lang}.zip")
@@ -97,44 +98,76 @@ class OpenSubtitlesProcessor:
             print(f"Error extracting metadata from {xml_path}: {e}")
             return {}
     
-    def process_xml_to_text(self, xml_path: Path, output_path: Path) -> bool:
-        """Convert XML content to cleaned text format."""
+    def extract_sentences_from_xml(self, xml_path: Path) -> List[str]:
+        """Extract sentences from XML file."""
         try:
             tree = ET.parse(xml_path)
             root = tree.getroot()
             
-            with open(output_path, 'w', encoding='utf-8') as txt_file:
-                def process_element(element):
-                    if element.tag == "meta":
-                        return
-                    
-                    if element.tag == "w" and element.text:
-                        # Clean and write word
-                        cleaned_text = self.clean_text(element.text)
-                        if cleaned_text:
-                            txt_file.write(cleaned_text + " ")
-                    
-                    for child in element:
-                        process_element(child)
-                    
-                    if element.tag == "s":
-                        txt_file.write("\n")
+            sentences = []
+            
+            def process_element(element):
+                if element.tag == "meta":
+                    return
                 
-                process_element(root)
+                if element.tag == "s":
+                    # Extract all words in this sentence
+                    words = []
+                    for w in element.findall('.//w'):
+                        if w.text:
+                            words.append(w.text)
+                    
+                    if words:
+                        sentence = ' '.join(words)
+                        sentences.append(sentence)
+                
+                for child in element:
+                    if child.tag != "s":  # Don't recurse into nested sentences
+                        process_element(child)
+            
+            process_element(root)
+            return sentences
+            
+        except Exception as e:
+            print(f"Error extracting sentences from {xml_path}: {e}")
+            return []
+    
+    def process_xml_to_text(self, xml_path: Path, output_path: Path, 
+                           preprocessor: Optional['BasePreprocessor'] = None) -> bool:
+        """Convert XML content to cleaned text format."""
+        try:
+            # Extract sentences
+            sentences = self.extract_sentences_from_xml(xml_path)
+            
+            if not sentences:
+                return False
+            
+            # Use preprocessor if provided, otherwise use default
+            if preprocessor:
+                processed_sentences = preprocessor.preprocess_lines(sentences)
+                processed_text = '\n'.join(processed_sentences)
+            else:
+                # Fallback to simple cleaning
+                processed_sentences = []
+                for sentence in sentences:
+                    cleaned = sentence.lower().strip()
+                    cleaned = re.sub(r'\s+', ' ', cleaned)
+                    if cleaned:
+                        processed_sentences.append(cleaned)
+                processed_text = '\n'.join(processed_sentences)
+            
+            # Write output
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(output_path, 'w', encoding='utf-8') as f:
+                f.write(processed_text)
             
             return True
         except Exception as e:
             print(f"Error processing XML {xml_path}: {e}")
             return False
     
-    @staticmethod
-    def clean_text(text: str) -> str:
-        """Clean and normalize text."""
-        text = text.lower().strip()
-        text = re.sub(r'\s+', ' ', text)  # Normalize whitespace
-        return text
-    
-    def process_zip_in_batches(self, zip_path: Path, batch_size: int = 50) -> pd.DataFrame:
+    def process_zip_in_batches(self, zip_path: Path, batch_size: int = 50,
+                              preprocessor: Optional['BasePreprocessor'] = None) -> pd.DataFrame:
         """Process XML files from zip in batches and return metadata DataFrame."""
         self.temp_dir.mkdir(parents=True, exist_ok=True)
         
@@ -166,7 +199,7 @@ class OpenSubtitlesProcessor:
                         
                         # Process to text
                         text_output_path = self.preprocessed_dir / f"{file_id}.txt"
-                        success = self.process_xml_to_text(extracted_path, text_output_path)
+                        success = self.process_xml_to_text(extracted_path, text_output_path, preprocessor)
                         
                         if success:
                             # Create metadata record
@@ -220,9 +253,15 @@ class OpenSubtitlesProcessor:
         
         return pd.DataFrame(metadata_records)
     
-    def process_language(self, batch_size: int = 50, keep_zip: bool = False) -> Tuple[pd.DataFrame, Path]:
+    def process_language(self, batch_size: int = 50, keep_zip: bool = False,
+                        preprocessor: Optional['BasePreprocessor'] = None) -> Tuple[pd.DataFrame, Path]:
         """
         Complete pipeline to download and process a language's OpenSubtitles data.
+        
+        Args:
+            batch_size: Number of files to process at once
+            keep_zip: Whether to keep the downloaded zip file
+            preprocessor: Optional preprocessor instance to use
         
         Returns:
             Tuple of (metadata_df, preprocessed_texts_dir)
@@ -236,7 +275,7 @@ class OpenSubtitlesProcessor:
         
         # Process
         print(f"Processing {self.lang_code} dataset...")
-        metadata_df = self.process_zip_in_batches(zip_dest, batch_size)
+        metadata_df = self.process_zip_in_batches(zip_dest, batch_size, preprocessor)
         
         # Save metadata
         metadata_path = self.output_dir / f"{self.lang_code}_file_metadata.csv"
