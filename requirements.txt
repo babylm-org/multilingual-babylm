@@ -1,0 +1,17 @@
+# Core dependencies
+pandas>=1.5.0
+numpy>=1.20.0
+tqdm>=4.65.0
+requests>=2.28.0
+python-dotenv>=0.20.0
+
+# Text processing
+ftfy>=6.1.0
+
+# HuggingFace dependencies
+huggingface-hub>=0.16.0
+datasets>=2.12.0
+pyarrow>=11.0.0  # For parquet support
+
+# Optional but recommended
+lxml>=4.9.0  # Better XML parsing performance
