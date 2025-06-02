@@ -45,10 +45,10 @@ def main():
     # Preprocessing options
     parser.add_argument("--no-preprocess", action="store_true",
                        help="Skip preprocessing (use raw extracted text)")
-    parser.add_argument("--lowercase", action="store_true", default=True,
-                       help="Lowercase text (default: True)")
+    parser.add_argument("--lowercase", action="store_true", default=False,
+                       help="Lowercase text (default: False - preserves capitalization)")
     parser.add_argument("--no-lowercase", dest="lowercase", action="store_false",
-                       help="Don't lowercase text")
+                       help="Don't lowercase text (default behavior)")
     
     # Optional metadata
     parser.add_argument("--source-url", default="https://opus.nlpl.eu/OpenSubtitles.php",
@@ -69,7 +69,8 @@ def main():
             normalize_whitespace=True,
             fix_unicode=True,
             remove_timestamps=True,
-            remove_stage_directions=True
+            remove_stage_directions=True,
+            preserve_paragraphs=True  # Preserve paragraph structure
         )
     
     # Process with OpenSubtitles processor

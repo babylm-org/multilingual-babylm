@@ -13,7 +13,6 @@ from tqdm.auto import tqdm
 import xml.etree.ElementTree as ET
 import pandas as pd
 from typing import Dict, List, Tuple, Optional
-from text_preprocessor import BasePreprocessor
 
 BASE_URL = ("https://object.pouta.csc.fi/OPUS-OpenSubtitles/"
             "v2024/xml/{lang}.zip")
@@ -99,14 +98,14 @@ class OpenSubtitlesProcessor:
             return {}
     
     def extract_sentences_from_xml(self, xml_path: Path) -> List[str]:
-        """Extract sentences from XML file."""
+        """Extract sentences from XML file, preserving document structure."""
         try:
             tree = ET.parse(xml_path)
             root = tree.getroot()
             
             sentences = []
             
-            def process_element(element):
+            def process_element(element, depth=0):
                 if element.tag == "meta":
                     return
                 
@@ -121,12 +120,31 @@ class OpenSubtitlesProcessor:
                         sentence = ' '.join(words)
                         sentences.append(sentence)
                 
+                # Process children
                 for child in element:
                     if child.tag != "s":  # Don't recurse into nested sentences
-                        process_element(child)
+                        process_element(child, depth + 1)
+                
+                # Add paragraph break after certain structural elements
+                # This helps preserve some document structure
+                if element.tag in ['div', 'p'] and sentences and not sentences[-1].endswith('\n\n'):
+                    sentences.append('')  # Empty line will become paragraph break
             
             process_element(root)
-            return sentences
+            
+            # Clean up multiple empty lines
+            cleaned_sentences = []
+            prev_empty = False
+            for sent in sentences:
+                if sent == '':
+                    if not prev_empty:
+                        cleaned_sentences.append(sent)
+                    prev_empty = True
+                else:
+                    cleaned_sentences.append(sent)
+                    prev_empty = False
+            
+            return cleaned_sentences
             
         except Exception as e:
             print(f"Error extracting sentences from {xml_path}: {e}")
@@ -147,14 +165,29 @@ class OpenSubtitlesProcessor:
                 processed_sentences = preprocessor.preprocess_lines(sentences)
                 processed_text = '\n'.join(processed_sentences)
             else:
-                # Fallback to simple cleaning
+                # Fallback to simple cleaning - preserve structure
                 processed_sentences = []
                 for sentence in sentences:
-                    cleaned = sentence.lower().strip()
-                    cleaned = re.sub(r'\s+', ' ', cleaned)
-                    if cleaned:
-                        processed_sentences.append(cleaned)
-                processed_text = '\n'.join(processed_sentences)
+                    if sentence == '':  # Preserve empty lines as paragraph breaks
+                        processed_sentences.append('')
+                    else:
+                        cleaned = sentence.strip()
+                        cleaned = re.sub(r'\s+', ' ', cleaned)  # Only normalize spaces, not newlines
+                        if cleaned:
+                            processed_sentences.append(cleaned)
+                
+                # Join with newlines, converting empty lines to paragraph breaks
+                processed_text = []
+                for i, sent in enumerate(processed_sentences):
+                    if sent == '':
+                        if processed_text and not processed_text[-1].endswith('\n\n'):
+                            processed_text.append('\n')  # Add paragraph break
+                    else:
+                        processed_text.append(sent)
+                        if i < len(processed_sentences) - 1 and processed_sentences[i + 1] != '':
+                            processed_text.append('\n')  # Single newline between sentences
+                
+                processed_text = ''.join(processed_text)
             
             # Write output
             output_path.parent.mkdir(parents=True, exist_ok=True)
