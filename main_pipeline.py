@@ -1,3 +1,4 @@
+# main_pipeline.py
 """
 Main pipeline script for processing various data sources into BabyLM datasets.
 """
@@ -9,7 +10,7 @@ from typing import Optional, Dict, Any
 from tqdm import tqdm
 
 # Import our modules
-from babylm_dataset_builder import BabyLMDatasetBuilder, DatasetConfig
+from babylm_dataset_builder import BabyLMDatasetBuilder, DatasetConfig, DocumentConfig
 from hf_uploader import HFDatasetUploader
 from text_preprocessor import create_preprocessor, BasePreprocessor
 
@@ -19,7 +20,7 @@ def process_dataset(
     data_source: str,
     category: str,
     texts_dir: Path,
-    config_params: dict,
+    document_config_params: dict,
     metadata_file: Optional[Path] = None,
     upload: bool = False,
     repo_id: Optional[str] = None,
@@ -34,7 +35,7 @@ def process_dataset(
         data_source: Name of the data source
         category: Content category
         texts_dir: Directory containing text files
-        config_params: Dictionary with dataset configuration
+        document_config_params: Dictionary with document-level configuration
         metadata_file: Optional JSON file with document metadata
         upload: Whether to upload to HuggingFace
         repo_id: HuggingFace repository ID
@@ -71,16 +72,18 @@ def process_dataset(
             # Use preprocessed directory for dataset building
             texts_dir = preprocessed_dir
     
-    # Create config
-    config = DatasetConfig(
-        language_code=language_code,
+    # Create dataset config (just language code)
+    dataset_config = DatasetConfig(language_code=language_code)
+    
+    # Create default document config
+    default_doc_config = DocumentConfig(
         category=category,
         data_source=data_source,
-        **config_params
+        **document_config_params
     )
     
     # Build dataset
-    builder = BabyLMDatasetBuilder(config)
+    builder = BabyLMDatasetBuilder(dataset_config)
     
     # Load metadata if provided
     metadata_mapping = {}
@@ -90,7 +93,7 @@ def process_dataset(
             metadata_mapping = json.load(f)
     
     # Add documents
-    builder.add_documents_from_directory(texts_dir, metadata_mapping)
+    builder.add_documents_from_directory(texts_dir, default_doc_config, metadata_mapping)
     
     # Save and create dataset
     builder.save_metadata()
@@ -188,19 +191,19 @@ def main():
     if args.upload and not args.repo_id:
         parser.error("--repo-id is required when --upload is specified")
     
-    # Prepare config parameters
-    config_params = {
+    # Prepare document config parameters
+    document_config_params = {
         "script": args.script,
         "age_estimate": args.age_estimate,
         "license": args.license,
     }
     
     if args.source_url:
-        config_params["source_url"] = args.source_url
+        document_config_params["source_url"] = args.source_url
     if args.source_identifier:
-        config_params["source_identifier"] = args.source_identifier
+        document_config_params["source_identifier"] = args.source_identifier
     if args.misc:
-        config_params["misc"] = args.misc
+        document_config_params["misc"] = args.misc
     
     # Prepare preprocessing config
     preprocessing_config = None
@@ -231,7 +234,7 @@ def main():
         data_source=args.data_source,
         category=args.category,
         texts_dir=args.texts_dir,
-        config_params=config_params,
+        document_config_params=document_config_params,
         metadata_file=args.metadata_file,
         upload=args.upload,
         repo_id=args.repo_id,

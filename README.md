@@ -7,7 +7,9 @@ A modular pipeline for processing various data sources into standardized BabyLM 
 This pipeline provides a flexible framework for:
 1. Processing text data from any source into BabyLM format
 2. Applying various preprocessing strategies (including LLM-based filtering)
-3. Uploading to HuggingFace Hub
+3. Creating language-specific datasets where each document has its own metadata
+4. Uploading to HuggingFace Hub
+
 
 ## Project Structure
 
@@ -37,16 +39,16 @@ HF_TOKEN=your_huggingface_token_here
 
 ## Dataset Format
 
-All datasets follow the BabyLM standard format:
+Each dataset contains documents with the following fields:
 
 | Column | Description | Example Values |
 |--------|-------------|----------------|
-| text | Document text | "this is sample text..." |
-| category | Content type | child-directed-speech, educational, subtitles, etc. |
-| data-source | Original source | OpenSubtitles, CHILDES, etc. |
+| text | Document text (preserves capitalization and paragraphs) | "This is a story.\n\nIt has multiple paragraphs." |
+| category | Content type for this document | child-directed-speech, educational, subtitles, etc. |
+| data-source | Original source of this document | OpenSubtitles, CHILDES, etc. |
 | script | Writing system | latin, cyrillic, arabic, etc. |
-| age-estimate | Target age | "4", "12-17", "n/a" |
-| license | Data license | cc-by, cc-by-sa, etc. |
+| age-estimate | Target age for this document | "4", "12-17", "n/a" |
+| license | License for this document | cc-by, cc-by-sa, etc. |
 | misc | Additional metadata | JSON string with extra info |
 
 ## Usage
@@ -64,9 +66,42 @@ python main_pipeline.py \
     --license "cc-by"
 ```
 
-### With Preprocessing
+### With Document-Specific Metadata
 
-The pipeline supports multiple preprocessing strategies:
+Create a metadata JSON file that maps document IDs to specific metadata:
+
+```json
+{
+  "doc1": {
+    "category": "child-books",
+    "age_estimate": "4-6",
+    "source_url": "https://example.com/book1"
+  },
+  "doc2": {
+    "category": "educational",
+    "age_estimate": "8-10",
+    "license": "cc-by-sa"
+  }
+}
+```
+
+Then use it:
+
+```bash
+python main_pipeline.py \
+    --language eng \
+    --data-source "MixedSources" \
+    --category "educational" \
+    --texts-dir "./texts" \
+    --script latin \
+    --age-estimate "6-12" \
+    --license "cc-by" \
+    --metadata-file "./document_metadata.json"
+```
+
+### Preprocessing Options
+
+The pipeline now **preserves capitalization and paragraph structure by default**. 
 
 #### Basic Text Preprocessing
 ```bash
@@ -79,41 +114,21 @@ python main_pipeline.py \
     --age-estimate "4-8" \
     --license "cc-by" \
     --preprocess \
-    --lowercase \
     --fix-unicode
 ```
 
-#### Subtitle-Specific Preprocessing
+#### If You Need Lowercasing
 ```bash
 python main_pipeline.py \
-    --language deu \
-    --data-source "GermanSubtitles" \
-    --category "subtitles" \
-    --texts-dir "./subtitles" \
+    --language fra \
+    --data-source "FrenchTexts" \
+    --category "child-books" \
+    --texts-dir "./texts" \
     --script latin \
-    --age-estimate "n/a" \
+    --age-estimate "4-8" \
     --license "cc-by" \
     --preprocess \
-    --preprocessor-type subtitle \
-    --remove-timestamps \
-    --remove-stage-directions
-```
-
-#### LLM-Based Filtering
-```bash
-python main_pipeline.py \
-    --language spa \
-    --data-source "WebTexts" \
-    --category "child-available-speech" \
-    --texts-dir "./web_texts" \
-    --script latin \
-    --age-estimate "8-14" \
-    --license "cc-by" \
-    --preprocess \
-    --preprocessor-type llm \
-    --llm-model "llama3.2" \
-    --llm-prompt "Your custom filtering prompt here" \
-    --llm-filter-threshold 0.8
+    --lowercase  # Explicitly enable lowercasing
 ```
 
 ### Processing OpenSubtitles Data
@@ -129,56 +144,35 @@ python process_opensubtitles.py \
     --repo-id "bhargavns/babylm-afr"
 ```
 
-## Module Details
+The OpenSubtitles processor:
+- Preserves capitalization by default
+- Maintains document structure where possible
+- Removes timestamps and stage directions
+- Each subtitle file becomes a document with its own metadata
 
-### opensubtitles_processor.py
+## Preprocessor Types
 
-Handles OpenSubtitles-specific functionality:
-- Downloads language-specific zip files
-- Extracts XML metadata from files
-- Processes XML to clean text
-- Generates file metadata CSV with all XML metadata fields
+- **text**: Basic text preprocessing
+- **subtitle**: Specialized for subtitle files (removes timestamps, stage directions)
+- **transcript**: For dialogue transcripts (removes speaker labels, annotations)
+- **llm**: Uses language models for quality filtering
 
-### babylm_dataset_builder.py
+## Text Structure Preservation
 
-General-purpose dataset builder:
-- Creates standardized BabyLM dataset structure
-- Handles metadata management
-- Generates final dataset tables (CSV/Parquet)
-- Supports various content categories
+The pipeline preserves important text structure:
 
-### hf_uploader.py
+1. **Capitalization**: Maintained by default (use `--lowercase` to change)
+2. **Paragraphs**: Double newlines (`\n\n`) indicate paragraph breaks
+3. **Sentences**: Single newlines (`\n`) separate sentences within paragraphs
 
-HuggingFace integration:
-- Uploads datasets to HuggingFace Hub
-- Creates dataset cards automatically
-- Handles authentication via environment variables
-
-## Adding New Data Sources
-
-To add support for a new data source:
-
-1. Create a processor module similar to `opensubtitles_processor.py`
-2. Implement text extraction and metadata handling
-3. Add a new option in `main_pipeline.py`
-4. Use `BabyLMDatasetBuilder` to create the final dataset
-
-## Output Structure
-
-Each processed dataset creates:
-```
-babylm-{language}/
-├── texts/                    # Individual text files
-├── dataset_metadata.json     # Complete metadata
-├── {language}_file_metadata.csv  # File-level metadata (OpenSubtitles)
-├── babylm-{language}_dataset.csv     # Final dataset (CSV)
-├── babylm-{language}_dataset.parquet # Final dataset (Parquet)
-└── README.md                # Dataset card
-```
+This preservation is important for:
+- Proper nouns and sentence beginnings
+- Document structure and context switches
+- Natural reading flow
 
 ## Categories
 
-Valid categories for BabyLM datasets:
+Valid categories for documents:
 - `child-directed-speech`: Direct speech to children
 - `educational`: Educational content for children
 - `child-books`: Children's literature
@@ -188,6 +182,20 @@ Valid categories for BabyLM datasets:
 - `qed`: QED educational content
 - `child-available-speech`: Other dialogue/speech accessible to children
 
+## Output Structure
+
+Each processed dataset creates:
+```
+babylm-{language}/
+├── texts/                    # Individual text files
+├── dataset_metadata.json     # Complete metadata
+├── babylm-{language}_dataset.csv     # Final dataset (CSV)
+├── babylm-{language}_dataset.parquet # Final dataset (Parquet)
+└── README.md                # Dataset card
+```
+
 ## License
 
-The pipeline code is provided as-is. Individual datasets have their own licenses as specified in the metadata.
+
+The pipeline code is provided as-is. Individual documents in datasets have their own licenses as specified in the metadata.
+

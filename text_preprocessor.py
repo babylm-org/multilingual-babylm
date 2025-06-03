@@ -1,3 +1,4 @@
+# text_preprocessor.py
 """
 General text preprocessing utilities for BabyLM datasets.
 Can be extended for source-specific preprocessing needs.
@@ -17,21 +18,23 @@ class BasePreprocessor(ABC):
     """
     
     def __init__(self, 
-                 lowercase: bool = True,
+                 lowercase: bool = False,  # Changed default to False
                  normalize_whitespace: bool = True,
                  fix_unicode: bool = True,
                  remove_timestamps: bool = True,
                  remove_stage_directions: bool = True,
+                 preserve_paragraphs: bool = True,  # New option
                  custom_steps: Optional[List[Callable]] = None):
         """
         Initialize preprocessor with configuration.
         
         Args:
-            lowercase: Whether to lowercase text
+            lowercase: Whether to lowercase text (default: False to preserve capitalization)
             normalize_whitespace: Whether to normalize whitespace
             fix_unicode: Whether to fix unicode issues with ftfy
             remove_timestamps: Whether to remove timestamp patterns
             remove_stage_directions: Whether to remove [bracketed] stage directions
+            preserve_paragraphs: Whether to preserve paragraph breaks (double newlines)
             custom_steps: List of additional preprocessing functions
         """
         self.lowercase = lowercase
@@ -39,6 +42,7 @@ class BasePreprocessor(ABC):
         self.fix_unicode = fix_unicode
         self.remove_timestamps = remove_timestamps
         self.remove_stage_directions = remove_stage_directions
+        self.preserve_paragraphs = preserve_paragraphs
         self.custom_steps = custom_steps or []
         
         # Compile regex patterns for efficiency
@@ -145,11 +149,29 @@ class BasePreprocessor(ABC):
         return ftfy.fix_text(text)
     
     def _normalize_whitespace(self, text: str) -> str:
-        """Normalize whitespace in text."""
-        # Replace multiple whitespace with single space
-        text = self.whitespace_pattern.sub(' ', text)
-        # Strip leading/trailing whitespace
-        return text.strip()
+        """Normalize whitespace in text while preserving paragraph structure."""
+        if self.preserve_paragraphs:
+            # Split by double newlines (paragraphs)
+            paragraphs = text.split('\n\n')
+            
+            # Process each paragraph
+            processed_paragraphs = []
+            for para in paragraphs:
+                # Replace multiple spaces with single space within paragraph
+                para = re.sub(r'[ \t]+', ' ', para)
+                # Replace single newlines with space within paragraph
+                para = re.sub(r'\n', ' ', para)
+                # Strip leading/trailing whitespace
+                para = para.strip()
+                if para:  # Only keep non-empty paragraphs
+                    processed_paragraphs.append(para)
+            
+            # Join paragraphs back with double newlines
+            return '\n\n'.join(processed_paragraphs)
+        else:
+            # Original behavior - collapse all whitespace
+            text = self.whitespace_pattern.sub(' ', text)
+            return text.strip()
     
     def _remove_timestamps(self, text: str) -> str:
         """Remove timestamp patterns from text."""
@@ -237,6 +259,7 @@ class SubtitlePreprocessor(BasePreprocessor):
         # Set subtitle-specific defaults
         kwargs.setdefault('remove_stage_directions', True)
         kwargs.setdefault('remove_timestamps', True)
+        kwargs.setdefault('lowercase', False)  # Preserve capitalization by default
         super().__init__(**kwargs)
         
         # Add subtitle-specific patterns
@@ -480,7 +503,7 @@ def normalize_punctuation(text: str) -> str:
     """Normalize various punctuation marks."""
     # Smart quotes to regular quotes
     text = re.sub(r'["""]', '"', text)
-
+    
     # Various dashes to regular dash
     text = re.sub(r'[–—]', '-', text)
     
