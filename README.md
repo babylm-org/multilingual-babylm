@@ -10,12 +10,6 @@ This pipeline provides a flexible framework for:
 3. Creating language-specific datasets where each document has its own metadata
 4. Uploading to HuggingFace Hub
 
-## Key Features
-
-- **Document-Level Metadata**: Each document in a dataset can have its own category, source, age estimate, license, etc.
-- **Preserves Text Structure**: By default, maintains capitalization and paragraph structure
-- **Flexible Preprocessing**: Multiple preprocessor types with configurable options
-- **Modular Design**: Easy to extend for new data sources
 
 ## Project Structure
 
