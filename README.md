@@ -137,11 +137,11 @@ For OpenSubtitles specifically, use the dedicated wrapper script:
 
 ```bash
 python process_opensubtitles.py \
-    --language afr \
+    --language af \
     --script latin \
     --batch-size 100 \
     --upload \
-    --repo-id "username/babylm-afr"
+    --repo-id "bhargavns/babylm-afr"
 ```
 
 The OpenSubtitles processor:
@@ -196,4 +196,6 @@ babylm-{language}/
 
 ## License
 
+
 The pipeline code is provided as-is. Individual documents in datasets have their own licenses as specified in the metadata.
+
