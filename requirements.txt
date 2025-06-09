@@ -8,6 +8,9 @@ python-dotenv>=0.20.0
 # Text processing
 ftfy>=6.1.0
 
+# Language detection (for language filtering)
+fasttext>=0.9.2
+
 # HuggingFace dependencies
 huggingface-hub>=0.16.0
 datasets>=2.12.0
