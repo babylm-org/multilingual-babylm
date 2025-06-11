@@ -14,6 +14,8 @@ from babylm_dataset_builder import BabyLMDatasetBuilder, DatasetConfig, Document
 from hf_uploader import HFDatasetUploader
 from text_preprocessor import create_preprocessor, BasePreprocessor
 from text_preprocessor import remove_urls, normalize_punctuation, remove_xml_tags
+from language_filter import LanguageFilter, print_filtering_results
+from language_scripts import get_script_formal_name, SCRIPT_NAMES
 
 
 def process_dataset(
@@ -27,6 +29,8 @@ def process_dataset(
     repo_id: Optional[str] = None,
     preprocessing_config: Optional[dict] = None,
     preprocessor_type: str = "text",
+    enable_language_filtering: bool = False,
+    language_filter_threshold: float = 0.8,
 ) -> Path:
     """
     Process any data source into BabyLM format.
@@ -42,6 +46,8 @@ def process_dataset(
         repo_id: HuggingFace repository ID
         preprocessing_config: Configuration for text preprocessing
         preprocessor_type: Type of preprocessor to use
+        enable_language_filtering: Whether to enable language filtering
+        language_filter_threshold: Minimum confidence for language filtering
 
     Returns:
         Path to output directory
@@ -68,21 +74,56 @@ def process_dataset(
                     preprocessor.process_file(text_file, output_file)
                 except Exception as e:
                     print(f"Error preprocessing {text_file}: {e}")
-                    continue
-
-            # Use preprocessed directory for dataset building
-            texts_dir = preprocessed_dir
-
-    # Create dataset config (just language code)
+                    continue  # Use preprocessed directory for dataset building
+            texts_dir = preprocessed_dir  # Create dataset config (just language code)
     dataset_config = DatasetConfig(language_code=language_code)
 
     # Create default document config
+    # Map script code to formal name for dataset
+    script_code = document_config_params.get("script", "Zzzz")
+    script_formal_name = get_script_formal_name(script_code)
+    document_config_params["script"] = script_formal_name
     default_doc_config = DocumentConfig(
         category=category, data_source=data_source, **document_config_params
     )
 
     # Build dataset
     builder = BabyLMDatasetBuilder(dataset_config)
+
+    # Language filtering if enabled
+    if enable_language_filtering:
+        expected_script = document_config_params.get("script", "Latn")
+        print(f"\nPerforming language filtering...")
+        print(f"Expected language: {language_code}")
+        print(f"Expected script: {expected_script}")
+
+        # Create language filter
+        language_filter = LanguageFilter()
+
+        # Create filtered directory inside builder output directory
+        filtered_dir = builder.output_dir / "filtered"
+
+        # Perform filtering
+        filter_results = language_filter.filter_documents(
+            input_dir=texts_dir,
+            expected_language=language_code,
+            expected_script=expected_script,
+            output_dir=filtered_dir,
+            min_confidence=language_filter_threshold,
+        )
+
+        # Print filtering results
+        print_filtering_results(filter_results, language_code, expected_script)
+
+        # Use matching files for dataset building
+        matching_dir = filtered_dir / language_code
+        if matching_dir.exists():
+            texts_dir = matching_dir
+        else:
+            print(
+                f"Warning: No matching files found for {language_code}_{expected_script}"
+            )
+            print(f"Proceeding with original directory: {texts_dir}")
 
     # Load metadata if provided
     metadata_mapping = {}
@@ -171,14 +212,23 @@ def main():
     parser.add_argument("--source-identifier", help="Source identifier")
     parser.add_argument(
         "--misc", type=json.loads, help="Additional metadata as JSON string"
-    )
-
-    # Upload arguments
+    )  # Upload arguments
     parser.add_argument(
         "--upload", action="store_true", help="Upload to HuggingFace after processing"
     )
     parser.add_argument(
         "--repo-id", help="HuggingFace repo ID (e.g., 'username/babylm-eng')"
+    )  # Language filtering arguments
+    parser.add_argument(
+        "--enable-language-filtering",
+        action="store_true",
+        help="Enable language and script filtering using GlotLID v3",
+    )
+    parser.add_argument(
+        "--language-filter-threshold",
+        type=float,
+        default=0.8,
+        help="Minimum confidence threshold for language filtering (0.0-1.0)",
     )
 
     # Preprocessing arguments
@@ -255,6 +305,14 @@ def main():
 
     args = parser.parse_args()
 
+    # Normalize script code to title case
+    args.script = args.script.title()
+    # Enforce ISO 15924 script code
+    if args.script not in SCRIPT_NAMES:
+        parser.error(
+            f"Invalid script code '{args.script}'. Please use a valid ISO 15924 script code (e.g., Latn, Cyrl, Arab, etc.)."
+        )
+
     # Validate required arguments
     if not args.texts_dir.exists():
         parser.error(f"Texts directory does not exist: {args.texts_dir}")
@@ -307,9 +365,9 @@ def main():
                 parser.error("--llm-prompt is required when using LLM preprocessor")
             preprocessing_config["model"] = args.llm_model
             preprocessing_config["prompt"] = args.llm_prompt
-            preprocessing_config["filter_threshold"] = args.llm_filter_threshold
-
-    # Process the dataset
+            preprocessing_config["filter_threshold"] = (
+                args.llm_filter_threshold
+            )  # Process the dataset
     output_dir = process_dataset(
         language_code=args.language,
         data_source=args.data_source,
@@ -321,6 +379,8 @@ def main():
         repo_id=args.repo_id,
         preprocessing_config=preprocessing_config,
         preprocessor_type=args.preprocessor_type,
+        enable_language_filtering=args.enable_language_filtering,
+        language_filter_threshold=args.language_filter_threshold,
     )
 
     print(f"\nProcessing complete! Output directory: {output_dir}")

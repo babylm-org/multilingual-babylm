@@ -5,3 +5,4 @@ preprocessed_output
 .env
 babylm_datasets
 output
+preprocessed_*

@@ -5,11 +5,11 @@ A modular pipeline for processing various data sources into standardized BabyLM 
 ## Overview
 
 This pipeline provides a flexible framework for:
+
 1. Processing text data from any source into BabyLM format
 2. Applying various preprocessing strategies (including LLM-based filtering)
 3. Creating language-specific datasets where each document has its own metadata
 4. Uploading to HuggingFace Hub
-
 
 ## Project Structure
 
@@ -33,6 +33,7 @@ pip install -r requirements.txt
 ## Configuration
 
 Create a `.env` file with your HuggingFace token:
+
 ```
 HF_TOKEN=your_huggingface_token_here
 ```
@@ -41,19 +42,22 @@ HF_TOKEN=your_huggingface_token_here
 
 Each dataset contains documents with the following fields:
 
-| Column | Description | Example Values |
-|--------|-------------|----------------|
-| text | Document text (preserves capitalization and paragraphs) | "This is a story.\n\nIt has multiple paragraphs." |
-| category | Content type for this document | child-directed-speech, educational, subtitles, etc. |
-| data-source | Original source of this document | OpenSubtitles, CHILDES, etc. |
-| script | Writing system | latin, cyrillic, arabic, etc. |
-| age-estimate | Target age for this document | "4", "12-17", "n/a" |
-| license | License for this document | cc-by, cc-by-sa, etc. |
-| misc | Additional metadata | JSON string with extra info |
+| Column       | Description                                                      | Example Values                                      |
+| ------------ | ---------------------------------------------------------------- | --------------------------------------------------- |
+| text         | Document text (preserves capitalization and paragraphs)          | "This is a story.\n\nIt has multiple paragraphs."   |
+| category     | Content type for this document                                   | child-directed-speech, educational, subtitles, etc. |
+| data-source  | Original source of this document                                 | OpenSubtitles, CHILDES, etc.                        |
+| script       | Writing system (ISO 15924 code as input, formal name in dataset) | `Latn`:Latin, `Cyrl`:Cyrillic, etc.                 |
+| age-estimate | Target age for this document                                     | "4", "12-17", "n/a"                                 |
+| license      | License for this document                                        | cc-by, cc-by-sa, etc.                               |
+| misc         | Additional metadata                                              | JSON string with extra info                         |
 
 ## Usage
 
 ### Basic Usage (Any Text Source)
+
+- The directory specified by `--texts-dir` must contain plain text files with the `.txt` extension. Each `.txt` file will be treated as a separate document.
+- After processing, the output HuggingFace-compatible dataset will be created in a new directory named `babylm-{language}` inside a parent folder called `babylm_datasets` (e.g., `babylm_datasets/babylm-eng/`).
 
 ```bash
 python main_pipeline.py \
@@ -61,14 +65,15 @@ python main_pipeline.py \
     --data-source "MyDataSource" \
     --category "educational" \
     --texts-dir "./path/to/texts" \
-    --script latin \
+    --script Latn \
     --age-estimate "6-12" \
     --license "cc-by"
 ```
 
 ### With Document-Specific Metadata
 
-Create a metadata JSON file that maps document IDs to specific metadata:
+- You can provide a JSON file mapping document IDs (filenames without `.txt`) to specific metadata fields.
+- If a document's ID is not found in the metadata file, the pipeline will use the values provided via command-line arguments for that document.
 
 ```json
 {
@@ -93,24 +98,56 @@ python main_pipeline.py \
     --data-source "MixedSources" \
     --category "educational" \
     --texts-dir "./texts" \
-    --script latin \
+    --script Latn \
     --age-estimate "6-12" \
     --license "cc-by" \
     --metadata-file "./document_metadata.json"
 ```
 
-### Preprocessing Options
+### Text Preprocessing
 
-The pipeline now **preserves capitalization and paragraph structure by default**. 
+- If you enable preprocessing (with `--preprocess`), the pipeline will write the preprocessed `.txt` files to a new directory named `preprocessed_{data-source}_{language}` (e.g., `preprocessed_MyDataSource_eng`).
+- The dataset will then be built from these preprocessed files, not the originals.
+- The original files are never overwritten.
+
+#### Available Custom Preprocessing Steps
+
+You can enable additional custom preprocessing steps using the following flags:
+
+- `--remove-urls`: Remove URLs from the text.
+- `--normalize-punctuation`: Normalize punctuation (e.g., convert curly quotes to straight quotes, unify dashes, etc.).
+- `--remove-xml-tags`: Remove XML/HTML tags from the text.
+
+You can combine these with other preprocessing options. For example:
+
+```bash
+python main_pipeline.py \
+    --language eng \
+    --data-source "MyDataSource" \
+    --category "educational" \
+    --texts-dir "./texts" \
+    --script Latn \
+    --age-estimate "6-12" \
+    --license "cc-by" \
+    --preprocess \
+    --remove-urls \
+    --normalize-punctuation \
+    --remove-xml-tags
+```
+
+- `--remove-urls` will strip out any web links.
+- `--normalize-punctuation` will standardize punctuation marks for consistency.
+- `--remove-xml-tags` will remove any XML or HTML tags, leaving only the text content.
 
 #### Basic Text Preprocessing
+
 ```bash
 python main_pipeline.py \
     --language fra \
     --data-source "FrenchTexts" \
     --category "child-books" \
     --texts-dir "./texts" \
-    --script latin \
+    --script Latn \
     --age-estimate "4-8" \
     --license "cc-by" \
     --preprocess \
@@ -118,13 +155,14 @@ python main_pipeline.py \
 ```
 
 #### If You Need Lowercasing
+
 ```bash
 python main_pipeline.py \
     --language fra \
     --data-source "FrenchTexts" \
     --category "child-books" \
     --texts-dir "./texts" \
-    --script latin \
+    --script Latn \
     --age-estimate "4-8" \
     --license "cc-by" \
     --preprocess \
@@ -145,10 +183,71 @@ python process_opensubtitles.py \
 ```
 
 The OpenSubtitles processor:
+
 - Preserves capitalization by default
 - Maintains document structure where possible
 - Removes timestamps and stage directions
 - Each subtitle file becomes a document with its own metadata
+
+## Language and Script Filtering
+
+The pipeline supports automatic language and script filtering using GlotLID v3. This ensures that only documents matching the desired language and script are included in the final dataset.
+
+### How It Works
+
+- Each document is segmented into reasonable-length chunks.
+- GlotLID v3 predicts the language and script for each segment.
+- The document's language and script are determined by majority vote **weighted by word count** (not just segment count).
+- Only documents matching the specified language and script (with sufficient confidence) are included in the main dataset. Others are saved separately for inspection.
+
+### Enabling Language Filtering
+
+Add the following arguments to your pipeline command:
+
+- `--enable-language-filtering` — Enable language/script filtering
+- `--language-filter-threshold 0.8` — (Optional) Set the minimum confidence threshold (default: 0.8)
+
+#### Example:
+
+```bash
+python main_pipeline.py \
+    --language ind \
+    --data-source "Bobo" \
+    --category child-news \
+    --texts-dir ./articles_cleaned_txt \
+    --script Latn \
+    --age-estimate "6-12" \
+    --license cc-by \
+    --enable-language-filtering \
+    --language-filter-threshold 0.8
+```
+
+- Matching files will be used for dataset creation.
+- Mismatched files are saved in a `filtered/mismatched/` subdirectory inside the output folder for later review.
+
+### Output Structure with Filtering
+
+When language filtering is enabled, the output directory will include:
+
+```
+babylm-{language}/
+├── filtered/
+│   ├── {language}/           # Matching files
+│   └── mismatched/           # Files not matching language/script
+│       ├── {pred_lang}_{pred_script}/
+│       └── ...
+├── texts/                    # Final dataset files
+├── dataset_metadata.json     # Complete metadata
+├── babylm-{language}_dataset.csv
+├── babylm-{language}_dataset.parquet
+└── README.md
+```
+
+### Notes
+
+- Filtering is based on **majority of words** in the document, not just the number of segments.
+- You can adjust the confidence threshold with `--language-filter-threshold`.
+- Filtering is available for any data source processed with `main_pipeline.py`.
 
 ## Preprocessor Types
 
@@ -166,6 +265,7 @@ The pipeline preserves important text structure:
 3. **Sentences**: Single newlines (`\n`) separate sentences within paragraphs
 
 This preservation is important for:
+
 - Proper nouns and sentence beginnings
 - Document structure and context switches
 - Natural reading flow
@@ -173,6 +273,7 @@ This preservation is important for:
 ## Categories
 
 Valid categories for documents:
+
 - `child-directed-speech`: Direct speech to children
 - `educational`: Educational content for children
 - `child-books`: Children's literature
@@ -185,6 +286,7 @@ Valid categories for documents:
 ## Output Structure
 
 Each processed dataset creates:
+
 ```
 babylm-{language}/
 ├── texts/                    # Individual text files
@@ -196,6 +298,4 @@ babylm-{language}/
 
 ## License
 
-
 The pipeline code is provided as-is. Individual documents in datasets have their own licenses as specified in the metadata.
-
