@@ -305,6 +305,8 @@ def main():
 
     args = parser.parse_args()
 
+    # Normalize script code to title case
+    args.script = args.script.title()
     # Enforce ISO 15924 script code
     if args.script not in SCRIPT_NAMES:
         parser.error(
