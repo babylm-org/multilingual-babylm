@@ -150,6 +150,59 @@ The OpenSubtitles processor:
 - Removes timestamps and stage directions
 - Each subtitle file becomes a document with its own metadata
 
+## Language and Script Filtering
+
+The pipeline supports automatic language and script filtering using GlotLID v3. This ensures that only documents matching the desired language and script are included in the final dataset.
+
+### How It Works
+- Each document is segmented into reasonable-length chunks.
+- GlotLID v3 predicts the language and script for each segment.
+- The document's language and script are determined by majority vote **weighted by word count** (not just segment count).
+- Only documents matching the specified language and script (with sufficient confidence) are included in the main dataset. Others are saved separately for inspection.
+
+### Enabling Language Filtering
+Add the following arguments to your pipeline command:
+- `--enable-language-filtering` — Enable language/script filtering
+- `--language-filter-threshold 0.8` — (Optional) Set the minimum confidence threshold (default: 0.8)
+
+#### Example:
+```bash
+python main_pipeline.py \
+    --language ind \
+    --data-source "Bobo" \
+    --category child-news \
+    --texts-dir ./articles_cleaned_txt \
+    --script Latn \
+    --age-estimate "6-12" \
+    --license cc-by \
+    --enable-language-filtering \
+    --language-filter-threshold 0.8
+```
+
+- Matching files will be used for dataset creation.
+- Mismatched files are saved in a `filtered/mismatched/` subdirectory inside the output folder for later review.
+
+### Output Structure with Filtering
+When language filtering is enabled, the output directory will include:
+```
+babylm-{language}/
+├── filtered/
+│   ├── {language}/           # Matching files
+│   └── mismatched/           # Files not matching language/script
+│       ├── {pred_lang}_{pred_script}/
+│       └── ...
+├── texts/                    # Final dataset files
+├── dataset_metadata.json     # Complete metadata
+├── babylm-{language}_dataset.csv
+├── babylm-{language}_dataset.parquet
+└── README.md
+```
+
+### Notes
+- Filtering is based on **majority of words** in the document, not just the number of segments.
+- You can adjust the confidence threshold with `--language-filter-threshold`.
+- Filtering is available for any data source processed with `main_pipeline.py`.
+
 ## Preprocessor Types
 
 - **text**: Basic text preprocessing
