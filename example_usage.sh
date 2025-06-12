@@ -122,7 +122,7 @@ python main_pipeline.py \
 
 # Example 8: Process OpenSubtitles using the dedicated script
 python process_opensubtitles.py \
-    --language afr \
+    --language af \
     --script latin \
     --batch-size 100 \
     --upload \

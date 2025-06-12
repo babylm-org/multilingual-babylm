@@ -28,6 +28,14 @@ def main():
     parser.add_argument("--keep-zip", action="store_true",
                        help="Keep the downloaded zip file")
     
+    # IMDB filtering options
+    parser.add_argument("--imdb-db-path", type=Path, default=Path("./prep_subtitles/imdb_mastersheet.db"),
+                       help="Path to IMDB SQLite database")
+    parser.add_argument("--forbidden-genres", nargs="+", default=[],
+                       help="List of genres to exclude (e.g., --forbidden-genres Horror News)")
+    parser.add_argument("--disable-imdb-filtering", action="store_true",
+                       help="Disable IMDB-based filtering")
+    
     # Dataset configuration (with OpenSubtitles defaults)
     parser.add_argument("--script", required=True,
                        help="Script type (latin, cyrillic, arabic, etc.)")
@@ -58,8 +66,23 @@ def main():
     
     args = parser.parse_args()
     
+    # Validate IMDB database if filtering is enabled
+    enable_imdb_filtering = not args.disable_imdb_filtering
+    if enable_imdb_filtering and not args.imdb_db_path.exists():
+        print(f"Warning: IMDB database not found at {args.imdb_db_path}")
+        print("Proceeding without IMDB filtering...")
+        enable_imdb_filtering = False
+    
     # Step 1: Download and extract OpenSubtitles data
     print(f"Processing OpenSubtitles data for {args.language}...")
+    
+    if enable_imdb_filtering:
+        print(f"IMDB filtering enabled:")
+        print(f"  Database: {args.imdb_db_path}")
+        print(f"  Forbidden genres: {args.forbidden_genres}")
+        print(f"  Adult content: excluded")
+    else:
+        print("IMDB filtering disabled")
     
     # Create preprocessor for OpenSubtitles
     preprocessor = None
@@ -74,28 +97,46 @@ def main():
         )
     
     # Process with OpenSubtitles processor
-    processor = OpenSubtitlesProcessor(args.language)
+    processor = OpenSubtitlesProcessor(
+        lang_code=args.language,
+        imdb_db_path=args.imdb_db_path,
+        forbidden_genres=args.forbidden_genres
+    )
+    
     metadata_df, preprocessed_dir = processor.process_language(
         batch_size=args.batch_size,
         keep_zip=args.keep_zip,
-        preprocessor=preprocessor
+        preprocessor=preprocessor,
+        enable_imdb_filtering=enable_imdb_filtering
     )
     
     print(f"\nExtracted {len(metadata_df)} files to {preprocessed_dir}")
     
-    # Create metadata mapping from the OpenSubtitles metadata
+    # Print filtering statistics
+    if enable_imdb_filtering:
+        success_count = len(metadata_df[metadata_df['processing_status'] == 'success'])
+        filtered_count = len(metadata_df[metadata_df['processing_status'] == 'filtered_out'])
+        failed_count = len(metadata_df[metadata_df['processing_status'] == 'failed'])
+        
+        print(f"\nProcessing Summary:")
+        print(f"  Successfully processed: {success_count}")
+        print(f"  Filtered out by IMDB criteria: {filtered_count}")
+        print(f"  Failed to process: {failed_count}")
+    
+    # Create metadata mapping from the OpenSubtitles metadata (only successful ones)
     metadata_mapping = {}
-    for _, row in metadata_df.iterrows():
-        if row['processing_status'] == 'success':
-            doc_metadata = {
-                'year': row['year'],
-                'folder_name': row['folder_name']
-            }
-            # Add any XML metadata fields
-            for col in row.index:
-                if col.startswith('meta_'):
-                    doc_metadata[col] = row[col]
-            metadata_mapping[row['file_id']] = doc_metadata
+    successful_df = metadata_df[metadata_df['processing_status'] == 'success']
+    
+    for _, row in successful_df.iterrows():
+        doc_metadata = {
+            'year': row['year'],
+            'folder_name': row['folder_name']
+        }
+        # Add any XML metadata fields
+        for col in row.index:
+            if col.startswith('meta_'):
+                doc_metadata[col] = row[col]
+        metadata_mapping[row['file_id']] = doc_metadata
     
     # Save metadata mapping
     metadata_file = processor.output_dir / f"{args.language}_metadata_mapping.json"
