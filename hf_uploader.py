@@ -236,6 +236,8 @@ dataset_info:
       dtype: string
     - name: misc
       dtype: string
+    - name: num_tokens
+      dtype: int64
 ---
 
 # {metadata.get('dataset_name', 'BabyLM Dataset')}
@@ -274,6 +276,7 @@ This dataset is part of the BabyLM multilingual collection.
 - `age-estimate`: Target age or age range
 - `license`: Data license
 - `misc`: Additional metadata (JSON string)
+- `num_tokens`: Number of tokens per item (based on white-space split)
 
 ### Licensing Information
 
