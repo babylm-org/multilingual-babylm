@@ -194,7 +194,7 @@ python main_pipeline.py \
     --data-source "ChineseChildrenStories" \
     --category "child-books" \
     --texts-dir "./chinese_stories" \
-    --script "chinese-simplified" \
+    --script "Hans" \  # ISO 15924 code for "Simplified Chinese"
     --age-estimate "5-10" \
     --license "cc-by" \
     --preprocess \
