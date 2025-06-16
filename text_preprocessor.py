@@ -522,7 +522,7 @@ def normalize_punctuation(text: str) -> str:
     import re
 
     # Normalize all double quotes to "
-    text = re.sub(r"[“”‟❝❞〝〞＂]", '"', text)
+    text = re.sub(r"[“”‟❝❞〝〞＂«»]", '"', text)
     # Normalize all single quotes to '
     text = re.sub(r"[‘’‛`´′‵']", "'", text)
 

@@ -176,7 +176,7 @@ For OpenSubtitles specifically, use the dedicated wrapper script:
 ```bash
 python process_opensubtitles.py \
     --language af \
-    --script latin \
+    --script Latn \
     --batch-size 100 \
     --upload \
     --repo-id "bhargavns/babylm-afr"
