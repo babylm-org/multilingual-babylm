@@ -6,7 +6,7 @@ python main_pipeline.py \
     --data-source "MyCustomTexts" \
     --category "educational" \
     --texts-dir "./my_text_files" \
-    --script latin \
+    --script Latn \
     --age-estimate "6-12" \
     --license "cc-by" \
     --upload \
@@ -41,7 +41,7 @@ python main_pipeline.py \
     --data-source "MixedSources" \
     --category "educational" \
     --texts-dir "./mixed_texts_example" \
-    --script latin \
+    --script Latn \
     --age-estimate "4-10" \
     --license "cc-by" \
     --metadata-file "./mixed_metadata.json" \
@@ -57,7 +57,7 @@ python main_pipeline.py \
     --data-source "FrenchStories" \
     --category "child-books" \
     --texts-dir "./french_stories" \
-    --script latin \
+    --script Latn \
     --age-estimate "4-8" \
     --license "cc-by-sa" \
     --preprocess \
@@ -70,7 +70,7 @@ python main_pipeline.py \
     --data-source "FrenchPoems" \
     --category "child-books" \
     --texts-dir "./french_poems" \
-    --script latin \
+    --script Latn \
     --age-estimate "6-10" \
     --license "cc-by" \
     --preprocess \
@@ -84,7 +84,7 @@ python main_pipeline.py \
     --data-source "GermanSubtitles" \
     --category "subtitles" \
     --texts-dir "./german_subs" \
-    --script latin \
+    --script Latn \
     --age-estimate "n/a" \
     --license "cc-by" \
     --preprocess \
@@ -98,7 +98,7 @@ python main_pipeline.py \
     --data-source "CHILDES-Dutch" \
     --category "child-directed-speech" \
     --texts-dir "./childes_dutch" \
-    --script latin \
+    --script Latn \
     --age-estimate "2-5" \
     --license "cc-by-sa" \
     --metadata-file "./childes_metadata.json" \
@@ -111,7 +111,7 @@ python main_pipeline.py \
     --data-source "SpanishWebTexts" \
     --category "child-available-speech" \
     --texts-dir "./spanish_web_texts" \
-    --script latin \
+    --script Latn \
     --age-estimate "8-14" \
     --license "cc-by" \
     --preprocess \
@@ -123,7 +123,7 @@ python main_pipeline.py \
 # Example 8: Process OpenSubtitles using the dedicated script
 python process_opensubtitles.py \
     --language af \
-    --script latin \
+    --script Latn \
     --batch-size 100 \
     --upload \
     --repo-id "username/babylm-afr"
@@ -131,7 +131,7 @@ python process_opensubtitles.py \
 # Example 9: Process OpenSubtitles with lowercasing (non-default)
 python process_opensubtitles.py \
     --language ita \
-    --script latin \
+    --script Latn \
     --lowercase \
     --batch-size 50 \
     --upload \
@@ -141,7 +141,7 @@ python process_opensubtitles.py \
 # Step 1: Extract texts without preprocessing
 python process_opensubtitles.py \
     --language por \
-    --script latin \
+    --script Latn \
     --no-preprocess \
     --keep-zip
 
@@ -151,7 +151,7 @@ python main_pipeline.py \
     --data-source "OpenSubtitles" \
     --category "subtitles" \
     --texts-dir "./output/por/preprocessed_texts" \
-    --script latin \
+    --script Latn \
     --age-estimate "n/a" \
     --license "cc-by" \
     --preprocess \
@@ -178,7 +178,7 @@ python main_pipeline.py \
     --data-source "K12Education" \
     --category "educational" \
     --texts-dir "./k12_texts" \
-    --script latin \
+    --script Latn \
     --age-estimate "4-13" \
     --license "cc-by-sa" \
     --metadata-file "./edu_metadata.json" \
