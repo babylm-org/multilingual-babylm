@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 from huggingface_hub import HfApi, create_repo
 from datasets import Dataset, DatasetDict, load_dataset 
 from datasets.exceptions import DatasetNotFoundError
+from transformers import AutoTokenizer
 
 
 class HFDatasetUploader:
@@ -31,6 +32,7 @@ class HFDatasetUploader:
         create_dataset_card: bool = True,
         create_repo_if_missing: bool = True,
         add_to_existing_data: bool = True,
+        tokenizer_name: str = None
     ) -> None:
         """
         Upload a BabyLM dataset to HuggingFace.
@@ -80,14 +82,22 @@ class HFDatasetUploader:
                 df = pd.concat([prev_data, df], ignore_index=True)
             except DatasetNotFoundError:
                 print("Previous data not found")
-                
+        
+        if tokenizer_name:
+            tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
+        else:
+            tokenizer = None
+        
         # Calculate token statistics
-        def count_tokens(text):
+        def count_tokens(text, tokenizer=None):
             if not isinstance(text, str):
                 return 0
+            if tokenizer:
+                tokens = tokenizer.encode(text, add_special_tokens=False)
+                return len(tokens)
             return len(text.split())
 
-        df["num_tokens"] = df["text"].apply(count_tokens)
+        df["num_tokens"] = df["text"].apply(count_tokens, tokenizer=tokenizer)
         total_tokens = int(df["num_tokens"].sum())
         tokens_per_category = None
         if "category" in df.columns:
