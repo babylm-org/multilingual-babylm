@@ -103,8 +103,9 @@ class HFDatasetUploader:
 
         # Create dataset card if requested
         if create_dataset_card:
+            num_documents = len(df)
             self._create_dataset_card(
-                dataset_dir, repo_id, total_tokens, tokens_per_category
+                dataset_dir, repo_id, total_tokens, tokens_per_category, num_documents
             )
 
         # Upload additional files (metadata, etc.)
@@ -137,6 +138,7 @@ class HFDatasetUploader:
         repo_id: str,
         total_tokens: int,
         tokens_per_category: Optional[dict],
+        num_documents: int,
     ) -> None:
         """Create a README.md dataset card."""
         import json
@@ -153,7 +155,7 @@ class HFDatasetUploader:
         config = metadata.get("config", {})
 
         # Determine size category based on number of documents
-        num_documents = metadata.get("num_documents")
+        num_documents = metadata.get("num_documents") or num_documents
         if num_documents is None:
             # Try to infer from dataset files if not in metadata
             data_file = next(
@@ -175,14 +177,20 @@ class HFDatasetUploader:
             else:
                 num_documents = 0
 
-        if num_documents < 1000:
+        if num_documents < 1_000:
             size_category = "n<1K"
-        elif num_documents < 10000:
-            size_category = "1K<=n<10K"
-        elif num_documents < 100000:
-            size_category = "10K<=n<100K"
-        else:
-            size_category = "n>=100K"
+        elif num_documents < 10_000:
+            size_category = "1K - 10K"
+        elif num_documents < 100_000:
+            size_category = "10K - 100K"
+        elif num_documents < 1_000_000:
+            size_category = "100K - 1M"
+        elif num_documents < 10_000_000:
+            size_category = "1M - 10M"
+        elif num_documents < 100_000_000:
+            size_category = "10M - 100M"
+        elif num_documents < 1_000_000_000:
+            size_category = "100M - 1B"
 
         # Helper to infer a field from config or documents
         def infer_field(field_name, hf_field=None):
@@ -251,9 +259,6 @@ This dataset is part of the BabyLM multilingual collection.
 
 - **Language:** {language}
 - **Script:** {script}
-- **Category:** {category}
-- **Source:** {source}
-- **Age Estimate:** {age_estimate}
 - **Number of Documents:** {num_documents}
 - **Total Tokens:** {total_tokens}
 
