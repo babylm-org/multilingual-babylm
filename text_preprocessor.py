@@ -25,6 +25,7 @@ class BasePreprocessor(ABC):
         remove_timestamps: bool = True,
         remove_stage_directions: bool = True,
         preserve_paragraphs: bool = True,  # New option
+        replace_newline_within_paragraph: bool = True,  # NEW OPTION
         custom_steps: Optional[List[Callable]] = None,
     ):
         """
@@ -37,6 +38,7 @@ class BasePreprocessor(ABC):
             remove_timestamps: Whether to remove timestamp patterns
             remove_stage_directions: Whether to remove [bracketed] stage directions
             preserve_paragraphs: Whether to preserve paragraph breaks (double newlines)
+            replace_newline_within_paragraph: Whether to replace single newlines with space within paragraphs
             custom_steps: List of additional preprocessing functions
         """
         self.lowercase = lowercase
@@ -45,6 +47,7 @@ class BasePreprocessor(ABC):
         self.remove_timestamps = remove_timestamps
         self.remove_stage_directions = remove_stage_directions
         self.preserve_paragraphs = preserve_paragraphs
+        self.replace_newline_within_paragraph = replace_newline_within_paragraph
         self.custom_steps = custom_steps or []
 
         # Compile regex patterns for efficiency
@@ -161,8 +164,9 @@ class BasePreprocessor(ABC):
             for para in paragraphs:
                 # Replace multiple spaces with single space within paragraph
                 para = re.sub(r"[ \t]+", " ", para)
-                # Replace single newlines with space within paragraph
-                para = re.sub(r"\n", " ", para)
+                if self.replace_newline_within_paragraph:
+                    # Replace single newlines with space within paragraph
+                    para = re.sub(r"\n", " ", para)
                 # Strip leading/trailing whitespace
                 para = para.strip()
                 if para:  # Only keep non-empty paragraphs
