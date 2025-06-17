@@ -66,8 +66,8 @@ class HFDatasetUploader:
             df = pd.read_parquet(data_file)
         elif csv_files:
             # Fallback to CSV
-            data_file = csv_files[0]
-            df = pd.read_csv(data_file)
+            csv_dfs = [pd.read_csv(f) for f in csv_files]
+            df = pd.concat(csv_dfs, ignore_index=True)
         else:
             raise ValueError(f"No dataset files found in {dataset_dir}")
 
@@ -147,7 +147,8 @@ class HFDatasetUploader:
             with open(metadata_path, "r", encoding="utf-8") as f:
                 metadata = json.load(f)
         else:
-            metadata = {}
+            language_code = repo_id.split("-")[-1]
+            metadata = {"config": {"language_code": language_code}}
 
         config = metadata.get("config", {})
 

@@ -37,7 +37,7 @@ class DocumentConfig:
             "child-available-speech"
         }
         if self.category not in allowed_categories:
-            raise ValueError(f"Category must be one of: {allowed_categories}")
+            raise ValueError(f"Category '{self.category}' must be one of: {allowed_categories}")
 
 
 @dataclass
