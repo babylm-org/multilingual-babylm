@@ -8,7 +8,8 @@ from typing import Optional
 import pandas as pd
 from dotenv import load_dotenv
 from huggingface_hub import HfApi, create_repo
-from datasets import Dataset, DatasetDict
+from datasets import Dataset, DatasetDict, load_dataset 
+from datasets.exceptions import DatasetNotFoundError
 
 
 class HFDatasetUploader:
@@ -29,6 +30,7 @@ class HFDatasetUploader:
         private: bool = True,
         create_dataset_card: bool = True,
         create_repo_if_missing: bool = True,
+        add_to_existing_data: bool = True,
     ) -> None:
         """
         Upload a BabyLM dataset to HuggingFace.
@@ -39,6 +41,7 @@ class HFDatasetUploader:
             private: Whether to make the repo private
             create_dataset_card: Whether to create a README
             create_repo_if_missing: Whether to create the repo if it doesn't exist
+            add_to_existing_data: Add to the existing dataset if it already exists. Overrides previous data if set to False.
         """
         # Optionally ensure repository exists
         if create_repo_if_missing:
@@ -71,6 +74,13 @@ class HFDatasetUploader:
         else:
             raise ValueError(f"No dataset files found in {dataset_dir}")
 
+        if add_to_existing_data:
+            try:
+                prev_data = load_dataset(repo_id, token=self.token, split="train").to_pandas()
+                df = pd.concat([prev_data, df], ignore_index=True)
+            except DatasetNotFoundError:
+                print("Previous data not found")
+                
         # Calculate token statistics
         def count_tokens(text):
             if not isinstance(text, str):
@@ -92,7 +102,7 @@ class HFDatasetUploader:
             print("No 'category' column found in dataset.")
 
         # Convert to HuggingFace Dataset
-        dataset = Dataset.from_pandas(df)
+        dataset = Dataset.from_pandas(df)                
 
         # Create DatasetDict with a single split
         dataset_dict = DatasetDict({"train": dataset})
@@ -180,17 +190,17 @@ class HFDatasetUploader:
         if num_documents < 1_000:
             size_category = "n<1K"
         elif num_documents < 10_000:
-            size_category = "1K - 10K"
+            size_category = "1K<n<10K"
         elif num_documents < 100_000:
-            size_category = "10K - 100K"
+            size_category = "10K<n<100K"
         elif num_documents < 1_000_000:
-            size_category = "100K - 1M"
+            size_category = "100K<n<1M"
         elif num_documents < 10_000_000:
-            size_category = "1M - 10M"
+            size_category = "1M<n<10M"
         elif num_documents < 100_000_000:
-            size_category = "10M - 100M"
+            size_category = "10M<n<100M"
         elif num_documents < 1_000_000_000:
-            size_category = "100M - 1B"
+            size_category = "100M<n<1B"
 
         # Helper to infer a field from config or documents
         def infer_field(field_name, hf_field=None):
