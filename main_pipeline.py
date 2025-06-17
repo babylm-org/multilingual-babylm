@@ -288,6 +288,12 @@ def main():
     parser.add_argument(
         "--remove-xml-tags", action="store_true", default=None, help="Remove XML tags"
     )
+    parser.add_argument(
+        "--replace-newline-within-paragraph",
+        action="store_true",
+        default=False,
+        help="Replace single newlines with space within paragraphs (default: False)",
+    )
 
     # LLM preprocessing options
     parser.add_argument(
@@ -350,6 +356,7 @@ def main():
             preprocessing_config["remove_stage_directions"] = (
                 args.remove_stage_directions
             )
+        preprocessing_config["replace_newline_within_paragraph"] = args.replace_newline_within_paragraph
         # Add custom preprocessing steps if flags are set
         if args.remove_urls:
             custom_steps.append(remove_urls)

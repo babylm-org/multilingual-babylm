@@ -17,11 +17,13 @@ This pipeline provides a flexible framework for:
 ├── main_pipeline.py             # Main generic pipeline
 ├── babylm_dataset_builder.py    # BabyLM dataset builder
 ├── text_preprocessor.py         # Text preprocessing utilities
-├── hf_uploader.py              # HuggingFace upload utilities
-├── process_opensubtitles.py    # OpenSubtitles-specific wrapper
-├── opensubtitles_processor.py  # OpenSubtitles processing module
-├── requirements.txt            # Python dependencies
-└── example_usage.sh           # Usage examples
+├── hf_uploader.py               # HuggingFace upload utilities
+├── process_opensubtitles.py     # OpenSubtitles-specific wrapper
+├── opensubtitles_processor.py   # OpenSubtitles processing module
+├── language_filter.py           # Language and script filtering (GlotLID)
+├── language_scripts.py          # ISO 15924 script code mapping utilities
+├── requirements.txt             # Python dependencies
+└── example_usage.sh             # Usage examples
 ```
 
 ## Installation
@@ -42,17 +44,18 @@ HF_TOKEN=your_huggingface_token_here
 
 Each dataset contains documents with the following fields:
 
-| Column       | Description                                                      | Example Values                                      |
-| ------------ | ---------------------------------------------------------------- | --------------------------------------------------- |
-| text         | Document text (preserves capitalization and paragraphs)          | "This is a story.\n\nIt has multiple paragraphs."   |
-| category     | Content type for this document                                   | See below                                           |
-| data-source  | Original source of this document                                 | OpenSubtitles, CHILDES, etc.                        |
-| script       | Writing system (ISO 15924 code as input, formal name in dataset) | `Latn`:Latin, `Cyrl`:Cyrillic, etc.                 |
-| age-estimate | Target age for this document                                     | "4", "12-17", "n/a"                                 |
-| license      | License for this document                                        | cc-by, cc-by-sa, etc.                               |
-| misc         | Additional metadata                                              | JSON string with extra info                         |
+| Column       | Description                                                      | Example Values                                    |
+| ------------ | ---------------------------------------------------------------- | ------------------------------------------------- |
+| text         | Document text (preserves capitalization and paragraphs)          | "This is a story.\n\nIt has multiple paragraphs." |
+| category     | Content type for this document                                   | See below                                         |
+| data-source  | Original source of this document                                 | OpenSubtitles, CHILDES, etc.                      |
+| script       | Writing system (ISO 15924 code as input, formal name in dataset) | `Latn`:Latin, `Cyrl`:Cyrillic, etc.               |
+| age-estimate | Target age for this document                                     | "4", "12-17", "n/a"                               |
+| license      | License for this document                                        | cc-by, cc-by-sa, etc.                             |
+| misc         | Additional metadata                                              | JSON string with extra info                       |
 
 ### Categories
+
 - `child-directed-speech`
 - `educational`
 - `child-books`
@@ -128,6 +131,7 @@ You can enable additional custom preprocessing steps using the following flags:
 - `--remove-urls`: Remove URLs from the text.
 - `--normalize-punctuation`: Normalize punctuation (e.g., convert curly quotes to straight quotes, unify dashes, etc.).
 - `--remove-xml-tags`: Remove XML/HTML tags from the text.
+- `--replace-newline-within-paragraph`: Replace single newlines with a space within paragraphs (default: off). This is useful if you want to treat each paragraph as a single line, even if the original text had line breaks within paragraphs.
 
 You can combine these with other preprocessing options. For example:
 
@@ -143,12 +147,14 @@ python main_pipeline.py \
     --preprocess \
     --remove-urls \
     --normalize-punctuation \
-    --remove-xml-tags
+    --remove-xml-tags \
+    --replace-newline-within-paragraph
 ```
 
 - `--remove-urls` will strip out any web links.
 - `--normalize-punctuation` will standardize punctuation marks for consistency.
 - `--remove-xml-tags` will remove any XML or HTML tags, leaving only the text content.
+- `--replace-newline-within-paragraph` will join lines within paragraphs into a single line (paragraphs are still separated by double newlines).
 
 #### Basic Text Preprocessing
 
@@ -199,6 +205,53 @@ The OpenSubtitles processor:
 - Maintains document structure where possible
 - Removes timestamps and stage directions
 - Each subtitle file becomes a document with its own metadata
+
+## Output Structure
+
+Each processed dataset creates:
+
+```
+babylm-{language}/
+├── texts/                    # Individual text files
+├── dataset_metadata.json     # Complete metadata
+├── babylm-{language}_dataset.csv     # Final dataset (CSV)
+├── babylm-{language}_dataset.parquet # Final dataset (Parquet)
+└── README.md                # Dataset card
+```
+
+## Preprocessor Types
+
+- **text**: Basic text preprocessing
+- **subtitle**: Specialized for subtitle files (removes timestamps, stage directions)
+- **transcript**: For dialogue transcripts (removes speaker labels, annotations)
+- **llm**: Uses language models for quality filtering
+
+## Text Structure Preservation
+
+The pipeline preserves important text structure:
+
+1. **Capitalization**: Maintained by default (use `--lowercase` to change)
+2. **Paragraphs**: Double newlines (`\n\n`) indicate paragraph breaks
+3. **Sentences**: Single newlines (`\n`) separate sentences within paragraphs
+
+This preservation is important for:
+
+- Proper nouns and sentence beginnings
+- Document structure and context switches
+- Natural reading flow
+
+## Categories
+
+Valid categories for documents:
+
+- `child-directed-speech`: Direct speech to children
+- `educational`: Educational content for children
+- `child-books`: Children's literature
+- `child-wiki`: Child-friendly encyclopedic content
+- `child-news`: News adapted for children
+- `subtitles`: TV/movie subtitles
+- `qed`: QED educational content
+- `child-available-speech`: Other dialogue/speech accessible to children
 
 ## Language and Script Filtering
 
@@ -259,53 +312,6 @@ babylm-{language}/
 - Filtering is based on **majority of words** in the document, not just the number of segments.
 - You can adjust the confidence threshold with `--language-filter-threshold`.
 - Filtering is available for any data source processed with `main_pipeline.py`.
-
-## Preprocessor Types
-
-- **text**: Basic text preprocessing
-- **subtitle**: Specialized for subtitle files (removes timestamps, stage directions)
-- **transcript**: For dialogue transcripts (removes speaker labels, annotations)
-- **llm**: Uses language models for quality filtering
-
-## Text Structure Preservation
-
-The pipeline preserves important text structure:
-
-1. **Capitalization**: Maintained by default (use `--lowercase` to change)
-2. **Paragraphs**: Double newlines (`\n\n`) indicate paragraph breaks
-3. **Sentences**: Single newlines (`\n`) separate sentences within paragraphs
-
-This preservation is important for:
-
-- Proper nouns and sentence beginnings
-- Document structure and context switches
-- Natural reading flow
-
-## Categories
-
-Valid categories for documents:
-
-- `child-directed-speech`: Direct speech to children
-- `educational`: Educational content for children
-- `child-books`: Children's literature
-- `child-wiki`: Child-friendly encyclopedic content
-- `child-news`: News adapted for children
-- `subtitles`: TV/movie subtitles
-- `qed`: QED educational content
-- `child-available-speech`: Other dialogue/speech accessible to children
-
-## Output Structure
-
-Each processed dataset creates:
-
-```
-babylm-{language}/
-├── texts/                    # Individual text files
-├── dataset_metadata.json     # Complete metadata
-├── babylm-{language}_dataset.csv     # Final dataset (CSV)
-├── babylm-{language}_dataset.parquet # Final dataset (Parquet)
-└── README.md                # Dataset card
-```
 
 ## License
 
