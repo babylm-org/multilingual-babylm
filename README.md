@@ -45,12 +45,23 @@ Each dataset contains documents with the following fields:
 | Column       | Description                                                      | Example Values                                      |
 | ------------ | ---------------------------------------------------------------- | --------------------------------------------------- |
 | text         | Document text (preserves capitalization and paragraphs)          | "This is a story.\n\nIt has multiple paragraphs."   |
-| category     | Content type for this document                                   | child-directed-speech, educational, subtitles, etc. |
+| category     | Content type for this document                                   | See below                                           |
 | data-source  | Original source of this document                                 | OpenSubtitles, CHILDES, etc.                        |
 | script       | Writing system (ISO 15924 code as input, formal name in dataset) | `Latn`:Latin, `Cyrl`:Cyrillic, etc.                 |
 | age-estimate | Target age for this document                                     | "4", "12-17", "n/a"                                 |
 | license      | License for this document                                        | cc-by, cc-by-sa, etc.                               |
 | misc         | Additional metadata                                              | JSON string with extra info                         |
+
+### Categories
+- `child-directed-speech`
+- `educational`
+- `child-books`
+- `child-wiki`
+- `child-news`
+- `subtitles`
+- `qed`
+- `child-available-speech`
+- `simplified-text`
 
 ## Usage
 
