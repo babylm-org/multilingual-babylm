@@ -8,7 +8,7 @@ from typing import Optional
 import pandas as pd
 from dotenv import load_dotenv
 from huggingface_hub import HfApi, create_repo
-from datasets import Dataset, DatasetDict, load_dataset 
+from datasets import Dataset, DatasetDict, load_dataset
 from datasets.exceptions import DatasetNotFoundError
 from transformers import AutoTokenizer
 
@@ -32,7 +32,7 @@ class HFDatasetUploader:
         create_dataset_card: bool = True,
         create_repo_if_missing: bool = True,
         add_to_existing_data: bool = True,
-        tokenizer_name: str = None
+        tokenizer_name: Optional[str] = None,
     ) -> None:
         """
         Upload a BabyLM dataset to HuggingFace.
@@ -78,16 +78,18 @@ class HFDatasetUploader:
 
         if add_to_existing_data:
             try:
-                prev_data = load_dataset(repo_id, token=self.token, split="train").to_pandas()
+                prev_data = load_dataset(
+                    repo_id, token=self.token, split="train"
+                ).to_pandas()
                 df = pd.concat([prev_data, df], ignore_index=True)
             except DatasetNotFoundError:
                 print("Previous data not found")
-        
+
         if tokenizer_name:
             tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
         else:
             tokenizer = None
-        
+
         # Calculate token statistics
         def count_tokens(text, tokenizer=None):
             if not isinstance(text, str):
@@ -112,7 +114,7 @@ class HFDatasetUploader:
             print("No 'category' column found in dataset.")
 
         # Convert to HuggingFace Dataset
-        dataset = Dataset.from_pandas(df)                
+        dataset = Dataset.from_pandas(df)
 
         # Create DatasetDict with a single split
         dataset_dict = DatasetDict({"train": dataset})
