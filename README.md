@@ -70,8 +70,8 @@ Each dataset contains documents with the following fields:
 
 ### Basic Usage (Any Text Source)
 
-- The directory specified by `--texts-dir` must contain plain text files with the `.txt` extension. Each `.txt` file will be treated as a separate document.
-- After processing, the output HuggingFace-compatible dataset will be created in a new directory named `babylm-{language}` inside a parent folder called `babylm_datasets` (e.g., `babylm_datasets/babylm-eng/`).
+- If you do **not** use `--preprocess`, the directory specified by `--texts-dir` must contain plain text files with the `.txt` extension. Each `.txt` file will be treated as a separate document.
+  - After processing, the output HuggingFace-compatible dataset will be created in a new directory named `babylm-{language}` inside a parent folder called `babylm_datasets` (e.g., `babylm_datasets/babylm-eng/`).
 
 ```bash
 python main_pipeline.py \
@@ -84,10 +84,66 @@ python main_pipeline.py \
     --license "cc-by"
 ```
 
+- If you use `--preprocess` with `--preprocessor-type text`, the pipeline will preprocess all `.txt` files in the directory specified by `--texts-dir` and build the dataset from the preprocessed files. The original files are never overwritten; preprocessed files are written to a new directory named `preprocessed_{data-source}_{language}` (e.g., `preprocessed_MyDataSource_eng`).
+
+```bash
+python main_pipeline.py \
+    --language eng \
+    --data-source "MyDataSource" \
+    --category "educational" \
+    --texts-dir "./path/to/texts" \
+    --script Latn \
+    --age-estimate "6-12" \
+    --license "cc-by" \
+    --preprocess \
+    --preprocessor-type text
+```
+
+- If you use `--preprocess` with `--preprocessor-type csv`, the pipeline will extract text and metadata from the CSV file specified by `--texts-dir`, write each row's text to a `.txt` file in a new preprocessed directory, and build the dataset from those files. Only fields relevant to the BabyLM dataset (category, data_source, script, age_estimate, license, misc, source_url, source_identifier) are extracted as metadata.
+- If you use `--preprocess` with `--preprocessor-type hf`, the pipeline will extract text and metadata from the HuggingFace dataset specified by `--texts-dir` (dataset ID), write each example's text to a `.txt` file in a new preprocessed directory, and build the dataset from those files. Only fields relevant to the BabyLM dataset are extracted as metadata. You can specify the split with `--hf-dataset-split` (default: use the default split).
+- If you do **not** use `--preprocess`, you cannot use CSV or HuggingFace datasets as input; only a directory of `.txt` files is supported.
+
+#### Example: Using a CSV as Input
+
+```bash
+python main_pipeline.py \
+    --language eng \
+    --data-source "MyCSVSource" \
+    --category "educational" \
+    --texts-dir "./mydata.csv" \
+    --script Latn \
+    --age-estimate "6-12" \
+    --license "cc-by" \
+    --preprocess \
+    --preprocessor-type csv \
+    --text-field "text"
+```
+
+#### Example: Using a HuggingFace Dataset as Input
+
+```bash
+python main_pipeline.py \
+    --language eng \
+    --data-source "MyHFSource" \
+    --category "educational" \
+    --texts-dir "my_hf_dataset_id" \
+    --script Latn \
+    --age-estimate "6-12" \
+    --license "cc-by" \
+    --preprocess \
+    --preprocessor-type hf \
+    --text-field "text" \
+    --hf-dataset-split "train"
+```
+
+- The pipeline will extract the text and relevant metadata fields from the dataset, write each example to a `.txt` file, and build the BabyLM dataset from those files.
+- If you do not specify `--hf-dataset-split`, no split will be used.
+
 ### With Document-Specific Metadata
 
 - You can provide a JSON file mapping document IDs (filenames without `.txt`) to specific metadata fields.
 - If a document's ID is not found in the metadata file, the pipeline will use the values provided via command-line arguments for that document.
+- If using CSV or HuggingFace dataset as Input, by default the metadata is extracted from the CSV file/HF dataset.
 
 ```json
 {
@@ -132,8 +188,7 @@ You can enable additional custom preprocessing steps using the following flags:
 - `--normalize-punctuation`: Normalize punctuation (e.g., convert curly quotes to straight quotes, unify dashes, etc.).
 - `--remove-xml-tags`: Remove XML/HTML tags from the text.
 - `--replace-newline-within-paragraph`: Replace single newlines with a space within paragraphs (default: off). This is useful if you want to treat each paragraph as a single line, even if the original text had line breaks within paragraphs.
-
-`--tokenizer-name` : Specify the tokenizer you would like to use to count tokens.
+- `--tokenizer-name` : Specify the tokenizer you would like to use to count tokens (default to whitespace split). Support HuggingFace tokenizers.
 
 You can combine these with other preprocessing options. For example:
 
@@ -152,11 +207,6 @@ python main_pipeline.py \
     --remove-xml-tags \
     --replace-newline-within-paragraph
 ```
-
-- `--remove-urls` will strip out any web links.
-- `--normalize-punctuation` will standardize punctuation marks for consistency.
-- `--remove-xml-tags` will remove any XML or HTML tags, leaving only the text content.
-- `--replace-newline-within-paragraph` will join lines within paragraphs into a single line (paragraphs are still separated by double newlines).
 
 #### Basic Text Preprocessing
 
@@ -227,6 +277,8 @@ babylm-{language}/
 - **subtitle**: Specialized for subtitle files (removes timestamps, stage directions)
 - **transcript**: For dialogue transcripts (removes speaker labels, annotations)
 - **llm**: Uses language models for quality filtering
+- **csv**: For CSV files; extracts text and relevant metadata fields from each row, writes each as a .txt file, and builds the dataset from those files (requires --preprocess)
+- **hf**: For HuggingFace datasets; extracts text and relevant metadata fields from each example, writes each as a .txt file, and builds the dataset from those files (requires --preprocess)
 
 ## Text Structure Preservation
 
@@ -234,7 +286,7 @@ The pipeline preserves important text structure:
 
 1. **Capitalization**: Maintained by default (use `--lowercase` to change)
 2. **Paragraphs**: Double newlines (`\n\n`) indicate paragraph breaks
-3. **Sentences**: Single newlines (`\n`) separate sentences within paragraphs
+3. **Sentences**: Single newlines (`\n`) are maintained within paragraph
 
 This preservation is important for:
 

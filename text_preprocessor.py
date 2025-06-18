@@ -9,6 +9,8 @@ from typing import List, Optional, Callable, Dict, Any
 from pathlib import Path
 import ftfy
 from abc import ABC, abstractmethod
+import csv
+from datasets import load_from_disk
 
 
 class BasePreprocessor(ABC):
@@ -487,30 +489,79 @@ class LLMPreprocessor(BasePreprocessor):
         return processed_lines
 
 
+class CSVPreprocessor(TextFilePreprocessor):
+    """Preprocessor for CSV files with text and metadata fields."""
+
+    def __init__(self, text_field="text", **kwargs):
+        super().__init__(**kwargs)
+        self.text_field = text_field
+
+    def process_csv(self, csv_path: Path, output_dir: Path) -> Dict[str, Any]:
+        metadata_mapping = {}
+        with open(csv_path, newline="", encoding="utf-8") as csvfile:
+            reader = csv.DictReader(csvfile)
+            for i, row in enumerate(reader):
+                text = row.get(self.text_field, "")
+                if not text:
+                    continue
+                processed_text = self.preprocess_text(text)
+                doc_id = str(i)
+                out_path = output_dir / f"{doc_id}.txt"
+                with open(out_path, "w", encoding="utf-8") as f:
+                    f.write(processed_text)
+                meta = {k: v for k, v in row.items() if k != self.text_field}
+                metadata_mapping[doc_id] = meta
+        return metadata_mapping
+
+
+class HFDatasetPreprocessor(TextFilePreprocessor):
+    """Preprocessor for HuggingFace datasets with text and metadata fields."""
+
+    def __init__(self, dataset_id, split=None, text_field="text", **kwargs):
+        super().__init__(**kwargs)
+        self.dataset_id = dataset_id
+        self.split = split
+        self.text_field = text_field
+
+    def process_hf_dataset(self, output_dir: Path) -> Dict[str, Any]:
+        metadata_mapping = {}
+        ds = (
+            load_from_disk(self.dataset_id, split=self.split)
+            if self.split
+            else load_from_disk(self.dataset_id)
+        )
+        # If no split, ds is a dict of splits, use the first split
+        if isinstance(ds, dict):
+            ds = next(iter(ds.values()))
+        for i, row in enumerate(ds):
+            text = row.get(self.text_field, "")
+            if not text:
+                continue
+            processed_text = self.preprocess_text(text)
+            doc_id = str(i)
+            out_path = output_dir / f"{doc_id}.txt"
+            with open(out_path, "w", encoding="utf-8") as f:
+                f.write(processed_text)
+            meta = {k: v for k, v in row.items() if k != self.text_field}
+            metadata_mapping[doc_id] = meta
+        return metadata_mapping
+
+
+# Update factory
 def create_preprocessor(source_type: str, **kwargs) -> BasePreprocessor:
-    """
-    Factory function to create appropriate preprocessor.
-
-    Args:
-        source_type: Type of source ('text', 'subtitle', 'transcript', 'llm', etc.)
-        **kwargs: Configuration parameters for the preprocessor
-
-    Returns:
-        Configured preprocessor instance
-    """
     preprocessors = {
         "text": TextFilePreprocessor,
         "subtitle": SubtitlePreprocessor,
         "transcript": TranscriptPreprocessor,
         "llm": LLMPreprocessor,
+        "csv": CSVPreprocessor,
+        "hf": HFDatasetPreprocessor,
     }
-
     if source_type not in preprocessors:
         raise ValueError(
             f"Unknown source type: {source_type}. "
             f"Available: {list(preprocessors.keys())}"
         )
-
     return preprocessors[source_type](**kwargs)
 
 

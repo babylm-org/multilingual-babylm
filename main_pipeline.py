@@ -58,25 +58,41 @@ def process_dataset(
 
     # Create preprocessor if preprocessing is requested
     preprocessor = None
+    metadata_mapping = {}
     if preprocessing_config:
         print(f"Using {preprocessor_type} preprocessor...")
         preprocessor = create_preprocessor(preprocessor_type, **preprocessing_config)
 
-        # If preprocessor is provided, we need to preprocess the texts
         if preprocessor:
             preprocessed_dir = Path(f"./preprocessed_{data_source}_{language_code}")
             preprocessed_dir.mkdir(exist_ok=True)
 
+            if preprocessor_type == "csv" and hasattr(preprocessor, "process_csv"):
+                print(f"Preprocessing CSV file: {texts_dir}")
+                # type: ignore
+                metadata_mapping = getattr(preprocessor, "process_csv")(
+                    texts_dir, preprocessed_dir
+                )
+                texts_dir = preprocessed_dir
+            elif preprocessor_type == "hf" and hasattr(
+                preprocessor, "process_hf_dataset"
+            ):
+                print(f"Preprocessing HuggingFace dataset: {texts_dir}")
+                # type: ignore
+                metadata_mapping = getattr(preprocessor, "process_hf_dataset")(
+                    preprocessed_dir
+                )
+                texts_dir = preprocessed_dir
+
             print("Preprocessing text files...")
             text_files = list(texts_dir.glob("*.txt"))
-
             for text_file in tqdm(text_files, desc="Preprocessing files"):
                 output_file = preprocessed_dir / text_file.name
                 try:
                     preprocessor.process_file(text_file, output_file)
                 except Exception as e:
                     print(f"Error preprocessing {text_file}: {e}")
-                    continue  # Use preprocessed directory for dataset building
+                    continue
             texts_dir = preprocessed_dir  # Create dataset config (just language code)
     dataset_config = DatasetConfig(language_code=language_code)
 
@@ -94,7 +110,7 @@ def process_dataset(
 
     # Language filtering if enabled
     if enable_language_filtering:
-        expected_script = document_config_params.get("script", "Latn")
+        expected_script = script_code
         print(f"\nPerforming language filtering...")
         print(f"Expected language: {language_code}")
         print(f"Expected script: {expected_script}")
@@ -127,9 +143,8 @@ def process_dataset(
             )
             print(f"Proceeding with original directory: {texts_dir}")
 
-    # Load metadata if provided
-    metadata_mapping = {}
-    if metadata_file and metadata_file.exists():
+    # Load metadata if provided, unless already set from preprocessor
+    if not metadata_mapping and metadata_file and metadata_file.exists():
         print(f"Loading metadata from {metadata_file}")
         with open(metadata_file, "r", encoding="utf-8") as f:
             metadata_mapping = json.load(f)
@@ -148,9 +163,19 @@ def process_dataset(
     if upload and repo_id:
         print(f"\nUploading to HuggingFace: {repo_id}")
         uploader = HFDatasetUploader()
-        uploader.upload_babylm_dataset(
-            dataset_dir=builder.output_dir, repo_id=repo_id, create_repo_if_missing=True, tokenizer_name = tokenizer_name
-        )
+        if tokenizer_name is not None:
+            uploader.upload_babylm_dataset(
+                dataset_dir=builder.output_dir,
+                repo_id=repo_id,
+                create_repo_if_missing=True,
+                tokenizer_name=tokenizer_name,
+            )
+        else:
+            uploader.upload_babylm_dataset(
+                dataset_dir=builder.output_dir,
+                repo_id=repo_id,
+                create_repo_if_missing=True,
+            )
 
     return builder.output_dir
 
@@ -240,8 +265,20 @@ def main():
     parser.add_argument(
         "--preprocessor-type",
         default="text",
-        choices=["text", "subtitle", "transcript", "llm"],
+        choices=["text", "subtitle", "transcript", "llm", "csv", "hf"],
         help="Type of preprocessor to use",
+    )
+    parser.add_argument(
+        "--text-field",
+        type=str,
+        default="text",
+        help="Field name for text in CSV or HuggingFace datasets (default: 'text')",
+    )
+    parser.add_argument(
+        "--hf-dataset-split",
+        type=str,
+        default=None,
+        help="Split name for HuggingFace datasets (e.g., 'train', 'test'). Default: None (use default split)",
     )
 
     # Preprocessing options
@@ -364,7 +401,9 @@ def main():
             preprocessing_config["remove_stage_directions"] = (
                 args.remove_stage_directions
             )
-        preprocessing_config["replace_newline_within_paragraph"] = args.replace_newline_within_paragraph
+        preprocessing_config["replace_newline_within_paragraph"] = (
+            args.replace_newline_within_paragraph
+        )
         # Add custom preprocessing steps if flags are set
         if args.remove_urls:
             custom_steps.append(remove_urls)
@@ -380,9 +419,15 @@ def main():
                 parser.error("--llm-prompt is required when using LLM preprocessor")
             preprocessing_config["model"] = args.llm_model
             preprocessing_config["prompt"] = args.llm_prompt
-            preprocessing_config["filter_threshold"] = (
-                args.llm_filter_threshold
-            )  # Process the dataset
+            preprocessing_config["filter_threshold"] = args.llm_filter_threshold
+        # Add CSV/HF-specific options
+        if args.preprocessor_type in ["csv", "hf"]:
+            preprocessing_config["text_field"] = args.text_field
+        if args.preprocessor_type == "hf":
+            preprocessing_config["dataset_id"] = str(args.texts_dir)
+            preprocessing_config["split"] = args.hf_dataset_split
+
+    # Process the dataset
     output_dir = process_dataset(
         language_code=args.language,
         data_source=args.data_source,
@@ -396,7 +441,7 @@ def main():
         preprocessor_type=args.preprocessor_type,
         enable_language_filtering=args.enable_language_filtering,
         language_filter_threshold=args.language_filter_threshold,
-        tokenizer_name=args.tokenizer_name
+        tokenizer_name=args.tokenizer_name,
     )
 
     print(f"\nProcessing complete! Output directory: {output_dir}")
