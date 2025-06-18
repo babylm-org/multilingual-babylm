@@ -31,6 +31,7 @@ def process_dataset(
     preprocessor_type: str = "text",
     enable_language_filtering: bool = False,
     language_filter_threshold: float = 0.8,
+    tokenizer_name: Optional[str] = None,
 ) -> Path:
     """
     Process any data source into BabyLM format.
@@ -48,6 +49,7 @@ def process_dataset(
         preprocessor_type: Type of preprocessor to use
         enable_language_filtering: Whether to enable language filtering
         language_filter_threshold: Minimum confidence for language filtering
+        tokenizer_name: Name of the tokenizer to use for token counting (for languages like Chinese, Japanese and Korean)
 
     Returns:
         Path to output directory
@@ -147,7 +149,7 @@ def process_dataset(
         print(f"\nUploading to HuggingFace: {repo_id}")
         uploader = HFDatasetUploader()
         uploader.upload_babylm_dataset(
-            dataset_dir=builder.output_dir, repo_id=repo_id, create_repo_if_missing=True
+            dataset_dir=builder.output_dir, repo_id=repo_id, create_repo_if_missing=True, tokenizer_name = tokenizer_name
         )
 
     return builder.output_dir
@@ -294,6 +296,12 @@ def main():
         default=False,
         help="Replace single newlines with space within paragraphs (default: False)",
     )
+    parser.add_argument(
+        "--tokenizer-name",
+        type=str,
+        default=None,
+        help="Name of the tokenizer to use for token counting (for languages like Chinese, Japanese and Korean)",
+    )
 
     # LLM preprocessing options
     parser.add_argument(
@@ -388,6 +396,7 @@ def main():
         preprocessor_type=args.preprocessor_type,
         enable_language_filtering=args.enable_language_filtering,
         language_filter_threshold=args.language_filter_threshold,
+        tokenizer_name=args.tokenizer_name
     )
 
     print(f"\nProcessing complete! Output directory: {output_dir}")

@@ -16,5 +16,7 @@ huggingface-hub>=0.16.0
 datasets>=2.12.0
 pyarrow>=11.0.0  # For parquet support
 
+
 # Optional but recommended
 lxml>=4.9.0  # Better XML parsing performance
+transformers>=4.30.0  # For loading tokenizers

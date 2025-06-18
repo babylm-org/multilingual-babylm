@@ -133,6 +133,8 @@ You can enable additional custom preprocessing steps using the following flags:
 - `--remove-xml-tags`: Remove XML/HTML tags from the text.
 - `--replace-newline-within-paragraph`: Replace single newlines with a space within paragraphs (default: off). This is useful if you want to treat each paragraph as a single line, even if the original text had line breaks within paragraphs.
 
+`--tokenizer-name` : Specify the tokenizer you would like to use to count tokens.
+
 You can combine these with other preprocessing options. For example:
 
 ```bash
