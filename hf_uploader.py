@@ -31,7 +31,7 @@ class HFDatasetUploader:
         private: bool = True,
         create_dataset_card: bool = True,
         create_repo_if_missing: bool = True,
-        add_to_existing_data: bool = True,
+        add_to_existing_data: bool = False,
         tokenizer_name: Optional[str] = None,
     ) -> None:
         """
