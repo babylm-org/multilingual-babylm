@@ -15,5 +15,11 @@
     "category": "child-directed-speech",
     "age_estimate": "2-4",
     "data_source": "CHILDES"
+  },
+  "filter1": {
+    "category": "child-directed-speech",
+    "age_estimate": "2-4",
+    "data_source": "CHILDES"
   }
+
 }

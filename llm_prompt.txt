@@ -1,0 +1,12 @@
+Evaluate if this text is appropriate for children's language learning.
+Consider factors like:
+- Age-appropriate content
+- Educational value
+- Language quality
+- Absence of inappropriate content
+
+Respond with ONLY a JSON object in this format:
+{"score": 0.0-1.0, "reason": "brief explanation", "processed_text": "cleaned version if needed"}
+
+Text to evaluate:
+{text}

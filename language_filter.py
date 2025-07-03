@@ -5,28 +5,28 @@ Simple segmentation and majority vote for document-level language/script predict
 """
 
 import os
-import re
-from collections import Counter, defaultdict
-from typing import List, Tuple, Dict, Optional, Any
+from collections import defaultdict
+from typing import Any
+
 import fasttext
+import pandas as pd
 from huggingface_hub import hf_hub_download
-from pathlib import Path
 
 
 class LanguageFilter:
     """Language and script filter using GlotLID v3."""
 
-    def __init__(self, model_path: Optional[str] = None):
-        """Initialize the language filter.
+    def __init__(self, model_path: str | None = None):
+        """
+        Initialize the language filter.
 
         Args:
             model_path: Path to local model.bin file, if None will download from HF
+
         """
         self.model = self._load_model(model_path)
 
-    def _load_model(
-        self, model_path: Optional[str] = None
-    ) -> fasttext.FastText._FastText:
+    def _load_model(self, model_path: str | None = None) -> fasttext.FastText._FastText:
         """Load GlotLID model."""
         if model_path and os.path.exists(model_path):
             glotlid_model_path = model_path
@@ -45,8 +45,9 @@ class LanguageFilter:
 
     def predict_language_script(
         self, text: str, top_k: int = 3
-    ) -> List[Tuple[str, str, float]]:
-        """Predict language and script for text.
+    ) -> list[tuple[str, str, float]]:
+        """
+        Predict language and script for text.
 
         Args:
             text: Input text
@@ -54,11 +55,12 @@ class LanguageFilter:
 
         Returns:
             List of (language_code, script, probability) tuples
+
         """
         labels, probs = self.model.predict(text, k=top_k)
 
         results = []
-        for label, prob in zip(labels, probs):
+        for label, prob in zip(labels, probs, strict=False):
             # Remove '__label__' prefix
             label_clean = label.replace("__label__", "")
 
@@ -80,8 +82,9 @@ class LanguageFilter:
         min_chars: int = 50,
         max_words: int = 200,
         max_chars: int = 1000,
-    ) -> List[str]:
-        """Simple segmentation by newlines, merging short segments, and splitting long ones.
+    ) -> list[str]:
+        """
+        Simple segmentation by newlines, merging short segments, and splitting long ones.
 
         Args:
             text: Input text
@@ -92,6 +95,7 @@ class LanguageFilter:
 
         Returns:
             List of text segments
+
         """
         # Split by newlines
         segments = [s.strip() for s in text.split("\n") if s.strip()]
@@ -140,12 +144,12 @@ class LanguageFilter:
 
     def merge_short_segments(
         self,
-        segments: List[str],
+        segments: list[str],
         min_words: int = 10,
         min_chars: int = 50,
         max_words: int = 200,
         max_chars: int = 1000,
-    ) -> List[str]:
+    ) -> list[str]:
         """Merge consecutive short segments to meet minimum requirements, and split long ones."""
         if not segments:
             return []
@@ -191,8 +195,9 @@ class LanguageFilter:
         min_words: int = 10,
         min_chars: int = 50,
         min_confidence: float = 0.3,
-    ) -> Tuple[str, str, float, Dict]:
-        """Predict language and script for entire document using majority vote by word count.
+    ) -> tuple[str, str, float, dict]:
+        """
+        Predict language and script for entire document using majority vote by word count.
 
         Args:
             text: Document text
@@ -203,6 +208,7 @@ class LanguageFilter:
         Returns:
             Tuple of (language_code, script, confidence, metadata)
             metadata contains segment details and voting information
+
         """
         # Segment text
         segments = self.segment_text(text, min_words, min_chars)
@@ -253,7 +259,9 @@ class LanguageFilter:
         if script_word_votes:
             best_script = max(script_word_votes.items(), key=lambda x: x[1])[0]
             script_word_count = script_word_votes[best_script]
-            script_confidence = script_word_count / total_words if total_words > 0 else 0.0
+            script_confidence = (
+                script_word_count / total_words if total_words > 0 else 0.0
+            )
         else:
             best_script = "unknown"
             script_confidence = 0.0
@@ -276,37 +284,28 @@ class LanguageFilter:
 
     def filter_documents(
         self,
-        input_dir: Path,
+        documennts_df: pd.DataFrame,
         expected_language: str,
         expected_script: str,
-        output_dir: Path,
         min_confidence: float = 0.5,
         min_words: int = 10,
         min_chars: int = 50,
-    ) -> Dict[str, Any]:
-        """Filter documents by language and script.
+    ) -> dict[str, Any]:
+        """
+        Filter documents by language and script.
 
         Args:
-            input_dir: Directory containing text files
+            documents_df: DataFrame containing document metadata
             expected_language: Expected language code (ISO 639-3)
             expected_script: Expected script (e.g., 'Latn', 'Arab', etc.)
-            output_dir: Output directory for filtered files
             min_confidence: Minimum confidence for predictions
             min_words: Minimum words per segment
             min_chars: Minimum characters per segment
 
         Returns:
             Dictionary with statistics about filtered documents
+
         """
-        input_dir = Path(input_dir)
-        output_dir = Path(output_dir)
-
-        # Create output directories
-        matching_dir = output_dir / expected_language
-        mismatched_dir = output_dir / "mismatched"
-        matching_dir.mkdir(parents=True, exist_ok=True)
-        mismatched_dir.mkdir(parents=True, exist_ok=True)
-
         results = {
             "matching": [],
             "mismatched": [],
@@ -314,32 +313,22 @@ class LanguageFilter:
             "statistics": defaultdict(int),
         }
 
-        # Process all text files
-        text_files = list(input_dir.glob("*.txt"))
-
-        for file_path in text_files:
+        match_indexes = []
+        mismatch_indexes = []
+        for i, text in documennts_df["text"].items():
             try:
-                # Read file
-                with open(file_path, "r", encoding="utf-8") as f:
-                    text = f.read()
-
-                if not text.strip():
-                    results["errors"].append(f"{file_path.name}: Empty file")
-                    continue
-
                 # Predict language and script
                 pred_lang, pred_script, confidence, metadata = (
                     self.predict_document_language_script(
                         text, min_words, min_chars, min_confidence
                     )
                 )
-
                 # Check if it matches expected language and script
                 lang_match = pred_lang.lower() == expected_language.lower()
                 script_match = pred_script.lower() == expected_script.lower()
-
+                document_id = documennts_df["document_id"][i]
                 file_info = {
-                    "filename": file_path.name,
+                    "filename": document_id + ".txt",
                     "predicted_language": pred_lang,
                     "predicted_script": pred_script,
                     "confidence": confidence,
@@ -347,48 +336,44 @@ class LanguageFilter:
                     "language_match": lang_match,
                     "script_match": script_match,
                 }
-
+                match = lang_match and script_match and confidence >= min_confidence
                 # Decide where to place the file
-                if lang_match and script_match and confidence >= min_confidence:
-                    # Copy to matching directory
-                    output_path = matching_dir / file_path.name
+                if match:
+                    match_indexes.append(i)
                     results["matching"].append(file_info)
                     results["statistics"]["matching"] += 1
+
                 else:
-                    # Copy to mismatched directory with subdirectory for predicted language
-                    pred_dir = mismatched_dir / f"{pred_lang}_{pred_script}"
-                    pred_dir.mkdir(exist_ok=True)
-                    output_path = pred_dir / file_path.name
+                    mismatch_indexes.append(i)
                     results["mismatched"].append(file_info)
                     results["statistics"]["mismatched"] += 1
                     results["statistics"][f"mismatched_{pred_lang}_{pred_script}"] += 1
 
-                # Copy file
-                with open(output_path, "w", encoding="utf-8") as f:
-                    f.write(text)
-
                 results["statistics"]["total_processed"] += 1
 
             except Exception as e:
-                error_msg = f"{file_path.name}: {str(e)}"
+                error_msg = f"{file_info['filename']}: {e!s}"
                 results["errors"].append(error_msg)
                 results["statistics"]["errors"] += 1
+
+        results["match_indexes"] = match_indexes
+        results["mismatch_indexes"] = mismatch_indexes
 
         return results
 
 
 def print_filtering_results(
-    results: Dict, expected_language: str, expected_script: str
+    results: dict, expected_language: str, expected_script: str
 ):
     """Print filtering results summary."""
     stats = results["statistics"]
 
-    print(f"\n{'='*60}")
-    print(f"LANGUAGE FILTERING RESULTS")
-    print(f"{'='*60}")
+    print(f"\n{'=' * 60}")
+    print("LANGUAGE FILTERING RESULTS")
+    print(f"{'=' * 60}")
     print(f"Expected Language: {expected_language}")
     print(f"Expected Script: {expected_script}")
-    print(f"")
+    print()
     print(f"Total files processed: {stats['total_processed']}")
     print(f"Matching files: {stats['matching']}")
     print(f"Mismatched files: {stats['mismatched']}")
@@ -399,7 +384,7 @@ def print_filtering_results(
         print(f"Match rate: {match_rate:.1f}%")
 
     # Show breakdown of mismatched languages
-    print(f"\nMismatched files breakdown:")
+    print("\nMismatched files breakdown:")
     for key, count in stats.items():
         if key.startswith("mismatched_") and key != "mismatched":
             lang_script = key.replace("mismatched_", "")
@@ -407,7 +392,7 @@ def print_filtering_results(
 
     # Show some examples of mismatched files
     if results["mismatched"]:
-        print(f"\nExamples of mismatched files:")
+        print("\nExamples of mismatched files:")
         for i, file_info in enumerate(results["mismatched"][:5]):
             print(
                 f"  {file_info['filename']}: {file_info['predicted_language']}_{file_info['predicted_script']} "
@@ -415,10 +400,10 @@ def print_filtering_results(
             )
 
     if results["errors"]:
-        print(f"\nErrors:")
+        print("\nErrors:")
         for error in results["errors"][:5]:
             print(f"  {error}")
         if len(results["errors"]) > 5:
             print(f"  ... and {len(results['errors']) - 5} more errors")
 
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")

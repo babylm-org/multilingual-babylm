@@ -4,19 +4,19 @@ HuggingFace dataset uploader for BabyLM datasets.
 
 import os
 from pathlib import Path
-from typing import Optional
+
 import pandas as pd
-from dotenv import load_dotenv
-from huggingface_hub import HfApi, create_repo
 from datasets import Dataset, DatasetDict, load_dataset
 from datasets.exceptions import DatasetNotFoundError
+from dotenv import load_dotenv
+from huggingface_hub import HfApi, create_repo
 from transformers import AutoTokenizer
 
 
 class HFDatasetUploader:
     """Handle uploading BabyLM datasets to HuggingFace."""
 
-    def __init__(self, token: Optional[str] = None):
+    def __init__(self, token: str | None = None):
         load_dotenv()
         self.token = token or os.getenv("HF_TOKEN")
         if not self.token:
@@ -32,7 +32,7 @@ class HFDatasetUploader:
         create_dataset_card: bool = True,
         create_repo_if_missing: bool = True,
         add_to_existing_data: bool = False,
-        tokenizer_name: Optional[str] = None,
+        tokenizer_name: str | None = None,
     ) -> None:
         """
         Upload a BabyLM dataset to HuggingFace.
@@ -44,6 +44,7 @@ class HFDatasetUploader:
             create_dataset_card: Whether to create a README
             create_repo_if_missing: Whether to create the repo if it doesn't exist
             add_to_existing_data: Add to the existing dataset if it already exists. Overrides previous data if set to False.
+
         """
         # Optionally ensure repository exists
         if create_repo_if_missing:
@@ -159,7 +160,7 @@ class HFDatasetUploader:
         dataset_dir: Path,
         repo_id: str,
         total_tokens: int,
-        tokens_per_category: Optional[dict],
+        tokens_per_category: dict | None,
         num_documents: int,
     ) -> None:
         """Create a README.md dataset card."""
@@ -168,7 +169,7 @@ class HFDatasetUploader:
         # Load metadata
         metadata_path = dataset_dir / "dataset_metadata.json"
         if metadata_path.exists():
-            with open(metadata_path, "r", encoding="utf-8") as f:
+            with open(metadata_path, encoding="utf-8") as f:
                 metadata = json.load(f)
         else:
             language_code = repo_id.split("-")[-1]
@@ -248,7 +249,7 @@ task_categories:
 - text-generation
 language:
 - {language}
-license: {config.get('license', 'unknown')}
+license: {config.get("license", "unknown")}
 size_categories:
 - {size_category}
 dataset_info:
@@ -271,7 +272,7 @@ dataset_info:
       dtype: int64
 ---
 
-# {metadata.get('dataset_name', 'BabyLM Dataset')}
+# {metadata.get("dataset_name", "BabyLM Dataset")}
 
 ## Dataset Description
 
@@ -308,11 +309,11 @@ This dataset is part of the BabyLM multilingual collection.
 
 ### Licensing Information
 
-This dataset is licensed under: {config.get('license', 'See individual files')}
+This dataset is licensed under: {config.get("license", "See individual files")}
 
 ### Citation
 
-Please cite the original data source: {config.get('data_source', 'Unknown')}
+Please cite the original data source: {config.get("data_source", "Unknown")}
 """
 
         # Save README
