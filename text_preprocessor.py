@@ -10,7 +10,9 @@ from pathlib import Path
 import ftfy
 from abc import ABC, abstractmethod
 import csv
+import json
 from datasets import load_from_disk
+from language_scripts import SCRIPT_NAMES
 
 
 class BasePreprocessor(ABC):
@@ -235,6 +237,12 @@ class BasePreprocessor(ABC):
         output_path.parent.mkdir(parents=True, exist_ok=True)
         with open(output_path, "w", encoding="utf-8") as f:
             f.write(processed_text)
+
+        # Validate script field in metadata if present
+        if metadata and "script" in metadata and metadata["script"] not in SCRIPT_NAMES:
+            raise ValueError(
+                f"Invalid script code '{metadata['script']}' in metadata for file {source_path}. Must be ISO 15924 code."
+            )
 
         # Return statistics
         result = {
@@ -507,9 +515,14 @@ class CSVPreprocessor(TextFilePreprocessor):
                 processed_text = self.preprocess_text(text)
                 doc_id = str(i)
                 out_path = output_dir / f"{doc_id}.txt"
+                meta = {k: v for k, v in row.items() if k != self.text_field}
+                # Validate script field if present
+                if "script" in meta and meta["script"] not in SCRIPT_NAMES:
+                    raise ValueError(
+                        f"Invalid script code '{meta['script']}' in CSV row {i}. Must be ISO 15924 code."
+                    )
                 with open(out_path, "w", encoding="utf-8") as f:
                     f.write(processed_text)
-                meta = {k: v for k, v in row.items() if k != self.text_field}
                 metadata_mapping[doc_id] = meta
         return metadata_mapping
 
@@ -525,24 +538,31 @@ class HFDatasetPreprocessor(TextFilePreprocessor):
 
     def process_hf_dataset(self, output_dir: Path) -> Dict[str, Any]:
         metadata_mapping = {}
-        ds = (
-            load_from_disk(self.dataset_id, split=self.split)
-            if self.split
-            else load_from_disk(self.dataset_id)
-        )
+        ds = load_from_disk(self.dataset_id)
         # If no split, ds is a dict of splits, use the first split
-        if isinstance(ds, dict):
+        if self.split and hasattr(ds, "split"):
+            ds = ds[self.split]
+        elif isinstance(ds, dict):
             ds = next(iter(ds.values()))
         for i, row in enumerate(ds):
-            text = row.get(self.text_field, "")
+            if isinstance(row, dict):
+                text = row.get(self.text_field, "")
+                meta = {k: v for k, v in row.items() if k != self.text_field}
+            else:
+                text = getattr(row, self.text_field, "")
+                meta = {k: v for k, v in row.__dict__.items() if k != self.text_field}
             if not text:
                 continue
             processed_text = self.preprocess_text(text)
             doc_id = str(i)
             out_path = output_dir / f"{doc_id}.txt"
+            # Validate script field if present
+            if "script" in meta and meta["script"] not in SCRIPT_NAMES:
+                raise ValueError(
+                    f"Invalid script code '{meta['script']}' in HF dataset row {i}. Must be ISO 15924 code."
+                )
             with open(out_path, "w", encoding="utf-8") as f:
                 f.write(processed_text)
-            meta = {k: v for k, v in row.items() if k != self.text_field}
             metadata_mapping[doc_id] = meta
         return metadata_mapping
 
@@ -555,7 +575,6 @@ class JSONPreprocessor(TextFilePreprocessor):
         self.text_field = text_field
 
     def process_json(self, json_path: Path, output_dir: Path) -> Dict[str, Any]:
-        import json
 
         metadata_mapping = {}
         with open(json_path, "r", encoding="utf-8") as f:
@@ -566,15 +585,23 @@ class JSONPreprocessor(TextFilePreprocessor):
         else:
             items = data
         for i, row in enumerate(items):
-            text = row.get(self.text_field, "")
+            if isinstance(row, dict):
+                text = row.get(self.text_field, "")
+                meta = {k: v for k, v in row.items() if k != self.text_field}
+            else:
+                continue
             if not text:
                 continue
             processed_text = self.preprocess_text(text)
             doc_id = str(i)
             out_path = output_dir / f"{doc_id}.txt"
+            # Validate script field if present
+            if "script" in meta and meta["script"] not in SCRIPT_NAMES:
+                raise ValueError(
+                    f"Invalid script code '{meta['script']}' in JSON row {i}. Must be ISO 15924 code."
+                )
             with open(out_path, "w", encoding="utf-8") as f:
                 f.write(processed_text)
-            meta = {k: v for k, v in row.items() if k != self.text_field}
             metadata_mapping[doc_id] = meta
         return metadata_mapping
 

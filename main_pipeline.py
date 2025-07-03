@@ -155,6 +155,11 @@ def process_dataset(
         print(f"Loading metadata from {metadata_file}")
         with open(metadata_file, "r", encoding="utf-8") as f:
             metadata_mapping = json.load(f)
+    # Validate script field in all loaded metadata
+    if metadata_mapping:
+        for doc_id, meta in metadata_mapping.items():
+            if isinstance(meta, dict) and "script" in meta and meta["script"] not in SCRIPT_NAMES:
+                raise ValueError(f"Invalid script code '{meta['script']}' in metadata for doc_id {doc_id}. Must be ISO 15924 code.")
 
     # Add documents
     builder.add_documents_from_directory(
