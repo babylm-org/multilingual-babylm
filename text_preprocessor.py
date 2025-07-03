@@ -85,7 +85,7 @@ def create_preprocessor(category: str) -> BasePreprocessor:
         "qed": QEDPreprocessor,
         # padding-wikipedia padding-xxx?
     }
-    return preprocessors[category]
+    return preprocessors[category]()
 
 
 class BookPreprocessor(BasePreprocessor):
