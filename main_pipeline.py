@@ -62,35 +62,24 @@ def process_dataset(
     if preprocessing_config:
         print(f"Using {preprocessor_type} preprocessor...")
         preprocessor = create_preprocessor(preprocessor_type, **preprocessing_config)
-
         if preprocessor:
             preprocessed_dir = Path(f"./preprocessed_{data_source}_{language_code}")
             preprocessed_dir.mkdir(exist_ok=True)
-
             if preprocessor_type == "csv" and hasattr(preprocessor, "process_csv"):
                 print(f"Preprocessing CSV file: {texts_dir}")
                 # type: ignore
-                metadata_mapping = getattr(preprocessor, "process_csv")(
-                    texts_dir, preprocessed_dir
-                )
+                metadata_mapping = getattr(preprocessor, "process_csv")(texts_dir, preprocessed_dir)
                 texts_dir = preprocessed_dir
-            elif preprocessor_type == "hf" and hasattr(
-                preprocessor, "process_hf_dataset"
-            ):
+            elif preprocessor_type == "hf" and hasattr(preprocessor, "process_hf_dataset"):
                 print(f"Preprocessing HuggingFace dataset: {texts_dir}")
                 # type: ignore
-                metadata_mapping = getattr(preprocessor, "process_hf_dataset")(
-                    preprocessed_dir
-                )
+                metadata_mapping = getattr(preprocessor, "process_hf_dataset")(preprocessed_dir)
                 texts_dir = preprocessed_dir
             elif preprocessor_type == "json" and hasattr(preprocessor, "process_json"):
                 print(f"Preprocessing JSON file: {texts_dir}")
                 # type: ignore
-                metadata_mapping = getattr(preprocessor, "process_json")(
-                    texts_dir, preprocessed_dir
-                )
+                metadata_mapping = getattr(preprocessor, "process_json")(texts_dir, preprocessed_dir)
                 texts_dir = preprocessed_dir
-
             print("Preprocessing text files...")
             text_files = list(texts_dir.glob("*.txt"))
             for text_file in tqdm(text_files, desc="Preprocessing files"):
@@ -278,7 +267,7 @@ def main():
     parser.add_argument(
         "--preprocessor-type",
         default="text",
-        choices=["text", "subtitle", "transcript", "llm", "csv", "hf", "json"],
+        choices=["text", "subtitle", "transcript", "csv", "hf", "json"],
         help="Type of preprocessor to use",
     )
     parser.add_argument(
@@ -353,20 +342,6 @@ def main():
         help="Name of the tokenizer to use for token counting (for languages like Chinese, Japanese and Korean)",
     )
 
-    # LLM preprocessing options
-    parser.add_argument(
-        "--llm-model",
-        default="llama3.2",
-        help="Ollama model to use for LLM preprocessing",
-    )
-    parser.add_argument("--llm-prompt", help="Prompt for LLM filtering/processing")
-    parser.add_argument(
-        "--llm-filter-threshold",
-        type=float,
-        default=0.7,
-        help="Threshold for LLM filtering (0-1)",
-    )
-
     args = parser.parse_args()
 
     # Normalize script code to title case
@@ -426,13 +401,6 @@ def main():
             custom_steps.append(remove_xml_tags)
         if custom_steps:
             preprocessing_config["custom_steps"] = custom_steps
-        # Add LLM-specific options if using LLM preprocessor
-        if args.preprocessor_type == "llm":
-            if not args.llm_prompt:
-                parser.error("--llm-prompt is required when using LLM preprocessor")
-            preprocessing_config["model"] = args.llm_model
-            preprocessing_config["prompt"] = args.llm_prompt
-            preprocessing_config["filter_threshold"] = args.llm_filter_threshold
         # Add CSV/HF/JSON-specific options
         if args.preprocessor_type in ["csv", "hf", "json"]:
             preprocessing_config["text_field"] = args.text_field

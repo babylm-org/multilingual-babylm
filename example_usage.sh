@@ -105,21 +105,6 @@ python main_pipeline.py \
     --preprocess \
     --preprocessor-type transcript
 
-# Example 7: Use LLM filtering for quality control
-python main_pipeline.py \
-    --language spa \
-    --data-source "SpanishWebTexts" \
-    --category "child-available-speech" \
-    --texts-dir "./spanish_web_texts" \
-    --script Latn \
-    --age-estimate "8-14" \
-    --license "cc-by" \
-    --preprocess \
-    --preprocessor-type llm \
-    --llm-model "llama3.2" \
-    --llm-prompt "Is this text appropriate and educational for Spanish-learning children aged 8-14? Consider vocabulary level, content appropriateness, and educational value. Respond with JSON: {\"score\": 0-1, \"reason\": \"explanation\"}" \
-    --llm-filter-threshold 0.8
-
 # Example 8: Process OpenSubtitles using the dedicated script
 python process_opensubtitles.py \
     --language af \
@@ -136,29 +121,6 @@ python process_opensubtitles.py \
     --batch-size 50 \
     --upload \
     --repo-id "username/babylm-ita"
-
-# Example 10: Chain preprocessing - first extract, then additional processing
-# Step 1: Extract texts without preprocessing
-python process_opensubtitles.py \
-    --language por \
-    --script Latn \
-    --no-preprocess \
-    --keep-zip
-
-# Step 2: Apply custom preprocessing with LLM filtering
-python main_pipeline.py \
-    --language por \
-    --data-source "OpenSubtitles" \
-    --category "subtitles" \
-    --texts-dir "./output/por/preprocessed_texts" \
-    --script Latn \
-    --age-estimate "n/a" \
-    --license "cc-by" \
-    --preprocess \
-    --preprocessor-type llm \
-    --llm-prompt "Clean this Portuguese subtitle text for language learning. Remove any profanity or inappropriate content. Preserve capitalization and paragraph structure. Return JSON with score and cleaned text." \
-    --upload \
-    --repo-id "username/babylm-por-filtered"
 
 # Example 11: Create a multi-age educational dataset
 # Create metadata for different age groups

@@ -143,7 +143,7 @@ python main_pipeline.py \
 
 - You can provide a JSON file mapping document IDs (filenames without `.txt`) to specific metadata fields.
 - If a document's ID is not found in the metadata file, the pipeline will use the values provided via command-line arguments for that document.
-- If using CSV or HuggingFace dataset as Input, by default the metadata is extracted from the CSV file/HF dataset.
+- If using CSV, JSON, or HuggingFace dataset as Input, by default the metadata is extracted from the CSV/JSON file/HF dataset.
 
 ```json
 {
@@ -276,9 +276,9 @@ babylm-{language}/
 - **text**: Basic text preprocessing
 - **subtitle**: Specialized for subtitle files (removes timestamps, stage directions)
 - **transcript**: For dialogue transcripts (removes speaker labels, annotations)
-- **llm**: Uses language models for quality filtering
 - **csv**: For CSV files; extracts text and relevant metadata fields from each row, writes each as a .txt file, and builds the dataset from those files (requires --preprocess)
 - **hf**: For HuggingFace datasets; extracts text and relevant metadata fields from each example, writes each as a .txt file, and builds the dataset from those files (requires --preprocess)
+- **json**: For JSON files; extracts text and relevant metadata fields from each example, writes each as a .txt file, and builds the dataset from those files (requires --preprocess)
 
 ## Text Structure Preservation
 
