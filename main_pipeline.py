@@ -83,6 +83,13 @@ def process_dataset(
                     preprocessed_dir
                 )
                 texts_dir = preprocessed_dir
+            elif preprocessor_type == "json" and hasattr(preprocessor, "process_json"):
+                print(f"Preprocessing JSON file: {texts_dir}")
+                # type: ignore
+                metadata_mapping = getattr(preprocessor, "process_json")(
+                    texts_dir, preprocessed_dir
+                )
+                texts_dir = preprocessed_dir
 
             print("Preprocessing text files...")
             text_files = list(texts_dir.glob("*.txt"))
@@ -265,7 +272,7 @@ def main():
     parser.add_argument(
         "--preprocessor-type",
         default="text",
-        choices=["text", "subtitle", "transcript", "llm", "csv", "hf"],
+        choices=["text", "subtitle", "transcript", "llm", "csv", "hf", "json"],
         help="Type of preprocessor to use",
     )
     parser.add_argument(
@@ -420,8 +427,8 @@ def main():
             preprocessing_config["model"] = args.llm_model
             preprocessing_config["prompt"] = args.llm_prompt
             preprocessing_config["filter_threshold"] = args.llm_filter_threshold
-        # Add CSV/HF-specific options
-        if args.preprocessor_type in ["csv", "hf"]:
+        # Add CSV/HF/JSON-specific options
+        if args.preprocessor_type in ["csv", "hf", "json"]:
             preprocessing_config["text_field"] = args.text_field
         if args.preprocessor_type == "hf":
             preprocessing_config["dataset_id"] = str(args.texts_dir)

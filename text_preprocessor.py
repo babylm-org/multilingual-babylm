@@ -547,6 +547,38 @@ class HFDatasetPreprocessor(TextFilePreprocessor):
         return metadata_mapping
 
 
+class JSONPreprocessor(TextFilePreprocessor):
+    """Preprocessor for JSON files with text and metadata fields."""
+
+    def __init__(self, text_field="text", **kwargs):
+        super().__init__(**kwargs)
+        self.text_field = text_field
+
+    def process_json(self, json_path: Path, output_dir: Path) -> Dict[str, Any]:
+        import json
+
+        metadata_mapping = {}
+        with open(json_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        # Support both list of dicts and dict of dicts
+        if isinstance(data, dict):
+            items = list(data.values())
+        else:
+            items = data
+        for i, row in enumerate(items):
+            text = row.get(self.text_field, "")
+            if not text:
+                continue
+            processed_text = self.preprocess_text(text)
+            doc_id = str(i)
+            out_path = output_dir / f"{doc_id}.txt"
+            with open(out_path, "w", encoding="utf-8") as f:
+                f.write(processed_text)
+            meta = {k: v for k, v in row.items() if k != self.text_field}
+            metadata_mapping[doc_id] = meta
+        return metadata_mapping
+
+
 # Update factory
 def create_preprocessor(source_type: str, **kwargs) -> BasePreprocessor:
     preprocessors = {
@@ -556,6 +588,7 @@ def create_preprocessor(source_type: str, **kwargs) -> BasePreprocessor:
         "llm": LLMPreprocessor,
         "csv": CSVPreprocessor,
         "hf": HFDatasetPreprocessor,
+        "json": JSONPreprocessor,
     }
     if source_type not in preprocessors:
         raise ValueError(
