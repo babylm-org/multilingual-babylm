@@ -1,8 +1,8 @@
 python main_pipeline.py \
     --language eng\
-    --load-path "examples/texts" \
+    --load-path "examples/" \
     --load-format "text" \
-    --metadata-file "examples/texts/text_metadata.json" \
+    --metadata-file "examples//text_metadata.json" \
     --script Latn \
     --enable-language-filter \
     --preprocess-text \
