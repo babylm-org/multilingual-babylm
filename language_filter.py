@@ -54,6 +54,10 @@ class LanguageFilter:
         Returns:
             List of (language_code, script, probability) tuples
         """
+        # GlotLID v3 cannot process text with newlines; replace with spaces
+        if "\n" in text:
+            text = text.replace("\n", " ")
+
         labels, probs = self.model.predict(text, k=top_k)
 
         results = []
