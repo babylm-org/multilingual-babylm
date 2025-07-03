@@ -179,6 +179,60 @@ class BabyLMDatasetBuilder:
 
             self.add_document(text, document_id, doc_config, additional_metadata)
 
+    def add_documents_from_iterable(
+        self,
+        documents: List[Dict],
+        default_document_config: DocumentConfig,
+    ) -> None:
+        """
+        Add multiple documents from an iterable of dicts with 'text', 'doc_id', and 'metadata'.
+
+        Args:
+            documents: List of dicts with keys 'text', 'doc_id', and 'metadata' (optional)
+            default_document_config: Default DocumentConfig for documents
+        """
+        for doc in documents:
+            text = doc["text"]
+            document_id = doc["doc_id"]
+            metadata = doc.get("metadata", {})
+
+            # Allow per-document config overrides in metadata
+            doc_config = DocumentConfig(
+                category=metadata.get("category", default_document_config.category),
+                data_source=metadata.get(
+                    "data_source", default_document_config.data_source
+                ),
+                script=metadata.get("script", default_document_config.script),
+                age_estimate=metadata.get(
+                    "age_estimate", default_document_config.age_estimate
+                ),
+                license=metadata.get("license", default_document_config.license),
+                misc=metadata.get("misc", default_document_config.misc),
+                source_url=metadata.get(
+                    "source_url", default_document_config.source_url
+                ),
+                source_identifier=metadata.get(
+                    "source_identifier", default_document_config.source_identifier
+                ),
+            )
+
+            # Additional metadata: any keys not in DocumentConfig
+            config_keys = {
+                "category",
+                "data_source",
+                "script",
+                "age_estimate",
+                "license",
+                "misc",
+                "source_url",
+                "source_identifier",
+            }
+            additional_metadata = {
+                k: v for k, v in metadata.items() if k not in config_keys
+            }
+
+            self.add_document(text, document_id, doc_config, additional_metadata)
+
     def save_metadata(self) -> None:
         """Save dataset metadata to JSON file."""
         metadata = {

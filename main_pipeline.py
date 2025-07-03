@@ -6,8 +6,7 @@ Main pipeline script for processing various data sources into BabyLM datasets.
 from pathlib import Path
 import argparse
 import json
-from typing import Optional, Dict, Any
-from tqdm import tqdm
+from typing import Optional
 
 # Import our modules
 from babylm_dataset_builder import BabyLMDatasetBuilder, DatasetConfig, DocumentConfig
@@ -16,6 +15,7 @@ from text_preprocessor import create_preprocessor, BasePreprocessor
 from text_preprocessor import remove_urls, normalize_punctuation, remove_xml_tags
 from language_filter import LanguageFilter, print_filtering_results
 from language_scripts import get_script_formal_name, SCRIPT_NAMES
+from loader import get_loader
 
 
 def process_dataset(
@@ -56,104 +56,78 @@ def process_dataset(
     """
     print(f"Processing {data_source} data for {language_code}...")
 
-    # Create preprocessor if preprocessing is requested
-    preprocessor = None
-    metadata_mapping = {}
-    if preprocessing_config:
-        print(f"Using {preprocessor_type} preprocessor...")
-        preprocessor = create_preprocessor(preprocessor_type, **preprocessing_config)
-        if preprocessor:
-            preprocessed_dir = Path(f"./preprocessed_{data_source}_{language_code}")
-            preprocessed_dir.mkdir(exist_ok=True)
-            if preprocessor_type == "csv" and hasattr(preprocessor, "process_csv"):
-                print(f"Preprocessing CSV file: {texts_dir}")
-                # type: ignore
-                metadata_mapping = getattr(preprocessor, "process_csv")(texts_dir, preprocessed_dir)
-                texts_dir = preprocessed_dir
-            elif preprocessor_type == "hf" and hasattr(preprocessor, "process_hf_dataset"):
-                print(f"Preprocessing HuggingFace dataset: {texts_dir}")
-                # type: ignore
-                metadata_mapping = getattr(preprocessor, "process_hf_dataset")(preprocessed_dir)
-                texts_dir = preprocessed_dir
-            elif preprocessor_type == "json" and hasattr(preprocessor, "process_json"):
-                print(f"Preprocessing JSON file: {texts_dir}")
-                # type: ignore
-                metadata_mapping = getattr(preprocessor, "process_json")(texts_dir, preprocessed_dir)
-                texts_dir = preprocessed_dir
-            print("Preprocessing text files...")
-            text_files = list(texts_dir.glob("*.txt"))
-            for text_file in tqdm(text_files, desc="Preprocessing files"):
-                output_file = preprocessed_dir / text_file.name
-                try:
-                    preprocessor.process_file(text_file, output_file)
-                except Exception as e:
-                    print(f"Error preprocessing {text_file}: {e}")
-                    continue
-            texts_dir = preprocessed_dir  # Create dataset config (just language code)
-    dataset_config = DatasetConfig(language_code=language_code)
+    # 1. Load data using loader
+    loader = get_loader(preprocessor_type, **(preprocessing_config or {}))
+    docs = loader.load_data(texts_dir)
 
-    # Create default document config
-    # Map script code to formal name for dataset
+    # 2. Load metadata file if provided and merge
+    metadata_mapping = {}
+    if metadata_file and metadata_file.exists():
+        with open(metadata_file, "r", encoding="utf-8") as f:
+            metadata_mapping = json.load(f)
+    for doc in docs:
+        doc_id = doc["doc_id"]
+        if doc_id in metadata_mapping:
+            doc["metadata"].update(metadata_mapping[doc_id])
+
+    # 3. Preprocess all texts (if requested)
+    preprocessor = None
+    if preprocessing_config:
+        preprocessor = create_preprocessor(preprocessor_type, **preprocessing_config)
+        for doc in docs:
+            doc["text"] = preprocessor.preprocess_text(doc["text"])
+    # else: no preprocessing
+
+    # 4. Language filtering if enabled (in-memory)
+    if enable_language_filtering:
+        expected_script = document_config_params.get("script", "Zzzz")
+        print(f"\nPerforming language filtering...")
+        print(f"Expected language: {language_code}")
+        print(f"Expected script: {expected_script}")
+        language_filter = LanguageFilter()
+        filtered_docs = []
+        filter_results = {}
+        for doc in docs:
+            # Try to use a per-document filter if available, else fallback to directory logic
+            if hasattr(language_filter, "filter_document"):
+                result = language_filter.filter_document(
+                    text=doc["text"],
+                    expected_language=language_code,
+                    expected_script=expected_script,
+                    min_confidence=language_filter_threshold,
+                )
+                filter_results[doc["doc_id"]] = result
+                if result.get("match"):
+                    filtered_docs.append(doc)
+            else:
+                # Fallback: always keep (or you can raise NotImplementedError)
+                filtered_docs.append(doc)
+        print_filtering_results(filter_results, language_code, expected_script)
+        docs = filtered_docs
+
+    # 5. Validate script in metadata
+    for doc in docs:
+        meta = doc.get("metadata", {})
+        if "script" in meta and meta["script"] not in SCRIPT_NAMES:
+            raise ValueError(
+                f"Invalid script code '{meta['script']}' in metadata for doc_id {doc['doc_id']}. Must be ISO 15924 code."
+            )
+
+    # 6. Build dataset
+    dataset_config = DatasetConfig(language_code=language_code)
     script_code = document_config_params.get("script", "Zzzz")
     script_formal_name = get_script_formal_name(script_code)
     document_config_params["script"] = script_formal_name
     default_doc_config = DocumentConfig(
         category=category, data_source=data_source, **document_config_params
     )
-
-    # Build dataset
     builder = BabyLMDatasetBuilder(dataset_config)
-
-    # Language filtering if enabled
-    if enable_language_filtering:
-        expected_script = script_code
-        print(f"\nPerforming language filtering...")
-        print(f"Expected language: {language_code}")
-        print(f"Expected script: {expected_script}")
-
-        # Create language filter
-        language_filter = LanguageFilter()
-
-        # Create filtered directory inside builder output directory
-        filtered_dir = builder.output_dir / "filtered"
-
-        # Perform filtering
-        filter_results = language_filter.filter_documents(
-            input_dir=texts_dir,
-            expected_language=language_code,
-            expected_script=expected_script,
-            output_dir=filtered_dir,
-            min_confidence=language_filter_threshold,
+    if hasattr(builder, "add_documents_from_iterable"):
+        builder.add_documents_from_iterable(docs, default_doc_config)
+    else:
+        raise NotImplementedError(
+            "Your BabyLMDatasetBuilder must implement add_documents_from_iterable."
         )
-
-        # Print filtering results
-        print_filtering_results(filter_results, language_code, expected_script)
-
-        # Use matching files for dataset building
-        matching_dir = filtered_dir / language_code
-        if matching_dir.exists():
-            texts_dir = matching_dir
-        else:
-            print(
-                f"Warning: No matching files found for {language_code}_{expected_script}"
-            )
-            print(f"Proceeding with original directory: {texts_dir}")
-
-    # Load metadata if provided, unless already set from preprocessor
-    if not metadata_mapping and metadata_file and metadata_file.exists():
-        print(f"Loading metadata from {metadata_file}")
-        with open(metadata_file, "r", encoding="utf-8") as f:
-            metadata_mapping = json.load(f)
-    # Validate script field in all loaded metadata
-    if metadata_mapping:
-        for doc_id, meta in metadata_mapping.items():
-            if isinstance(meta, dict) and "script" in meta and meta["script"] not in SCRIPT_NAMES:
-                raise ValueError(f"Invalid script code '{meta['script']}' in metadata for doc_id {doc_id}. Must be ISO 15924 code.")
-
-    # Add documents
-    builder.add_documents_from_directory(
-        texts_dir, default_doc_config, metadata_mapping
-    )
 
     # Save and create dataset
     builder.save_metadata()

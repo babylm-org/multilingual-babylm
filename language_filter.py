@@ -5,8 +5,7 @@ Simple segmentation and majority vote for document-level language/script predict
 """
 
 import os
-import re
-from collections import Counter, defaultdict
+from collections import defaultdict
 from typing import List, Tuple, Dict, Optional, Any
 import fasttext
 from huggingface_hub import hf_hub_download
@@ -253,7 +252,9 @@ class LanguageFilter:
         if script_word_votes:
             best_script = max(script_word_votes.items(), key=lambda x: x[1])[0]
             script_word_count = script_word_votes[best_script]
-            script_confidence = script_word_count / total_words if total_words > 0 else 0.0
+            script_confidence = (
+                script_word_count / total_words if total_words > 0 else 0.0
+            )
         else:
             best_script = "unknown"
             script_confidence = 0.0
@@ -274,6 +275,56 @@ class LanguageFilter:
 
         return best_lang, best_script, overall_confidence, metadata
 
+    def filter_document(
+        self,
+        text: str,
+        expected_language: str,
+        expected_script: str,
+        min_confidence: float = 0.5,
+        min_words: int = 10,
+        min_chars: int = 50,
+    ) -> Dict[str, Any]:
+        """Filter a single document by language and script.
+
+        Args:
+            text: Document text
+            expected_language: Expected language code (ISO 639-3)
+            expected_script: Expected script (e.g., 'Latn', 'Arab', etc.)
+            min_confidence: Minimum confidence for predictions
+            min_words: Minimum words per segment
+            min_chars: Minimum characters per segment
+
+        Returns:
+            Dictionary with filtering result and prediction details
+        """
+        if not text.strip():
+            return {
+                "match": False,
+                "reason": "empty",
+                "predicted_language": None,
+                "predicted_script": None,
+                "confidence": 0.0,
+                "metadata": {},
+            }
+        pred_lang, pred_script, confidence, metadata = (
+            self.predict_document_language_script(
+                text, min_words, min_chars, min_confidence
+            )
+        )
+        lang_match = pred_lang.lower() == expected_language.lower()
+        script_match = pred_script.lower() == expected_script.lower()
+        match = lang_match and script_match and confidence >= min_confidence
+        return {
+            "match": match,
+            "predicted_language": pred_lang,
+            "predicted_script": pred_script,
+            "confidence": confidence,
+            "metadata": metadata,
+            "language_match": lang_match,
+            "script_match": script_match,
+            "reason": None if match else "mismatch",
+        }
+
     def filter_documents(
         self,
         input_dir: Path,
@@ -284,96 +335,60 @@ class LanguageFilter:
         min_words: int = 10,
         min_chars: int = 50,
     ) -> Dict[str, Any]:
-        """Filter documents by language and script.
-
-        Args:
-            input_dir: Directory containing text files
-            expected_language: Expected language code (ISO 639-3)
-            expected_script: Expected script (e.g., 'Latn', 'Arab', etc.)
-            output_dir: Output directory for filtered files
-            min_confidence: Minimum confidence for predictions
-            min_words: Minimum words per segment
-            min_chars: Minimum characters per segment
-
-        Returns:
-            Dictionary with statistics about filtered documents
-        """
+        """Filter documents by language and script (directory version, uses filter_document)."""
         input_dir = Path(input_dir)
         output_dir = Path(output_dir)
-
-        # Create output directories
         matching_dir = output_dir / expected_language
         mismatched_dir = output_dir / "mismatched"
         matching_dir.mkdir(parents=True, exist_ok=True)
         mismatched_dir.mkdir(parents=True, exist_ok=True)
-
         results = {
             "matching": [],
             "mismatched": [],
             "errors": [],
             "statistics": defaultdict(int),
         }
-
-        # Process all text files
         text_files = list(input_dir.glob("*.txt"))
-
         for file_path in text_files:
             try:
-                # Read file
                 with open(file_path, "r", encoding="utf-8") as f:
                     text = f.read()
-
-                if not text.strip():
-                    results["errors"].append(f"{file_path.name}: Empty file")
-                    continue
-
-                # Predict language and script
-                pred_lang, pred_script, confidence, metadata = (
-                    self.predict_document_language_script(
-                        text, min_words, min_chars, min_confidence
-                    )
+                filter_result = self.filter_document(
+                    text,
+                    expected_language,
+                    expected_script,
+                    min_confidence=min_confidence,
+                    min_words=min_words,
+                    min_chars=min_chars,
                 )
-
-                # Check if it matches expected language and script
-                lang_match = pred_lang.lower() == expected_language.lower()
-                script_match = pred_script.lower() == expected_script.lower()
-
                 file_info = {
                     "filename": file_path.name,
-                    "predicted_language": pred_lang,
-                    "predicted_script": pred_script,
-                    "confidence": confidence,
-                    "metadata": metadata,
-                    "language_match": lang_match,
-                    "script_match": script_match,
+                    **{
+                        k: filter_result[k]
+                        for k in filter_result
+                        if k != "match" and k != "reason"
+                    },
                 }
-
-                # Decide where to place the file
-                if lang_match and script_match and confidence >= min_confidence:
-                    # Copy to matching directory
+                if filter_result["match"]:
                     output_path = matching_dir / file_path.name
                     results["matching"].append(file_info)
                     results["statistics"]["matching"] += 1
                 else:
-                    # Copy to mismatched directory with subdirectory for predicted language
+                    pred_lang = filter_result["predicted_language"] or "unknown"
+                    pred_script = filter_result["predicted_script"] or "unknown"
                     pred_dir = mismatched_dir / f"{pred_lang}_{pred_script}"
                     pred_dir.mkdir(exist_ok=True)
                     output_path = pred_dir / file_path.name
                     results["mismatched"].append(file_info)
                     results["statistics"]["mismatched"] += 1
                     results["statistics"][f"mismatched_{pred_lang}_{pred_script}"] += 1
-
-                # Copy file
                 with open(output_path, "w", encoding="utf-8") as f:
                     f.write(text)
-
                 results["statistics"]["total_processed"] += 1
-
             except Exception as e:
                 error_msg = f"{file_path.name}: {str(e)}"
                 results["errors"].append(error_msg)
                 results["statistics"]["errors"] += 1
-
         return results
 
 
