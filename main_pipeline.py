@@ -11,8 +11,12 @@ from typing import Optional
 # Import our modules
 from babylm_dataset_builder import BabyLMDatasetBuilder, DatasetConfig, DocumentConfig
 from hf_uploader import HFDatasetUploader
-from text_preprocessor import create_preprocessor, BasePreprocessor
-from text_preprocessor import remove_urls, normalize_punctuation, remove_xml_tags
+from text_preprocessor import (
+    remove_urls,
+    normalize_punctuation,
+    remove_xml_tags,
+    get_preprocessor_for_category,
+)
 from language_filter import LanguageFilter, print_filtering_results
 from language_scripts import get_script_formal_name, SCRIPT_NAMES
 from loader import get_loader
@@ -28,7 +32,7 @@ def process_dataset(
     upload: bool = False,
     repo_id: Optional[str] = None,
     preprocessing_config: Optional[dict] = None,
-    preprocessor_type: str = "text",
+    loader_type: str = "text",
     enable_language_filtering: bool = False,
     language_filter_threshold: float = 0.8,
     tokenizer_name: Optional[str] = None,
@@ -46,7 +50,7 @@ def process_dataset(
         upload: Whether to upload to HuggingFace
         repo_id: HuggingFace repository ID
         preprocessing_config: Configuration for text preprocessing
-        preprocessor_type: Type of preprocessor to use
+        loader_type: Type of loader to use
         enable_language_filtering: Whether to enable language filtering
         language_filter_threshold: Minimum confidence for language filtering
         tokenizer_name: Name of the tokenizer to use for token counting (for languages like Chinese, Japanese and Korean)
@@ -57,7 +61,7 @@ def process_dataset(
     print(f"Processing {data_source} data for {language_code}...")
 
     # 1. Load data using loader
-    loader = get_loader(preprocessor_type, **(preprocessing_config or {}))
+    loader = get_loader(loader_type, **(preprocessing_config or {}))
     docs = loader.load_data(texts_dir)
 
     # 2. Load metadata file if provided and merge
@@ -71,10 +75,13 @@ def process_dataset(
             doc["metadata"].update(metadata_mapping[doc_id])
 
     # 3. Preprocess all texts (if requested)
-    preprocessor = None
     if preprocessing_config:
-        preprocessor = create_preprocessor(preprocessor_type, **preprocessing_config)
         for doc in docs:
+            # Use category from doc['metadata'] if present, else fallback to main category
+            doc_category = doc.get("metadata", {}).get("category", category)
+            preprocessor = get_preprocessor_for_category(
+                doc_category, **preprocessing_config
+            )
             doc["text"] = preprocessor.preprocess_text(doc["text"])
     # else: no preprocessing
 
@@ -168,7 +175,7 @@ def main():
     parser.add_argument(
         "--data-source",
         "-s",
-        required=True,
+        required=False,
         help="Data source name (e.g., OpenSubtitles, CHILDES, etc.)",
     )
     parser.add_argument(
@@ -201,7 +208,9 @@ def main():
         "--script", required=True, help="Script type (latin, cyrillic, arabic, etc.)"
     )
     parser.add_argument(
-        "--age-estimate", required=True, help="Age estimate (e.g., '4', '12-17', 'n/a')"
+        "--age-estimate",
+        required=False,
+        help="Age estimate (e.g., '4', '12-17', 'n/a')",
     )
     parser.add_argument(
         "--license", required=True, help="License (e.g., cc-by, cc-by-sa)"
@@ -239,10 +248,10 @@ def main():
         "--preprocess", action="store_true", help="Enable text preprocessing"
     )
     parser.add_argument(
-        "--preprocessor-type",
+        "--loader-type",
         default="text",
-        choices=["text", "subtitle", "transcript", "csv", "hf", "json"],
-        help="Type of preprocessor to use",
+        choices=["text", "csv", "json", "hf"],
+        help="Type of loader to use (text, csv, json, hf)",
     )
     parser.add_argument(
         "--text-field",
@@ -257,51 +266,24 @@ def main():
         help="Split name for HuggingFace datasets (e.g., 'train', 'test'). Default: None (use default split)",
     )
 
-    # Preprocessing options
+    # Preprocessing options (only add args for options that are False by default)
     parser.add_argument(
-        "--lowercase", action="store_true", default=None, help="Lowercase text"
-    )
-    parser.add_argument(
-        "--no-lowercase",
-        dest="lowercase",
-        action="store_false",
-        help="Don't lowercase text",
-    )
-    parser.add_argument(
-        "--fix-unicode",
+        "--lowercase",
         action="store_true",
-        default=None,
-        help="Fix unicode issues with ftfy",
-    )
-    parser.add_argument(
-        "--no-fix-unicode",
-        dest="fix_unicode",
-        action="store_false",
-        help="Don't fix unicode",
+        default=False,
+        help="Lowercase text (default: False)",
     )
     parser.add_argument(
         "--remove-timestamps",
         action="store_true",
-        default=None,
-        help="Remove timestamps",
+        default=False,
+        help="Remove timestamps (default: False)",
     )
     parser.add_argument(
         "--remove-stage-directions",
         action="store_true",
-        default=None,
-        help="Remove [bracketed] stage directions",
-    )
-    parser.add_argument(
-        "--remove-urls", action="store_true", default=None, help="Remove URLs"
-    )
-    parser.add_argument(
-        "--normalize-punctuation",
-        action="store_true",
-        default=None,
-        help="Normalize punctuation",
-    )
-    parser.add_argument(
-        "--remove-xml-tags", action="store_true", default=None, help="Remove XML tags"
+        default=False,
+        help="Remove [bracketed] stage directions (default: False)",
     )
     parser.add_argument(
         "--replace-newline-within-paragraph",
@@ -309,12 +291,20 @@ def main():
         default=False,
         help="Replace single newlines with space within paragraphs (default: False)",
     )
+    # Options that are True by default (add --no-... to disable)
     parser.add_argument(
-        "--tokenizer-name",
-        type=str,
-        default=None,
-        help="Name of the tokenizer to use for token counting (for languages like Chinese, Japanese and Korean)",
+        "--no-normalize-whitespace",
+        dest="normalize_whitespace",
+        action="store_false",
+        help="Do not normalize whitespace (default: True)",
     )
+    parser.add_argument(
+        "--no-fix-unicode",
+        dest="fix_unicode",
+        action="store_false",
+        help="Do not fix unicode issues with ftfy (default: True)",
+    )
+    parser.set_defaults(normalize_whitespace=True, fix_unicode=True)
 
     args = parser.parse_args()
 
@@ -353,19 +343,18 @@ def main():
         preprocessing_config = {}
         custom_steps = []
         # Add boolean options only if explicitly set
-        if args.lowercase is not None:
-            preprocessing_config["lowercase"] = args.lowercase
-        if args.fix_unicode is not None:
-            preprocessing_config["fix_unicode"] = args.fix_unicode
-        if args.remove_timestamps is not None:
-            preprocessing_config["remove_timestamps"] = args.remove_timestamps
-        if args.remove_stage_directions is not None:
-            preprocessing_config["remove_stage_directions"] = (
-                args.remove_stage_directions
-            )
-        preprocessing_config["replace_newline_within_paragraph"] = (
-            args.replace_newline_within_paragraph
-        )
+        if args.lowercase:
+            preprocessing_config["lowercase"] = True
+        if not args.normalize_whitespace:
+            preprocessing_config["normalize_whitespace"] = False
+        if not args.fix_unicode:
+            preprocessing_config["fix_unicode"] = False
+        if args.remove_timestamps:
+            preprocessing_config["remove_timestamps"] = True
+        if args.remove_stage_directions:
+            preprocessing_config["remove_stage_directions"] = True
+        if args.replace_newline_within_paragraph:
+            preprocessing_config["replace_newline_within_paragraph"] = True
         # Add custom preprocessing steps if flags are set
         if args.remove_urls:
             custom_steps.append(remove_urls)
@@ -376,9 +365,9 @@ def main():
         if custom_steps:
             preprocessing_config["custom_steps"] = custom_steps
         # Add CSV/HF/JSON-specific options
-        if args.preprocessor_type in ["csv", "hf", "json"]:
+        if args.loader_type in ["csv", "hf", "json"]:
             preprocessing_config["text_field"] = args.text_field
-        if args.preprocessor_type == "hf":
+        if args.loader_type == "hf":
             preprocessing_config["dataset_id"] = str(args.texts_dir)
             preprocessing_config["split"] = args.hf_dataset_split
 
@@ -393,7 +382,7 @@ def main():
         upload=args.upload,
         repo_id=args.repo_id,
         preprocessing_config=preprocessing_config,
-        preprocessor_type=args.preprocessor_type,
+        loader_type=args.loader_type,
         enable_language_filtering=args.enable_language_filtering,
         language_filter_threshold=args.language_filter_threshold,
         tokenizer_name=args.tokenizer_name,
