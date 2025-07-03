@@ -216,6 +216,7 @@ def main():
             "subtitles",
             "qed",
             "child-available-speech",
+            "simplified-text",
         ],
         help="Content category",
     )

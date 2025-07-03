@@ -306,6 +306,7 @@ Valid categories for documents:
 - `subtitles`: TV/movie subtitles
 - `qed`: QED educational content
 - `child-available-speech`: Other dialogue/speech accessible to children
+- `simplified-text`: Any text that is purposefully simplified for easier understanding
 
 ## Language and Script Filtering
 

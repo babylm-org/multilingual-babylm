@@ -36,6 +36,7 @@ class DocumentConfig:
             "subtitles",
             "qed",
             "child-available-speech",
+            "simplified-text",
         }
         if self.category not in allowed_categories:
             raise ValueError(
