@@ -79,8 +79,9 @@ time python pipeline.py \
     --upload \
     --repo-id "username/babylm-ind"
 
+# ========== Examples for specific datasets ==========
 
-# Example 4: Process subtitles
+# Example 6: Process subtitles
 time python pipeline.py \
     --language deu \
     --script Latn \
@@ -93,7 +94,7 @@ time python pipeline.py \
     --misc '{"source_url": "https://example.com/german_subs"}'
 
 
-# Example 5: Process CHILDES transcripts
+# Example 7: Process CHILDES transcripts
 time python pipeline.py \
     --language nld \
     --script Latn \
@@ -103,7 +104,7 @@ time python pipeline.py \
     --license "cc-by-sa" \
     --metadata-file "./childes_metadata.json"
 
-# Example 6: Create a multi-age educational dataset
+# Example 8: Create a multi-age educational dataset
 cat > edu_metadata.json << EOF
 {
   "kindergarten_lesson1": {"age_estimate": "4-5", "category": "educational"},
