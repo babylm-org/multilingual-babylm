@@ -152,11 +152,6 @@ SCRIPT_NAMES = {
 }
 
 
-def get_script_formal_name(script_code: str) -> str:
-    """Return the formal script name for a given ISO 15924 script code."""
-    return SCRIPT_NAMES.get(script_code, script_code)
-
-
 def validate_script_code(script_code: str) -> bool:
     """Validate that the script code is a valid ISO 15924 code."""
     return script_code in SCRIPT_NAMES

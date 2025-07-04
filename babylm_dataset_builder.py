@@ -7,10 +7,9 @@ import json
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Any
 
 import pandas as pd
-
 from language_scripts import validate_script_code
 
 
@@ -29,6 +28,14 @@ class DocumentConfig:
         """Post-initialization validation."""
         self.validate_category()
         self.validate_script()
+
+        # check for None values
+        if self.license is None:
+            raise ValueError("License must be specified.")
+        if self.data_source is None:
+            raise ValueError("Data source must be specified.")
+        if self.age_estimate is None:
+            raise ValueError("Age estimate must be specified.")
 
     def validate_category(self):
         """Validate that category is one of the allowed values."""
@@ -109,7 +116,7 @@ class BabyLMDatasetBuilder:
     def add_documents_from_iterable(
         self,
         documents,
-        default_document_config: DocumentConfig,
+        document_config_params: dict[str, Any] = None,
     ) -> None:
         """
         Add multiple documents from an iterable of dicts with 'text', 'doc_id', and 'metadata'.
@@ -124,7 +131,7 @@ class BabyLMDatasetBuilder:
             metadata = doc.get("metadata", {})
 
             # Prepare misc, merging with existing misc if present
-            misc = metadata.get("misc", default_document_config.misc)
+            misc = metadata.get("misc", document_config_params.get('misc'))
             if misc is None:
                 misc = {}
             # Add source_url and source_identifier to misc if present
@@ -134,16 +141,21 @@ class BabyLMDatasetBuilder:
             if "source_identifier" in metadata:
                 misc = dict(misc)
                 misc["source_identifier"] = metadata["source_identifier"]
-            doc_config = DocumentConfig(
-                category=metadata.get("category") or default_document_config.category,
-                data_source=metadata.get("data_source")
-                or default_document_config.data_source,
-                script=metadata.get("script") or default_document_config.script,
-                age_estimate=metadata.get("age_estimate")
-                or default_document_config.age_estimate,
-                license=metadata.get("license") or default_document_config.license,
-                misc=misc,
-            )
+
+            try: 
+                doc_config = DocumentConfig(
+                    category=metadata.get("category") or document_config_params.get("category"),
+                    data_source=metadata.get("data_source")
+                    or document_config_params.get("data_source"),
+                    script=metadata.get("script") or document_config_params.get("script"),
+                    age_estimate=metadata.get("age_estimate")
+                    or document_config_params.get("age_estimate"),
+                    license=metadata.get("license") or document_config_params.get("license"),
+                    misc=misc,
+                )
+            except ValueError as e:
+                raise ValueError(f"Error in configuration of document with id {document_id}: {e}")
+
             config_keys = {
                 "category",
                 "data_source",

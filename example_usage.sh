@@ -1,25 +1,28 @@
 #!/bin/bash
 
-# Example 1: Basic usage - process any text files
+# Example 1: Process any text files with command-line global metadata
 time python pipeline.py \
     --language eng \
-    --category "educational" \
-    --loader-path "./my_text_files" \
-    --loader-type text \
     --script Latn \
-    --license "cc-by"
-
-# Example 1b: Basic usage with preprocessing
+    --data-path "./my_text_files" \
+    --data-type text \
+    --category "educational" \
+    --license "cc-by"\
+    --data-source "PublicDomainStories" \
+    --age-estimate "4-6" \
+    --misc '{"source_url": "https://example.com/my_text_files"}'
+  
+# Example 2: Process dataset from file with a format of: json, jsonl, csv, or HF dataset
+# command-line metadata can still be used, but are overridden by document-specific metadata
 time python pipeline.py \
     --language eng \
-    --category "educational" \
-    --loader-path "./my_text_files" \
-    --loader-type text \
     --script Latn \
-    --license "cc-by" \
-    --preprocess-text
+    --data-path "./my_dataset.json" \
+    --data-type json \
+    --category "educational" # will be overriden by category value in json file, if specified there
 
-# Example 2: Mixed-source dataset with document-specific metadata
+
+# Example 3: Add document-specific metadata from json file
 cat > mixed_metadata.json << EOF
 {
   "story1": {
@@ -42,53 +45,61 @@ cat > mixed_metadata.json << EOF
 }
 EOF
 
+# provide directory of text files, document-specific metadata is provided in the json metadata file
+# command-line metadata can still be used, but are overridden by document-specific metadata
 time python pipeline.py \
     --language eng \
-    --category "educational" \
-    --loader-path "./mixed_texts_example" \
-    --loader-type text \
     --script Latn \
-    --license "cc-by" \
-    --metadata-file "./mixed_metadata.json"
+    --data-path "./mixed_texts_example" \
+    --data-type text \
+    --metadata-file "./mixed_metadata.json"\
+    --category "educational" # will be overriden by category value in json file, if specified there
 
-# Example 2b: Mixed-source dataset with document-specific metadata and preprocessing
+
+# Example 4: Add pre-processing and language filtering
 time python pipeline.py \
     --language eng \
-    --category "educational" \
-    --loader-path "./mixed_texts_example" \
-    --loader-type text \
     --script Latn \
-    --license "cc-by" \
-    --metadata-file "./mixed_metadata.json" \
-    --preprocess-text
-
-# Example 3: Process with language filtering
-time python pipeline.py \
-    --language fra \
-    --category "child-books" \
-    --loader-path "./french_stories" \
-    --loader-type text \
-    --script Latn \
-    --license "cc-by-sa" \
+    --data-path "./my_dataset.json" \
+    --data-type json \
+    --preprocess-text \
     --enable-language-filtering \
     --language-filter-threshold 0.85
+
+
+# Example 5: Process, filter and upload a dataset
+time python pipeline.py \
+    --language ind \
+    --script Latn \
+    --data-path ./articles_cleaned.json \
+    --data-type json \
+    --preprocess-text \
+    --enable-language-filtering \
+    --language-filter-threshold 0.8 \
+    --upload \
+    --repo-id "username/babylm-ind"
+
 
 # Example 4: Process subtitles
 time python pipeline.py \
     --language deu \
-    --category "subtitles" \
-    --loader-path "./german_subs" \
-    --loader-type text \
     --script Latn \
-    --license "cc-by"
+    --data-path "./german_subs" \
+    --data-type text \
+    --license "cc-by" \
+    --category "subtitles" \
+    --data-source "OpenSubtitles" \
+    --age-estimate "13-15" \
+    --misc '{"source_url": "https://example.com/german_subs"}'
+
 
 # Example 5: Process CHILDES transcripts
 time python pipeline.py \
     --language nld \
-    --category "child-directed-speech" \
-    --loader-path "./childes_dutch" \
-    --loader-type text \
     --script Latn \
+    --data-path "./childes_dutch" \
+    --data-type text \
+    --category "child-directed-speech" \
     --license "cc-by-sa" \
     --metadata-file "./childes_metadata.json"
 
@@ -106,22 +117,10 @@ EOF
 
 time python pipeline.py \
     --language eng \
-    --category "educational" \
-    --loader-path "./k12_texts" \
-    --loader-type text \
     --script Latn \
+    --data-path "./k12_texts" \
+    --data-type text \
+    --category "educational" \
     --license "cc-by-sa" \
     --metadata-file "./edu_metadata.json"
 
-# Example 7: Process data with language filtering and upload
-time python pipeline.py \
-    --language ind \
-    --category child-news \
-    --loader-path ./articles_cleaned_txt \
-    --loader-type text \
-    --script Latn \
-    --license cc-by \
-    --enable-language-filtering \
-    --language-filter-threshold 0.8 \
-    --upload \
-    --repo-id "username/babylm-ind"

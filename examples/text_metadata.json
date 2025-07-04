@@ -8,8 +8,7 @@
   "lesson1": {
     "category": "educational", 
     "age_estimate": "8-10",
-    "data_source": "OpenEducation",
-    "license": "cc-by-sa"
+    "data_source": "OpenEducation"
   },
   "transcript1": {
     "category": "child-directed-speech",

@@ -3,7 +3,6 @@
 General text preprocessing utilities for BabyLM datasets.
 """
 
-import re
 import pandas as pd
 
 from abc import ABC
@@ -52,7 +51,6 @@ class TranscriptPreprocessor(BasePreprocessor):
         line = remove_annotations(line)
         if line == "":
             return ""
-        line = remove_speaker_labels(line)
         line = normalize_punctuation(line)
         return line
 

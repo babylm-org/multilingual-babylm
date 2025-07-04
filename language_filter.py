@@ -368,20 +368,21 @@ class LanguageFilter:
             "statistics": defaultdict(int),
         }
 
-        match_indexes = []
-        mismatch_indexes = []
-        for i, text in documents_df["text"].items():
+        match_ids = []
+        mismatch_ids = []
+        for _, row in documents_df.iterrows():
             try:
                 # Predict language and script
                 pred_lang, pred_script, confidence, metadata = (
                     self.predict_document_language_script(
-                        text, min_words, min_chars, min_confidence
+                        row["text"], min_words, min_chars, min_confidence
                     )
                 )
                 # Check if it matches expected language and script
                 lang_match = pred_lang.lower() == expected_language.lower()
                 script_match = pred_script.lower() == expected_script.lower()
-                document_id = documents_df["document_id"].iat[i]
+                document_id = row["document_id"]
+                
                 file_info = {
                     "filename": document_id + ".txt",
                     "predicted_language": pred_lang,
@@ -394,12 +395,12 @@ class LanguageFilter:
                 match = lang_match and script_match and confidence >= min_confidence
                 # Decide where to place the file
                 if match:
-                    match_indexes.append(i)
+                    match_ids.append(document_id)
                     results["matching"].append(file_info)
                     results["statistics"]["matching"] += 1
 
                 else:
-                    mismatch_indexes.append(i)
+                    mismatch_ids.append(document_id)
                     results["mismatched"].append(file_info)
                     results["statistics"]["mismatched"] += 1
                     results["statistics"][f"mismatched_{pred_lang}_{pred_script}"] += 1
@@ -410,8 +411,8 @@ class LanguageFilter:
                 results["errors"].append(error_msg)
                 results["statistics"]["errors"] += 1
 
-        results["match_indexes"] = match_indexes
-        results["mismatch_indexes"] = mismatch_indexes
+        results["match_ids"] = match_ids
+        results["mismatch_ids"] = mismatch_ids
 
         return results
 
