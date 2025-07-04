@@ -1,19 +1,25 @@
 #!/bin/bash
 
 # Example 1: Basic usage - process any text files
-python main_pipeline.py \
+time python main_pipeline.py \
     --language eng \
-    --data-source "MyCustomTexts" \
     --category "educational" \
-    --texts-dir "./my_text_files" \
+    --loader-path "./my_text_files" \
+    --loader-type text \
     --script Latn \
-    --age-estimate "6-12" \
+    --license "cc-by"
+
+# Example 1b: Basic usage with preprocessing
+time python main_pipeline.py \
+    --language eng \
+    --category "educational" \
+    --loader-path "./my_text_files" \
+    --loader-type text \
+    --script Latn \
     --license "cc-by" \
-    --upload \
-    --repo-id "username/babylm-eng"
+    --preprocess-text
 
 # Example 2: Mixed-source dataset with document-specific metadata
-# First create a metadata file that specifies different properties per document
 cat > mixed_metadata.json << EOF
 {
   "story1": {
@@ -36,94 +42,57 @@ cat > mixed_metadata.json << EOF
 }
 EOF
 
-python main_pipeline.py \
+time python main_pipeline.py \
     --language eng \
-    --data-source "MixedSources" \
     --category "educational" \
-    --texts-dir "./mixed_texts_example" \
+    --loader-path "./mixed_texts_example" \
+    --loader-type text \
     --script Latn \
-    --age-estimate "4-10" \
+    --license "cc-by" \
+    --metadata-file "./mixed_metadata.json"
+
+# Example 2b: Mixed-source dataset with document-specific metadata and preprocessing
+time python main_pipeline.py \
+    --language eng \
+    --category "educational" \
+    --loader-path "./mixed_texts_example" \
+    --loader-type text \
+    --script Latn \
     --license "cc-by" \
     --metadata-file "./mixed_metadata.json" \
-    --preprocess \
-    --preprocessor-type text \
-    --fix-unicode \
-    --upload \
-    --repo-id "username/babylm-eng"
+    --preprocess-text
 
-# Example 3: Process with basic preprocessing (preserves caps and paragraphs by default)
-python main_pipeline.py \
+# Example 3: Process with language filtering
+time python main_pipeline.py \
     --language fra \
-    --data-source "FrenchStories" \
     --category "child-books" \
-    --texts-dir "./french_stories" \
+    --loader-path "./french_stories" \
+    --loader-type text \
     --script Latn \
-    --age-estimate "4-8" \
     --license "cc-by-sa" \
-    --preprocess \
-    --preprocessor-type text \
-    --fix-unicode
+    --enable-language-filtering \
+    --language-filter-threshold 0.85
 
-# Example 4: Process with lowercasing (when explicitly needed)
-python main_pipeline.py \
-    --language fra \
-    --data-source "FrenchPoems" \
-    --category "child-books" \
-    --texts-dir "./french_poems" \
-    --script Latn \
-    --age-estimate "6-10" \
-    --license "cc-by" \
-    --preprocess \
-    --preprocessor-type text \
-    --lowercase \
-    --fix-unicode
-
-# Example 5: Process subtitles with subtitle-specific preprocessing
-python main_pipeline.py \
+# Example 4: Process subtitles
+time python main_pipeline.py \
     --language deu \
-    --data-source "GermanSubtitles" \
     --category "subtitles" \
-    --texts-dir "./german_subs" \
+    --loader-path "./german_subs" \
+    --loader-type text \
     --script Latn \
-    --age-estimate "n/a" \
-    --license "cc-by" \
-    --preprocess \
-    --preprocessor-type subtitle \
-    --remove-timestamps \
-    --remove-stage-directions
+    --license "cc-by"
 
-# Example 6: Process CHILDES transcripts
-python main_pipeline.py \
+# Example 5: Process CHILDES transcripts
+time python main_pipeline.py \
     --language nld \
-    --data-source "CHILDES-Dutch" \
     --category "child-directed-speech" \
-    --texts-dir "./childes_dutch" \
+    --loader-path "./childes_dutch" \
+    --loader-type text \
     --script Latn \
-    --age-estimate "2-5" \
     --license "cc-by-sa" \
-    --metadata-file "./childes_metadata.json" \
-    --preprocess \
-    --preprocessor-type transcript
+    --metadata-file "./childes_metadata.json"
 
-# Example 8: Process OpenSubtitles using the dedicated script
-python process_opensubtitles.py \
-    --language af \
-    --script Latn \
-    --batch-size 100 \
-    --upload \
-    --repo-id "username/babylm-afr"
-
-# Example 9: Process OpenSubtitles with lowercasing (non-default)
-python process_opensubtitles.py \
-    --language ita \
-    --script Latn \
-    --lowercase \
-    --batch-size 50 \
-    --upload \
-    --repo-id "username/babylm-ita"
-
-# Example 11: Create a multi-age educational dataset
-# Create metadata for different age groups
+# Example 6: Create a multi-age educational dataset
 cat > edu_metadata.json << EOF
 {
   "kindergarten_lesson1": {"age_estimate": "4-5", "category": "educational"},
@@ -135,31 +104,24 @@ cat > edu_metadata.json << EOF
 }
 EOF
 
-python main_pipeline.py \
+time python main_pipeline.py \
     --language eng \
-    --data-source "K12Education" \
     --category "educational" \
-    --texts-dir "./k12_texts" \
+    --loader-path "./k12_texts" \
+    --loader-type text \
     --script Latn \
-    --age-estimate "4-13" \
     --license "cc-by-sa" \
-    --metadata-file "./edu_metadata.json" \
-    --source-url "https://example-education.org" \
-    --misc '{"curriculum": "common-core", "year": "2024"}' \
-    --upload \
-    --repo-id "username/babylm-eng"
+    --metadata-file "./edu_metadata.json"
 
-# Example 12: Process data with custom preprocessing function
-# This shows how to add custom preprocessing while preserving structure
-python main_pipeline.py \
-    --language zho \
-    --data-source "ChineseChildrenStories" \
-    --category "child-books" \
-    --texts-dir "./chinese_stories" \
-    --script "Hans" \  # ISO 15924 code for "Simplified Chinese"
-    --age-estimate "5-10" \
-    --license "cc-by" \
-    --preprocess \
-    --preprocessor-type text \
-    --fix-unicode \
-    --no-lowercase  # Explicitly preserve case (though it's default)
+# Example 7: Process data with language filtering and upload
+time python main_pipeline.py \
+    --language ind \
+    --category child-news \
+    --loader-path ./articles_cleaned_txt \
+    --loader-type text \
+    --script Latn \
+    --license cc-by \
+    --enable-language-filtering \
+    --language-filter-threshold 0.8 \
+    --upload \
+    --repo-id "username/babylm-ind"
