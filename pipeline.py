@@ -11,7 +11,7 @@ from typing import Optional
 # Import our modules
 from babylm_dataset_builder import BabyLMDatasetBuilder, DatasetConfig, DocumentConfig
 from hf_uploader import HFDatasetUploader
-from text_preprocessor import preprocess_dataset
+from preprocessor import preprocess_dataset
 from language_filter import LanguageFilter, print_filtering_results
 from language_scripts import get_script_formal_name, validate_script_code
 from loader import get_loader
