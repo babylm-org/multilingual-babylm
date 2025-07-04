@@ -2,7 +2,7 @@ import csv
 import json
 from pathlib import Path
 from typing import List, Dict, Any, Optional
-from datasets import load_from_disk
+from datasets import load_from_disk, load_dataset
 from abc import ABC, abstractmethod
 
 
@@ -39,7 +39,13 @@ class CSVLoader(BaseLoader):
                     continue
                 meta = {k: v for k, v in row.items() if k != self.text_field}
                 doc_id = row.get("doc_id") or row.get("id") or None
-                docs.append({"text": text, "doc_id": doc_id if doc_id is not None else str(i), "metadata": meta})
+                docs.append(
+                    {
+                        "text": text,
+                        "doc_id": doc_id if doc_id is not None else str(i),
+                        "metadata": meta,
+                    }
+                )
         return docs
 
 
@@ -63,7 +69,42 @@ class JSONLoader(BaseLoader):
                 continue
             meta = {k: v for k, v in row.items() if k != self.text_field}
             doc_id = row.get("doc_id") or row.get("id") or None
-            docs.append({"text": text, "doc_id": doc_id if doc_id is not None else str(i), "metadata": meta})
+            docs.append(
+                {
+                    "text": text,
+                    "doc_id": doc_id if doc_id is not None else str(i),
+                    "metadata": meta,
+                }
+            )
+        return docs
+
+
+class JSONLLoader(BaseLoader):
+    def __init__(self, text_field="text"):
+        self.text_field = text_field
+
+    def load_data(self, source_path: Path) -> List[Dict[str, Any]]:
+        docs = []
+        with open(source_path, "r", encoding="utf-8") as f:
+            for i, line in enumerate(f):
+                try:
+                    row = json.loads(line)
+                except Exception:
+                    continue
+                if not isinstance(row, dict):
+                    continue
+                text = row.get(self.text_field, "")
+                if not text:
+                    continue
+                meta = {k: v for k, v in row.items() if k != self.text_field}
+                doc_id = row.get("doc_id") or row.get("id") or None
+                docs.append(
+                    {
+                        "text": text,
+                        "doc_id": doc_id if doc_id is not None else str(i),
+                        "metadata": meta,
+                    }
+                )
         return docs
 
 
@@ -74,11 +115,23 @@ class HFLoader(BaseLoader):
 
     def load_data(self, source_path: Path) -> List[Dict[str, Any]]:
         docs = []
-        ds = load_from_disk(str(source_path))
-        if self.split and hasattr(ds, "split"):
-            ds = ds[self.split]
-        elif isinstance(ds, dict):
-            ds = next(iter(ds.values()))
+        if source_path.exists():
+            ds = load_from_disk(str(source_path))
+            # If loaded from disk, may need to select split
+            if self.split and isinstance(ds, dict):
+                ds = ds[self.split]
+            elif isinstance(ds, dict):
+                ds = next(iter(ds.values()))
+        else:
+            # Assume it's a HuggingFace repo id
+            ds = (
+                load_dataset(str(source_path), split=self.split)
+                if self.split
+                else load_dataset(str(source_path))
+            )
+            # If no split specified and ds is a dict, pick first split
+            if not self.split and isinstance(ds, dict):
+                ds = next(iter(ds.values()))
         for i, row in enumerate(ds):
             if isinstance(row, dict):
                 text = row.get(self.text_field, "")
@@ -87,10 +140,18 @@ class HFLoader(BaseLoader):
             else:
                 text = getattr(row, self.text_field, "")
                 meta = {k: v for k, v in row.__dict__.items() if k != self.text_field}
-                doc_id = getattr(row, "doc_id", None) or getattr(row, "id", None) or None
+                doc_id = (
+                    getattr(row, "doc_id", None) or getattr(row, "id", None) or None
+                )
             if not text:
                 continue
-            docs.append({"text": text, "doc_id": doc_id if doc_id is not None else str(i), "metadata": meta})
+            docs.append(
+                {
+                    "text": text,
+                    "doc_id": doc_id if doc_id is not None else str(i),
+                    "metadata": meta,
+                }
+            )
         return docs
 
 
@@ -101,6 +162,8 @@ def get_loader(loader_type, **kwargs):
         return CSVLoader(text_field=kwargs.get("text_field", "text"))
     elif loader_type == "json":
         return JSONLoader(text_field=kwargs.get("text_field", "text"))
+    elif loader_type == "jsonl":
+        return JSONLLoader(text_field=kwargs.get("text_field", "text"))
     elif loader_type == "hf":
         return HFLoader(
             text_field=kwargs.get("text_field", "text"), split=kwargs.get("split")

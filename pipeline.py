@@ -1,4 +1,4 @@
-# main_pipeline.py
+# pipeline.py
 """
 Main pipeline script for processing various data sources into BabyLM datasets.
 """
@@ -11,14 +11,9 @@ from typing import Optional
 # Import our modules
 from babylm_dataset_builder import BabyLMDatasetBuilder, DatasetConfig, DocumentConfig
 from hf_uploader import HFDatasetUploader
-from text_preprocessor import (
-    remove_urls,
-    normalize_punctuation,
-    remove_xml_tags,
-    get_preprocessor_for_category,
-)
+from text_preprocessor import preprocess_dataset
 from language_filter import LanguageFilter, print_filtering_results
-from language_scripts import get_script_formal_name, SCRIPT_NAMES
+from language_scripts import get_script_formal_name, validate_script_code
 from loader import get_loader
 
 
@@ -26,12 +21,12 @@ def process_dataset(
     language_code: str,
     data_source: str,
     category: str,
-    texts_dir: Path,
+    loader_path: Path,
     document_config_params: dict,
     metadata_file: Optional[Path] = None,
     upload: bool = False,
     repo_id: Optional[str] = None,
-    preprocessing_config: Optional[dict] = None,
+    preprocess_text: bool = False,
     loader_type: str = "text",
     enable_language_filtering: bool = False,
     language_filter_threshold: float = 0.8,
@@ -44,12 +39,12 @@ def process_dataset(
         language_code: ISO 639-3 language code
         data_source: Name of the data source
         category: Content category
-        texts_dir: Directory containing text files
+        loader_path: Path to data directory or file
         document_config_params: Dictionary with document-level configuration
         metadata_file: Optional JSON file with document metadata
         upload: Whether to upload to HuggingFace
         repo_id: HuggingFace repository ID
-        preprocessing_config: Configuration for text preprocessing
+        preprocess_text: Enable text preprocessing
         loader_type: Type of loader to use
         enable_language_filtering: Whether to enable language filtering
         language_filter_threshold: Minimum confidence for language filtering
@@ -61,8 +56,8 @@ def process_dataset(
     print(f"Processing {data_source} data for {language_code}...")
 
     # 1. Load data using loader
-    loader = get_loader(loader_type, **(preprocessing_config or {}))
-    docs = loader.load_data(texts_dir)
+    loader = get_loader(loader_type)
+    docs = loader.load_data(loader_path)
 
     # 2. Load metadata file if provided and merge
     metadata_mapping = {}
@@ -74,90 +69,57 @@ def process_dataset(
         if doc_id in metadata_mapping:
             doc["metadata"].update(metadata_mapping[doc_id])
 
-    # 3. Preprocess all texts (if requested)
-    if preprocessing_config:
-        for doc in docs:
-            # Use category from doc['metadata'] if present, else fallback to main category
-            doc_category = doc.get("metadata", {}).get("category", category)
-            preprocessor = get_preprocessor_for_category(
-                doc_category, **preprocessing_config
-            )
-            doc["text"] = preprocessor.preprocess_text(doc["text"])
-    # else: no preprocessing
-
-    # 4. Language filtering if enabled (in-memory)
-    if enable_language_filtering:
-        expected_script = document_config_params.get("script", "Zzzz")
-        print(f"\nPerforming language filtering...")
-        print(f"Expected language: {language_code}")
-        print(f"Expected script: {expected_script}")
-        language_filter = LanguageFilter()
-        filtered_docs = []
-        filter_results = {}
-        for doc in docs:
-            # Try to use a per-document filter if available, else fallback to directory logic
-            if hasattr(language_filter, "filter_document"):
-                result = language_filter.filter_document(
-                    text=doc["text"],
-                    expected_language=language_code,
-                    expected_script=expected_script,
-                    min_confidence=language_filter_threshold,
-                )
-                filter_results[doc["doc_id"]] = result
-                if result.get("match"):
-                    filtered_docs.append(doc)
-            else:
-                # Fallback: always keep (or you can raise NotImplementedError)
-                filtered_docs.append(doc)
-        print_filtering_results(filter_results, language_code, expected_script)
-        docs = filtered_docs
-
-    # 5. Validate script in metadata
-    for doc in docs:
-        meta = doc.get("metadata", {})
-        if "script" in meta and meta["script"] not in SCRIPT_NAMES:
-            raise ValueError(
-                f"Invalid script code '{meta['script']}' in metadata for doc_id {doc['doc_id']}. Must be ISO 15924 code."
-            )
-
-    # 6. Build dataset
+    # 3. Build dataset
     dataset_config = DatasetConfig(language_code=language_code)
     script_code = document_config_params.get("script", "Zzzz")
+    if not validate_script_code(script_code):
+        raise ValueError(
+            f"Invalid script code '{script_code}'. Must be a valid ISO 15924 code (e.g., Latn, Cyrl, Arab, etc.)"
+        )
     script_formal_name = get_script_formal_name(script_code)
     document_config_params["script"] = script_formal_name
     default_doc_config = DocumentConfig(
         category=category, data_source=data_source, **document_config_params
     )
     builder = BabyLMDatasetBuilder(dataset_config)
-    if hasattr(builder, "add_documents_from_iterable"):
-        builder.add_documents_from_iterable(docs, default_doc_config)
-    else:
-        raise NotImplementedError(
-            "Your BabyLMDatasetBuilder must implement add_documents_from_iterable."
-        )
-
-    # Save and create dataset
-    builder.save_metadata()
+    builder.add_documents_from_iterable(docs, default_doc_config)
     dataset_df = builder.create_dataset_table()
-    print(f"\nDataset created with {len(dataset_df)} documents")
 
-    # Upload if requested
+    # 4. Preprocess all texts (if requested)
+    if preprocess_text:
+        dataset_df = preprocess_dataset(dataset_df)
+        builder.dataset_table = dataset_df
+
+    # 5. Language filtering if enabled
+    if enable_language_filtering:
+        lang_filter = LanguageFilter()
+        filter_results = lang_filter.filter_documents(
+            builder.dataset_table,
+            expected_language=language_code,
+            expected_script=script_code,
+            min_confidence=language_filter_threshold,
+        )
+        print_filtering_results(filter_results, language_code, script_code)
+        # Only keep matching documents
+        matching_ids = set(filter_results["matching"])
+        builder.dataset_table = builder.dataset_table[
+            builder.dataset_table["document_id"].isin(matching_ids)
+        ]
+
+    # 6. Save and create dataset
+    builder.save_dataset()
+    print(f"\nDataset created with {len(builder.dataset_table)} documents")
+
+    # 7. Upload if requested
     if upload and repo_id:
         print(f"\nUploading to HuggingFace: {repo_id}")
         uploader = HFDatasetUploader()
-        if tokenizer_name is not None:
-            uploader.upload_babylm_dataset(
-                dataset_dir=builder.output_dir,
-                repo_id=repo_id,
-                create_repo_if_missing=True,
-                tokenizer_name=tokenizer_name,
-            )
-        else:
-            uploader.upload_babylm_dataset(
-                dataset_dir=builder.output_dir,
-                repo_id=repo_id,
-                create_repo_if_missing=True,
-            )
+        uploader.upload_babylm_dataset(
+            dataset_dir=builder.output_dir,
+            repo_id=repo_id,
+            create_repo_if_missing=True,
+            tokenizer_name=tokenizer_name,
+        )
 
     return builder.output_dir
 
@@ -167,15 +129,14 @@ def main():
         description="Process data into BabyLM format",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-
-    # Required arguments
     parser.add_argument(
         "--language", "-l", required=True, help="ISO 639-3 language code"
     )
     parser.add_argument(
         "--data-source",
         "-s",
-        required=False,
+        type=str,
+        default="unknown",
         help="Data source name (e.g., OpenSubtitles, CHILDES, etc.)",
     )
     parser.add_argument(
@@ -196,41 +157,29 @@ def main():
         help="Content category",
     )
     parser.add_argument(
-        "--texts-dir",
-        "-t",
-        type=Path,
-        required=True,
-        help="Directory containing text files to process",
-    )
-
-    # Dataset configuration
-    parser.add_argument(
         "--script", required=True, help="Script type (latin, cyrillic, arabic, etc.)"
     )
     parser.add_argument(
         "--age-estimate",
-        required=False,
+        type=str,
+        default="n/a",
         help="Age estimate (e.g., '4', '12-17', 'n/a')",
     )
     parser.add_argument(
         "--license", required=True, help="License (e.g., cc-by, cc-by-sa)"
     )
-
-    # Optional metadata
     parser.add_argument(
         "--metadata-file", type=Path, help="JSON file with document metadata"
     )
-    parser.add_argument("--source-url", help="Source URL")
-    parser.add_argument("--source-identifier", help="Source identifier")
     parser.add_argument(
         "--misc", type=json.loads, help="Additional metadata as JSON string"
-    )  # Upload arguments
+    )
     parser.add_argument(
         "--upload", action="store_true", help="Upload to HuggingFace after processing"
     )
     parser.add_argument(
         "--repo-id", help="HuggingFace repo ID (e.g., 'username/babylm-eng')"
-    )  # Language filtering arguments
+    )
     parser.add_argument(
         "--enable-language-filtering",
         action="store_true",
@@ -242,153 +191,59 @@ def main():
         default=0.8,
         help="Minimum confidence threshold for language filtering (0.0-1.0)",
     )
-
-    # Preprocessing arguments
     parser.add_argument(
-        "--preprocess", action="store_true", help="Enable text preprocessing"
+        "--loader-path",
+        "-t",
+        type=Path,
+        required=True,
+        help="Path to data directory or file",
     )
     parser.add_argument(
         "--loader-type",
-        default="text",
-        choices=["text", "csv", "json", "hf"],
-        help="Type of loader to use (text, csv, json, hf)",
-    )
-    parser.add_argument(
-        "--text-field",
         type=str,
         default="text",
-        help="Field name for text in CSV or HuggingFace datasets (default: 'text')",
+        choices=["text", "json", "jsonl", "csv", "hf"],
+        help="Loader type for input data",
     )
     parser.add_argument(
-        "--hf-dataset-split",
+        "--preprocess-text", action="store_true", help="Enable text preprocessing"
+    )
+    parser.add_argument(
+        "--tokenizer-name",
         type=str,
         default=None,
-        help="Split name for HuggingFace datasets (e.g., 'train', 'test'). Default: None (use default split)",
+        help="Name of the tokenizer to use for token counting (for languages like Chinese, Japanese and Korean)",
     )
-
-    # Preprocessing options (only add args for options that are False by default)
-    parser.add_argument(
-        "--lowercase",
-        action="store_true",
-        default=False,
-        help="Lowercase text (default: False)",
-    )
-    parser.add_argument(
-        "--remove-timestamps",
-        action="store_true",
-        default=False,
-        help="Remove timestamps (default: False)",
-    )
-    parser.add_argument(
-        "--remove-stage-directions",
-        action="store_true",
-        default=False,
-        help="Remove [bracketed] stage directions (default: False)",
-    )
-    parser.add_argument(
-        "--replace-newline-within-paragraph",
-        action="store_true",
-        default=False,
-        help="Replace single newlines with space within paragraphs (default: False)",
-    )
-    # Options that are True by default (add --no-... to disable)
-    parser.add_argument(
-        "--no-normalize-whitespace",
-        dest="normalize_whitespace",
-        action="store_false",
-        help="Do not normalize whitespace (default: True)",
-    )
-    parser.add_argument(
-        "--no-fix-unicode",
-        dest="fix_unicode",
-        action="store_false",
-        help="Do not fix unicode issues with ftfy (default: True)",
-    )
-    parser.set_defaults(normalize_whitespace=True, fix_unicode=True)
 
     args = parser.parse_args()
 
-    # Normalize script code to title case
-    args.script = args.script.title()
-    # Enforce ISO 15924 script code
-    if args.script not in SCRIPT_NAMES:
-        parser.error(
-            f"Invalid script code '{args.script}'. Please use a valid ISO 15924 script code (e.g., Latn, Cyrl, Arab, etc.)."
+    if not validate_script_code(args.script):
+        raise ValueError(
+            f"Invalid script code '{args.script}'. Must be a valid ISO 15924 code (e.g., Latn, Cyrl, Arab, etc.)"
         )
 
-    # Validate required arguments
-    if not args.texts_dir.exists():
-        parser.error(f"Texts directory does not exist: {args.texts_dir}")
-
-    if args.upload and not args.repo_id:
-        parser.error("--repo-id is required when --upload is specified")
-
-    # Prepare document config parameters
     document_config_params = {
         "script": args.script,
         "age_estimate": args.age_estimate,
         "license": args.license,
+        "misc": args.misc if args.misc else None,
     }
 
-    if args.source_url:
-        document_config_params["source_url"] = args.source_url
-    if args.source_identifier:
-        document_config_params["source_identifier"] = args.source_identifier
-    if args.misc:
-        document_config_params["misc"] = args.misc
-
-    # Prepare preprocessing config
-    preprocessing_config = None
-    if args.preprocess:
-        preprocessing_config = {}
-        custom_steps = []
-        # Add boolean options only if explicitly set
-        if args.lowercase:
-            preprocessing_config["lowercase"] = True
-        if not args.normalize_whitespace:
-            preprocessing_config["normalize_whitespace"] = False
-        if not args.fix_unicode:
-            preprocessing_config["fix_unicode"] = False
-        if args.remove_timestamps:
-            preprocessing_config["remove_timestamps"] = True
-        if args.remove_stage_directions:
-            preprocessing_config["remove_stage_directions"] = True
-        if args.replace_newline_within_paragraph:
-            preprocessing_config["replace_newline_within_paragraph"] = True
-        # Add custom preprocessing steps if flags are set
-        if args.remove_urls:
-            custom_steps.append(remove_urls)
-        if args.normalize_punctuation:
-            custom_steps.append(normalize_punctuation)
-        if args.remove_xml_tags:
-            custom_steps.append(remove_xml_tags)
-        if custom_steps:
-            preprocessing_config["custom_steps"] = custom_steps
-        # Add CSV/HF/JSON-specific options
-        if args.loader_type in ["csv", "hf", "json"]:
-            preprocessing_config["text_field"] = args.text_field
-        if args.loader_type == "hf":
-            preprocessing_config["dataset_id"] = str(args.texts_dir)
-            preprocessing_config["split"] = args.hf_dataset_split
-
-    # Process the dataset
-    output_dir = process_dataset(
+    process_dataset(
         language_code=args.language,
         data_source=args.data_source,
         category=args.category,
-        texts_dir=args.texts_dir,
+        loader_path=args.loader_path,
         document_config_params=document_config_params,
         metadata_file=args.metadata_file,
         upload=args.upload,
         repo_id=args.repo_id,
-        preprocessing_config=preprocessing_config,
+        preprocess_text=args.preprocess_text,
         loader_type=args.loader_type,
         enable_language_filtering=args.enable_language_filtering,
         language_filter_threshold=args.language_filter_threshold,
         tokenizer_name=args.tokenizer_name,
     )
-
-    print(f"\nProcessing complete! Output directory: {output_dir}")
 
 
 if __name__ == "__main__":
