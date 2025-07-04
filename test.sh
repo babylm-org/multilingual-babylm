@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # check document filtering
 python pipeline.py \
     --language eng\

@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Basic command to upload a babyLM dataset from a JSON file
 # Recommended options included for: 
 # - language filtering
