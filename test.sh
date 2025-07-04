@@ -8,6 +8,7 @@ python pipeline.py \
     --enable-language-filter \
     --preprocess-text \
     --license "cc-by-sa"
+    # should filter out document filter1.txt
 
 # check license validation
 python pipeline.py \
@@ -21,7 +22,7 @@ python pipeline.py \
     #--license "cc-by-sa"
     # missing license, should fail
 
-# check script valdiation
+# check script validation
 python pipeline.py \
     --language eng\
     --data-path "examples/" \
@@ -31,4 +32,4 @@ python pipeline.py \
     --preprocess-text \
     --license "cc-by-sa"\
     --script Latin 
-    # non-ISO script, should fail
+    # non-ISO 15924 script value, should fail

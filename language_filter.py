@@ -381,7 +381,7 @@ class LanguageFilter:
                 # Check if it matches expected language and script
                 lang_match = pred_lang.lower() == expected_language.lower()
                 script_match = pred_script.lower() == expected_script.lower()
-                document_id = row["document_id"]
+                document_id = row["doc_id"]
                 
                 file_info = {
                     "filename": document_id + ".txt",

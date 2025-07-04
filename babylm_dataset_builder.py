@@ -101,7 +101,7 @@ class BabyLMDatasetBuilder:
         """Add a document to the dataset with its own configuration."""
         # Create document metadata
         document = {
-            "document_id": document_id,
+            "doc_id": document_id,
             "document_config": document_config,
             "text": text,  # Store the text content
         }
@@ -175,12 +175,12 @@ class BabyLMDatasetBuilder:
         for doc in self.documents:
             # Read the text
             text = doc["text"]
-            document_id = doc["document_id"]
+            document_id = doc["doc_id"]
             document_config = doc["document_config"]
 
             row = {
                 "text": text,
-                "document_id": document_id,
+                "doc_id": document_id,
                 "category": document_config.category,
                 "data-source": document_config.data_source,
                 "script": document_config.script,

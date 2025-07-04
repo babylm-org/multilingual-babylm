@@ -96,7 +96,7 @@ def process_dataset(
         # Only keep matching documents
         matching_ids = set(filter_results["match_ids"])
         builder.dataset_table = builder.dataset_table[
-            builder.dataset_table["document_id"].isin(matching_ids)
+            builder.dataset_table["doc_id"].isin(matching_ids)
         ]
 
     # 6. Save and create dataset
@@ -127,7 +127,7 @@ def main():
         "--language", "-l", required=True, help="ISO 639-3 language code"
     )
     parser.add_argument(
-        "--script", required=True, help="Script type (latin, cyrillic, arabic, etc.)"
+        "--script", required=True, help="Must be a valid ISO 15924 code (e.g., Latn, Cyrl, Arab, etc.)"
     )
     parser.add_argument(
         "--data-path",
