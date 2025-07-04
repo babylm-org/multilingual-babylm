@@ -12,6 +12,7 @@ from preprocessor_utils import (
     normalize_punctuation,
     remove_urls,
     remove_xml_tags,
+    remove_extra_spaces,
     remove_stage_directions,
     remove_timestamps,
     remove_annotations,
@@ -29,12 +30,12 @@ class BasePreprocessor(ABC):
     def __init__(self):
         super().__init__()
 
-    def process_text(self, text: str) -> str:
+    def process_text(self, text: str, preserve_tab: bool = False) -> str:
         """
         General preprocessing: fix unicode and normalize whitespace.
         """
         text = fix_unicode(text)
-        text = normalize_whitespace(text)
+        text = normalize_whitespace(text, preserve_tab=preserve_tab)
         return text
 
 
@@ -52,10 +53,13 @@ class TranscriptPreprocessor(BasePreprocessor):
         if line == "":
             return ""
         line = normalize_punctuation(line)
+        line = remove_extra_spaces(line, preserve_tab=True)
         return line
 
     def process_text(self, text: str) -> str:
-        text = super().process_text(text)
+        # transcript expected format is: *SPEAKER_LABEL + \t + utterance + \t + [PLACEHOLDER] (optionally)
+        # for now we just preserve the tab characters
+        text = super().process_text(text, preserve_tab=True)
         lines = text.splitlines()
         processed_lines = [self.preprocess_line(line) for line in lines]
         processed_lines = [l for l in processed_lines if l.strip()]
@@ -75,6 +79,7 @@ class SubtitlePreprocessor(BasePreprocessor):
         line = remove_stage_directions(line)
         line = remove_timestamps(line)
         line = normalize_punctuation(line)
+        line = remove_extra_spaces(line)
         return line
 
     def process_text(self, text: str) -> str:
@@ -95,6 +100,7 @@ class BookPreprocessor(BasePreprocessor):
         text = remove_xml_tags(text)
         text = normalize_punctuation(text)
         text = remove_urls(text)
+        text = remove_extra_spaces(text)
         return text
 
 
@@ -108,6 +114,7 @@ class QEDPreprocessor(BasePreprocessor):
         text = remove_xml_tags(text)
         text = normalize_punctuation(text)
         text = remove_urls(text)
+        text = remove_extra_spaces(text)
         return text
 
 

@@ -101,11 +101,22 @@ def remove_subtitle_artifacts(text: str) -> str:
     return text
 
 
+def remove_extra_spaces(text: str, preserve_tab: bool = False) -> str:
+    """Remove extra spaces from text, collapsing multiple spaces into a single space."""
+    # Collapse multiple spaces to a single space
+    space_re = r"[ ]+" if preserve_tab else r"[ \t]+"
+    text = re.sub(space_re, " ", text).strip()
+    return text
+
 def normalize_whitespace(
     text: str,
     preserve_paragraphs: bool = True,
     remove_newlines: bool = False,
+    preserve_tab: bool = False
 ) -> str:
+
+    space_re = r"[ ]+" if preserve_tab else r"[ \t]+"
+
     # normalize paragraphs
     text = re.sub(
         r"\n\n+", "\n\n", text
@@ -120,7 +131,7 @@ def normalize_whitespace(
 
         for para in paragraphs:
             # Replace multiple spaces with single space within paragraph
-            para = re.sub(r"[ \t]+", " ", para)
+            para = re.sub(space_re, " ", para)
 
             # Replace single newlines with space within paragraph
             if remove_newlines:
@@ -135,10 +146,11 @@ def normalize_whitespace(
         return "\n\n".join(processed_paragraphs)
 
     if remove_newlines:
-        # Collapse all whitespace
-        text = re.sub(r"\s+", " ", text)
-    else:
-        # Collapse multiple spaces to single space
-        text = re.sub(r"[ \t]+", " ", text)
+        # Collapse newlines to spaces
+        text = re.sub(r"\n", " ", text)
+
+    # Collapse multiple spaces to single space
+    text = re.sub(space_re, " ", text)
 
     return text.strip()
+
