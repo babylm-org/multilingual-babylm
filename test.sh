@@ -1,4 +1,4 @@
-python main_pipeline.py \
+python pipeline.py \
     --language eng\
     --load-path "examples/" \
     --load-format "text" \

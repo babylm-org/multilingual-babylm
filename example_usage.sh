@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Example 1: Basic usage - process any text files
-time python main_pipeline.py \
+time python pipeline.py \
     --language eng \
     --category "educational" \
     --loader-path "./my_text_files" \
@@ -10,7 +10,7 @@ time python main_pipeline.py \
     --license "cc-by"
 
 # Example 1b: Basic usage with preprocessing
-time python main_pipeline.py \
+time python pipeline.py \
     --language eng \
     --category "educational" \
     --loader-path "./my_text_files" \
@@ -42,7 +42,7 @@ cat > mixed_metadata.json << EOF
 }
 EOF
 
-time python main_pipeline.py \
+time python pipeline.py \
     --language eng \
     --category "educational" \
     --loader-path "./mixed_texts_example" \
@@ -52,7 +52,7 @@ time python main_pipeline.py \
     --metadata-file "./mixed_metadata.json"
 
 # Example 2b: Mixed-source dataset with document-specific metadata and preprocessing
-time python main_pipeline.py \
+time python pipeline.py \
     --language eng \
     --category "educational" \
     --loader-path "./mixed_texts_example" \
@@ -63,7 +63,7 @@ time python main_pipeline.py \
     --preprocess-text
 
 # Example 3: Process with language filtering
-time python main_pipeline.py \
+time python pipeline.py \
     --language fra \
     --category "child-books" \
     --loader-path "./french_stories" \
@@ -74,7 +74,7 @@ time python main_pipeline.py \
     --language-filter-threshold 0.85
 
 # Example 4: Process subtitles
-time python main_pipeline.py \
+time python pipeline.py \
     --language deu \
     --category "subtitles" \
     --loader-path "./german_subs" \
@@ -83,7 +83,7 @@ time python main_pipeline.py \
     --license "cc-by"
 
 # Example 5: Process CHILDES transcripts
-time python main_pipeline.py \
+time python pipeline.py \
     --language nld \
     --category "child-directed-speech" \
     --loader-path "./childes_dutch" \
@@ -104,7 +104,7 @@ cat > edu_metadata.json << EOF
 }
 EOF
 
-time python main_pipeline.py \
+time python pipeline.py \
     --language eng \
     --category "educational" \
     --loader-path "./k12_texts" \
@@ -114,7 +114,7 @@ time python main_pipeline.py \
     --metadata-file "./edu_metadata.json"
 
 # Example 7: Process data with language filtering and upload
-time python main_pipeline.py \
+time python pipeline.py \
     --language ind \
     --category child-news \
     --loader-path ./articles_cleaned_txt \

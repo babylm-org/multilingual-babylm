@@ -76,7 +76,7 @@ Each dataset contains documents with the following fields:
 - After processing, the output HuggingFace-compatible dataset will be created in a new directory named `babylm-{language}` inside a parent folder called `babylm_datasets` (e.g., `babylm_datasets/babylm-eng/`).
 
 ```bash
-python main_pipeline.py \
+python pipeline.py \
     --language eng \
     --category "educational" \
     --loader-path "./my_text_files" \
@@ -88,7 +88,7 @@ python main_pipeline.py \
 #### Example: With Document-Specific Metadata
 
 ```bash
-python main_pipeline.py \
+python pipeline.py \
     --language eng \
     --category "educational" \
     --loader-path "./texts" \
@@ -101,7 +101,7 @@ python main_pipeline.py \
 #### Example: Upload to HuggingFace
 
 ```bash
-python main_pipeline.py \
+python pipeline.py \
     --language eng \
     --category "educational" \
     --loader-path "./texts" \
@@ -115,7 +115,7 @@ python main_pipeline.py \
 #### Example: With Preprocessing Enabled
 
 ```bash
-python main_pipeline.py \
+python pipeline.py \
     --language eng \
     --category "educational" \
     --loader-path "./my_text_files" \
@@ -128,7 +128,7 @@ python main_pipeline.py \
 #### Example: With Document-Specific Metadata and Preprocessing
 
 ```bash
-python main_pipeline.py \
+python pipeline.py \
     --language eng \
     --category "educational" \
     --loader-path "./texts" \
@@ -192,7 +192,7 @@ See `preprocessor.py` and `preprocessor_utils.py` for details.
 #### Example:
 
 ```bash
-python main_pipeline.py \
+python pipeline.py \
     --language ind \
     --category child-news \
     --loader-path ./articles_cleaned_txt \
