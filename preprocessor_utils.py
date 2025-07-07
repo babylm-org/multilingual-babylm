@@ -17,7 +17,7 @@ def normalize_punctuation(text: str) -> str:
     text = re.sub(r"[‘’‛`´′‵']", "'", text)
 
     # Normalize ellipsis ...
-    # look for sequences of dots and optional;uy spaces, then replaces with "..."
+    # look for sequences of dots and optional spaces, then replaces with "..."
     # Ensure these specific ellipsis chars are handled
     text = re.sub(r"[…‥]", "...", text)
     # moved here to handle a variety of ellipsis forms
