@@ -4,7 +4,7 @@
 # Recommended options included for: 
 # - language filtering
 # - text preprocessing
-# Fore more data loading options, see the example_usage.sh file
+# For more data loading options, see the example_usage.sh file
 python pipeline.py \
     --language eng\
     --script Latn \
