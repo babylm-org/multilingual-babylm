@@ -22,7 +22,6 @@ class HFDatasetUploader:
         self.token = token or os.getenv("HF_TOKEN")
         if not self.token:
             raise ValueError("HF_TOKEN not found. Set it in .env or pass directly.")
-            raise ValueError("HF_TOKEN not found. Set it in .env or pass directly.")
 
         self.api = HfApi(token=self.token)
 
