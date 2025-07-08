@@ -145,11 +145,11 @@ class BabyLMDatasetBuilder:
             try: 
                 doc_config = DocumentConfig(
                     category=metadata.get("category") or document_config_params.get("category"),
-                    data_source=metadata.get("data_source")
-                    or document_config_params.get("data_source"),
+                    data_source=metadata.get("data-source")
+                    or document_config_params.get("data-source"),
                     script=metadata.get("script") or document_config_params.get("script"),
-                    age_estimate=metadata.get("age_estimate")
-                    or document_config_params.get("age_estimate"),
+                    age_estimate=metadata.get("age-estimate")
+                    or document_config_params.get("age-estimate"),
                     license=metadata.get("license") or document_config_params.get("license"),
                     misc=misc,
                 )
@@ -158,9 +158,9 @@ class BabyLMDatasetBuilder:
 
             config_keys = {
                 "category",
-                "data_source",
+                "data-source",
                 "script",
-                "age_estimate",
+                "age-estimate",
                 "license",
                 "misc",
             }
@@ -217,7 +217,7 @@ class BabyLMDatasetBuilder:
             "dataset_name": self.dataset_config.dataset_name,
             "language_code": self.dataset_config.language_code,
             "creation_date": datetime.now().isoformat(),
-            "num_documents": len(self.documents),
+            "num_documents": len(self.dataset_table),
             "config": asdict(self.dataset_config),
         }
         self.metadata = metadata

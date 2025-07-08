@@ -221,11 +221,11 @@ def main():
         "script": args.script,
     }
     if args.data_source:
-        document_config_params["data_source"] = args.data_source
+        document_config_params["data-source"] = args.data_source
     if args.category:
         document_config_params["category"] = args.category
     if args.age_estimate:
-        document_config_params["age_estimate"] = args.age_estimate
+        document_config_params["age-estimate"] = args.age_estimate
     if args.license:
         document_config_params["license"] = args.license
     if args.misc:

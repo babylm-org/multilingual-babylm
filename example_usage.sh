@@ -27,20 +27,20 @@ cat > mixed_metadata.json << EOF
 {
   "story1": {
     "category": "child-books",
-    "age_estimate": "4-6",
-    "data_source": "PublicDomainStories",
+    "age-estimate": "4-6",
+    "data-source": "PublicDomainStories",
     "source_url": "https://example.com/story1"
   },
   "lesson1": {
     "category": "educational", 
-    "age_estimate": "8-10",
-    "data_source": "OpenEducation",
+    "age-estimate": "8-10",
+    "data-source": "OpenEducation",
     "license": "cc-by-sa"
   },
   "transcript1": {
     "category": "child-directed-speech",
-    "age_estimate": "2-4",
-    "data_source": "CHILDES"
+    "age-estimate": "2-4",
+    "data-source": "CHILDES"
   }
 }
 EOF
@@ -107,12 +107,12 @@ time python pipeline.py \
 # Example 8: Create a multi-age educational dataset
 cat > edu_metadata.json << EOF
 {
-  "kindergarten_lesson1": {"age_estimate": "4-5", "category": "educational"},
-  "kindergarten_lesson2": {"age_estimate": "4-5", "category": "educational"},
-  "elementary_lesson1": {"age_estimate": "6-8", "category": "educational"},
-  "elementary_lesson2": {"age_estimate": "6-8", "category": "educational"},
-  "middle_school_lesson1": {"age_estimate": "11-13", "category": "educational"},
-  "middle_school_lesson2": {"age_estimate": "11-13", "category": "educational"}
+  "kindergarten_lesson1": {"age-estimate": "4-5", "category": "educational"},
+  "kindergarten_lesson2": {"age-estimate": "4-5", "category": "educational"},
+  "elementary_lesson1": {"age-estimate": "6-8", "category": "educational"},
+  "elementary_lesson2": {"age-estimate": "6-8", "category": "educational"},
+  "middle_school_lesson1": {"age-estimate": "11-13", "category": "educational"},
+  "middle_school_lesson2": {"age-estimate": "11-13", "category": "educational"}
 }
 EOF
 
