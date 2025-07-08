@@ -177,14 +177,15 @@ class BabyLMDatasetBuilder:
                 "data-source": doc["data_source"],
                 "script": doc["script"],
                 "age-estimate": doc["age_estimate"],
-                "license": doc["license"]
+                "license": doc["license"],
+                "num_tokens": len(text.split())
             }
             
             # Add misc field if present
             if "misc" in doc and doc["misc"]:
                 row["misc"] = json.dumps(doc["misc"])
             else:
-                row["misc"] = None
+                row["misc"] = ""
                 
             rows.append(row)
         

@@ -71,28 +71,54 @@ class HFDatasetUploader:
         else:
             raise ValueError(f"No dataset files found in {dataset_dir}")
 
+        # Fix schema issues before uploading
+        if "misc" in df.columns:
+            # Convert None/null values to empty strings
+            df["misc"] = df["misc"].fillna("")
+            # Ensure all misc values are strings
+            df["misc"] = df["misc"].astype(str)
+        
         # Calculate token statistics
-        def count_tokens(text):
-            if not isinstance(text, str):
-                return 0
-            return len(text.split())
-
-        df["num_tokens"] = df["text"].apply(count_tokens)
-        total_tokens = int(df["num_tokens"].sum())
-        tokens_per_category = None
-        if "category" in df.columns:
-            tokens_per_category = df.groupby("category")["num_tokens"].sum().to_dict()
+        if "num_tokens" in df.columns:
+            total_tokens = int(df["num_tokens"].sum())
+            tokens_per_category = None
+            if "category" in df.columns:
+                tokens_per_category = df.groupby("category")["num_tokens"].sum().to_dict()
+        else:
+            # Fallback calculation if num_tokens column doesn't exist
+            def count_tokens(text):
+                if not isinstance(text, str):
+                    return 0
+                return len(text.split())
+            
+            df["num_tokens"] = df["text"].apply(count_tokens)
+            total_tokens = int(df["num_tokens"].sum())
+            tokens_per_category = None
+            if "category" in df.columns:
+                tokens_per_category = df.groupby("category")["num_tokens"].sum().to_dict()
 
         print(f"Total tokens in dataset: {total_tokens}")
         if tokens_per_category:
             print("Tokens per category:")
             for cat, tok in tokens_per_category.items():
                 print(f"  {cat}: {tok}")
-        else:
-            print("No 'category' column found in dataset.")
 
-        # Convert to HuggingFace Dataset
-        dataset = Dataset.from_pandas(df)
+        # Convert to HuggingFace Dataset with explicit features
+        from datasets import Dataset, Features, Value
+        
+        # Define the expected features explicitly
+        features = Features({
+            'text': Value('string'),
+            'category': Value('string'),
+            'data-source': Value('string'),
+            'script': Value('string'),
+            'age-estimate': Value('string'),
+            'license': Value('string'),
+            'misc': Value('string'),
+            'num_tokens': Value('int64'),  # Include num_tokens in schema
+        })
+        
+        dataset = Dataset.from_pandas(df, features=features)
 
         # Create DatasetDict with a single split
         dataset_dict = DatasetDict({"train": dataset})
@@ -236,6 +262,8 @@ dataset_info:
       dtype: string
     - name: misc
       dtype: string
+    - name: num_tokens
+      dtype: int64
 ---
 
 # {metadata.get('dataset_name', 'BabyLM Dataset')}
@@ -274,6 +302,7 @@ This dataset is part of the BabyLM multilingual collection.
 - `age-estimate`: Target age or age range
 - `license`: Data license
 - `misc`: Additional metadata (JSON string)
+- `num_tokens`: Number of tokens in the subtitle file
 
 ### Licensing Information
 

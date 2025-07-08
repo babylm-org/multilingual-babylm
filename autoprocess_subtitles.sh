@@ -2,10 +2,13 @@
 
 set -e
 
-LANG_LIST="af" # Update this list based on the languages you are uploading
+# Prompt user for language list
+read -p "Enter space-separated language codes (e.g., 'af ku'): " LANG_LIST
+read -p "Do you want to upload your data to HF after processing? (true/false) " UPLOAD
+
 
 DATA_DIR="prep_subtitles"
-UPLOAD=true  # Set to true or false as needed
+# UPLOAD=true  # Set to true or false as needed
 
 if [ ! -d "$DATA_DIR" ]; then
     FILE_BASENAME="title.basics.tsv"
@@ -52,7 +55,10 @@ do
         --age-estimate n/a \
         --license cc-by \
         --source-url https://opus.nlpl.eu/OpenSubtitles.php \
+        --misc {} \
         $UPLOAD_ARGS
+
+    rm -rf ./output
 done
 
 echo "Done."
