@@ -3,27 +3,39 @@ General dataset builder for BabyLM multilingual datasets.
 This can be used for any data source, not just OpenSubtitles.
 """
 
-import os
 import json
-from pathlib import Path
-from typing import List, Dict, Optional, Union
-import pandas as pd
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from datetime import datetime
+from pathlib import Path
+from typing import Optional, Any
+
+import pandas as pd
+from language_scripts import validate_script_code
 
 
 @dataclass
 class DocumentConfig:
     """Configuration for a single document in the BabyLM dataset."""
 
-    category: str  # One of the predefined categories
+    category: str  # e.g., child-directed-speech, educational, child-books, etc.
     data_source: str
-    script: str  # latin, cyrillic, etc.
+    script: str  # ISO 15924 code (e.g., Latn, Cyrl, Arab, etc.)
     age_estimate: str  # Specific age, range, or "n/a"
     license: str  # cc-by, cc-by-sa, etc.
-    misc: Optional[Dict[str, str]] = None
-    source_url: Optional[str] = None
-    source_identifier: Optional[str] = None
+    misc: Optional[dict] = None
+
+    def __post_init__(self):
+        """Post-initialization validation."""
+        self.validate_category()
+        self.validate_script()
+
+        # check for None values
+        if self.license is None:
+            raise ValueError("License must be specified.")
+        if self.data_source is None:
+            raise ValueError("Data source must be specified.")
+        if self.age_estimate is None:
+            raise ValueError("Age estimate must be specified.")
 
     def validate_category(self):
         """Validate that category is one of the allowed values."""
@@ -36,10 +48,19 @@ class DocumentConfig:
             "subtitles",
             "qed",
             "child-available-speech",
+            "simplified-text",
         }
         if self.category not in allowed_categories:
             raise ValueError(
                 f"Category '{self.category}' must be one of: {allowed_categories}"
+            )
+
+    def validate_script(self):
+        """Validate that script is a valid ISO 15924 code."""
+        if not validate_script_code(self.script):
+            raise ValueError(
+                f"Invalid script code '{self.script}'."
+                " Please use a valid ISO 15924 script code (e.g., Latn, Cyrl, Arab, etc.)"
             )
 
 
@@ -66,188 +87,152 @@ class BabyLMDatasetBuilder:
 
         self.output_dir = output_dir / self.dataset_config.dataset_name
         self.output_dir.mkdir(parents=True, exist_ok=True)
-
-        self.texts_dir = self.output_dir / "texts"
-        self.texts_dir.mkdir(exist_ok=True)
-
         self.metadata_path = self.output_dir / "dataset_metadata.json"
-        self.documents: List[Dict] = []
+
+        self.documents: list[dict] = []
 
     def add_document(
         self,
         text: str,
         document_id: str,
         document_config: DocumentConfig,
-        additional_metadata: Optional[Dict] = None,
+        additional_metadata: Optional[dict] = None,
     ) -> None:
         """Add a document to the dataset with its own configuration."""
-        # Validate document config
-        document_config.validate_category()
-
-        # Save text file
-        text_path = self.texts_dir / f"{document_id}.txt"
-        with open(text_path, "w", encoding="utf-8") as f:
-            f.write(text)
-
         # Create document metadata
-        doc_metadata = {
-            "document_id": document_id,
-            "text_file": str(text_path.relative_to(self.output_dir)),
-            "category": document_config.category,
-            "data_source": document_config.data_source,
-            "script": document_config.script,
-            "age_estimate": document_config.age_estimate,
-            "license": document_config.license,
+        document = {
+            "doc_id": document_id,
+            "document_config": document_config,
+            "text": text,  # Store the text content
         }
-
         # Add optional fields
-        if document_config.source_url:
-            doc_metadata["source_url"] = document_config.source_url
-        if document_config.source_identifier:
-            doc_metadata["source_identifier"] = document_config.source_identifier
         if document_config.misc:
-            doc_metadata["misc"] = document_config.misc
+            document["misc"] = document_config.misc
         if additional_metadata:
-            doc_metadata["additional_metadata"] = additional_metadata
+            document["additional_metadata"] = additional_metadata
 
-        self.documents.append(doc_metadata)
+        self.documents.append(document)
 
-    def add_documents_from_directory(
+    def add_documents_from_iterable(
         self,
-        texts_dir: Path,
-        default_document_config: DocumentConfig,
-        metadata_mapping: Optional[Dict[str, Dict]] = None,
+        documents,
+        document_config_params: dict[str, Any] = None,
     ) -> None:
         """
-        Add multiple documents from a directory of text files.
+        Add multiple documents from an iterable of dicts with 'text', 'doc_id', and 'metadata'.
 
         Args:
-            texts_dir: Directory containing text files
-            default_document_config: Default configuration for documents
-            metadata_mapping: Optional dict mapping document_id to metadata overrides
+            documents: List of dicts with keys 'text', 'doc_id', and 'metadata' (optional)
+            default_document_config: Default DocumentConfig for documents
         """
-        metadata_mapping = metadata_mapping or {}
+        for doc in documents:
+            text = doc["text"]
+            document_id = doc["doc_id"]
+            metadata = doc.get("metadata", {})
 
-        for text_file in texts_dir.glob("*.txt"):
-            document_id = text_file.stem
+            # Prepare misc, merging with existing misc if present
+            misc = metadata.get("misc", document_config_params.get('misc'))
+            if misc is None:
+                misc = {}
+            # Add source_url and source_identifier to misc if present
+            if "source_url" in metadata:
+                misc = dict(misc)  # ensure it's a dict copy
+                misc["source_url"] = metadata["source_url"]
+            if "source_identifier" in metadata:
+                misc = dict(misc)
+                misc["source_identifier"] = metadata["source_identifier"]
 
-            with open(text_file, "r", encoding="utf-8") as f:
-                text = f.read()
+            try: 
+                doc_config = DocumentConfig(
+                    category=metadata.get("category") or document_config_params.get("category"),
+                    data_source=metadata.get("data-source")
+                    or document_config_params.get("data-source"),
+                    script=metadata.get("script") or document_config_params.get("script"),
+                    age_estimate=metadata.get("age-estimate")
+                    or document_config_params.get("age-estimate"),
+                    license=metadata.get("license") or document_config_params.get("license"),
+                    misc=misc,
+                )
+            except ValueError as e:
+                raise ValueError(f"Error in configuration of document with id {document_id}: {e}")
 
-            # Check if there are metadata overrides for this document
-            doc_overrides = metadata_mapping.get(document_id, {})
-
-            # Create a copy of the default config
-            doc_config = DocumentConfig(
-                category=doc_overrides.get(
-                    "category", default_document_config.category
-                ),
-                data_source=doc_overrides.get(
-                    "data_source", default_document_config.data_source
-                ),
-                script=doc_overrides.get("script", default_document_config.script),
-                age_estimate=doc_overrides.get(
-                    "age_estimate", default_document_config.age_estimate
-                ),
-                license=doc_overrides.get("license", default_document_config.license),
-                misc=doc_overrides.get("misc", default_document_config.misc),
-                source_url=doc_overrides.get(
-                    "source_url", default_document_config.source_url
-                ),
-                source_identifier=doc_overrides.get(
-                    "source_identifier", default_document_config.source_identifier
-                ),
-            )
-
-            # Extract additional metadata (non-config fields)
-            additional_metadata = {
-                k: v
-                for k, v in doc_overrides.items()
-                if k
-                not in [
-                    "category",
-                    "data_source",
-                    "script",
-                    "age_estimate",
-                    "license",
-                    "misc",
-                    "source_url",
-                    "source_identifier",
-                ]
+            config_keys = {
+                "category",
+                "data-source",
+                "script",
+                "age-estimate",
+                "license",
+                "misc",
             }
-
+            additional_metadata = {
+                k: v for k, v in metadata.items() if k not in config_keys
+            }
             self.add_document(text, document_id, doc_config, additional_metadata)
-
-    def save_metadata(self) -> None:
-        """Save dataset metadata to JSON file."""
-        metadata = {
-            "dataset_name": self.dataset_config.dataset_name,
-            "language_code": self.dataset_config.language_code,
-            "creation_date": datetime.now().isoformat(),
-            "num_documents": len(self.documents),
-            "config": asdict(self.dataset_config),
-            "documents": self.documents,
-        }
-
-        with open(self.metadata_path, "w", encoding="utf-8") as f:
-            json.dump(metadata, f, indent=2, ensure_ascii=False)
-
-        print(f"Metadata saved to {self.metadata_path}")
 
     def create_dataset_table(self) -> pd.DataFrame:
         """Create the standardized BabyLM dataset table."""
         rows = []
-
         for doc in self.documents:
             # Read the text
-            text_path = self.output_dir / doc["text_file"]
-            with open(text_path, "r", encoding="utf-8") as f:
-                text = f.read()
+            text = doc["text"]
+            document_id = doc["doc_id"]
+            document_config = doc["document_config"]
 
             row = {
                 "text": text,
-                "category": doc["category"],
-                "data-source": doc["data_source"],
-                "script": doc["script"],
-                "age-estimate": doc["age_estimate"],
-                "license": doc["license"],
+                "doc_id": document_id,
+                "category": document_config.category,
+                "data-source": document_config.data_source,
+                "script": document_config.script,
+                "age-estimate": document_config.age_estimate,
+                "license": document_config.license,
             }
-
             # Add misc field if present
-            if "misc" in doc and doc["misc"]:
+            if doc.get("misc"):
                 row["misc"] = json.dumps(doc["misc"])
             else:
                 row["misc"] = None
-
             rows.append(row)
 
         df = pd.DataFrame(rows)
+        # save metadata
+        self.dataset_table = df
+        return df
 
+    def save_dataset(self) -> None:
         # Save as CSV and parquet for flexibility
         csv_path = self.output_dir / f"{self.dataset_config.dataset_name}_dataset.csv"
         parquet_path = (
             self.output_dir / f"{self.dataset_config.dataset_name}_dataset.parquet"
         )
 
-        df.to_csv(csv_path, index=False)
-        df.to_parquet(parquet_path, index=False)
+        self.dataset_table.to_csv(csv_path, index=False)
+        self.dataset_table.to_parquet(parquet_path, index=False)
 
-        print(f"Dataset table saved to:")
+        print("Dataset table saved to:")
         print(f"  - {csv_path}")
         print(f"  - {parquet_path}")
 
-        return df
+        metadata = {
+            "dataset_name": self.dataset_config.dataset_name,
+            "language_code": self.dataset_config.language_code,
+            "creation_date": datetime.now().isoformat(),
+            "num_documents": len(self.dataset_table),
+            "config": asdict(self.dataset_config),
+        }
+        self.metadata = metadata
 
-    def get_upload_ready_dataset(self) -> Dict[str, Union[pd.DataFrame, Dict]]:
+        with open(self.metadata_path, "w", encoding="utf-8") as f:
+            json.dump(self.metadata, f, indent=2, ensure_ascii=False)
+
+        print(f"Metadata saved to {self.metadata_path}")
+
+    def get_upload_ready_dataset(self) -> dict:
         """
         Get the dataset in a format ready for upload to HuggingFace.
 
         Returns:
             Dict with 'data' (DataFrame) and 'metadata' (Dict)
+
         """
-        df = self.create_dataset_table()
-
-        with open(self.metadata_path, "r") as f:
-            metadata = json.load(f)
-
-        return {"data": df, "metadata": metadata}
+        return {"data": self.dataset_table, "metadata": self.metadata}

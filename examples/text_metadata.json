@@ -1,0 +1,23 @@
+{
+  "story1": {
+    "category": "child-books",
+    "age-estimate": "4-6",
+    "data-source": "PublicDomainStories"
+  },
+  "lesson1": {
+    "category": "educational", 
+    "age-estimate": "8-10",
+    "data-source": "OpenEducation"
+  },
+  "transcript1": {
+    "category": "child-directed-speech",
+    "age-estimate": "2-4",
+    "data-source": "CHILDES"
+  },
+  "filter1": {
+    "category": "child-directed-speech",
+    "age-estimate": "2-4",
+    "data-source": "CHILDES"
+  }
+
+}
