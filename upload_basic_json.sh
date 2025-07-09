@@ -8,9 +8,11 @@
 python pipeline.py \
     --language eng\
     --script Latn \
-    --data-path "data/dataset.json" \
+    --data-path "examples/dataset.json" \
     --data-type "json" \
-    --enable-language-filter \
     --preprocess-text \
+    --enable-language-filter \
     --upload \
     --repo-id "username/babylm-eng"
+    #--pad-opensubtitles 
+    # if you want to pad your dataset with OpenSubtitles data

@@ -12,23 +12,27 @@ from typing import Optional
 from babylm_dataset_builder import BabyLMDatasetBuilder, DatasetConfig
 from hf_uploader import HFDatasetUploader
 from preprocessor import preprocess_dataset
-from language_filter import LanguageFilter, print_filtering_results
+from language_filter import filter_dataset_for_lang_and_script
 from language_scripts import validate_script_code
 from loader import get_loader
+from pad_dataset import pad_dataset_to_next_tier
 
+from iso639 import is_language
 
 def process_dataset(
     language_code: str,
+    script_code: str,
     data_path: Path,
     document_config_params: dict,
-    metadata_file: Optional[Path] = None,
-    upload: bool = False,
-    repo_id: Optional[str] = None,
-    preprocess_text: bool = False,
-    data_type: str = "text",
-    enable_language_filtering: bool = False,
-    language_filter_threshold: float = 0.8,
-    tokenizer_name: Optional[str] = None,
+    metadata_file: Optional[Path],
+    upload: bool,
+    repo_id: Optional[str],
+    preprocess_text: bool,
+    data_type: str,
+    enable_language_filtering: bool,
+    language_filter_threshold: float,
+    pad_opensubtitles: bool,
+    tokenizer_name: Optional[str],
 ) -> Path:
     """
     Process any data source into BabyLM format.
@@ -69,41 +73,43 @@ def process_dataset(
     # 3. Build dataset
     dataset_config = DatasetConfig(language_code=language_code)
     # Zzzz : default ISO 15924 value for Unknown or Unencoded
-    script_code = document_config_params.get("script", "Zzzz") 
-    if not validate_script_code(script_code):
-        raise ValueError(
-            f"Invalid script code '{script_code}'. Must be a valid ISO 15924 code (e.g., Latn, Cyrl, Arab, etc.)"
-        )
     builder = BabyLMDatasetBuilder(dataset_config)
     builder.add_documents_from_iterable(docs, document_config_params)
-    dataset_df = builder.create_dataset_table()
+    builder.create_dataset_table()
 
     # 4. Preprocess all texts (if requested)
     if preprocess_text:
-        dataset_df = preprocess_dataset(dataset_df)
-        builder.dataset_table = dataset_df
+        builder.dataset_table = preprocess_dataset(builder.dataset_table)
 
     # 5. Language filtering if enabled
     if enable_language_filtering:
-        lang_filter = LanguageFilter()
-        filter_results = lang_filter.filter_documents(
+        builder.dataset_table = filter_dataset_for_lang_and_script(
             builder.dataset_table,
-            expected_language=language_code,
-            expected_script=script_code,
-            min_confidence=language_filter_threshold,
+            language_code=language_code,
+            script_code=script_code,
+            language_filter_threshold=language_filter_threshold,
         )
-        print_filtering_results(filter_results, language_code, script_code)
-        # Only keep matching documents
-        matching_ids = set(filter_results["match_ids"])
-        builder.dataset_table = builder.dataset_table[
-            builder.dataset_table["doc_id"].isin(matching_ids)
-        ]
 
-    # 6. Save and create dataset
+    
+    # 6. Pad dataset to next tier, accounting for byte premium
+    if pad_opensubtitles:
+        results = pad_dataset_to_next_tier(
+            dataset_df=builder.dataset_table,
+            language_code=language_code,
+        )
+        builder.dataset_table = results["dataset"]
+        # Keep the byte premium factor and dataset size for metadata
+        builder.byte_premium_factor = results["byte_premium_factor"]
+        builder.dataset_size = results["dataset_size"]
+
+        # assume the padding dataset is filtered for language and script
+        # and has been preprocessed for the subtitles category
+
+    # 7. Save and create dataset
     builder.save_dataset()
     print(f"\nDataset created with {len(builder.dataset_table)} documents")
 
-    # 7. Upload if requested
+    # 8. Upload if requested
     if upload and repo_id:
         print(f"\nUploading to HuggingFace: {repo_id}")
         uploader = HFDatasetUploader()
@@ -202,6 +208,11 @@ def main():
     parser.add_argument(
         "--preprocess-text", action="store_true", help="Enable text preprocessing"
     )
+
+    parser.add_argument(
+        "--pad-opensubtitles", action="store_true", help="Enable padding with OpenSubtitles"
+    )
+
     parser.add_argument(
         "--tokenizer-name",
         type=str,
@@ -216,6 +227,10 @@ def main():
             f"Invalid script code '{args.script}'. Must be a valid ISO 15924 code (e.g., Latn, Cyrl, Arab, etc.)"
         )
 
+    if not is_language(args.language, "pt3"):
+        raise ValueError(
+            f"Invalid language code '{args.language}'. Must be a valid ISO 639-3 code."
+        )
 
     document_config_params = {
         "script": args.script,
@@ -233,6 +248,7 @@ def main():
 
     process_dataset(
         language_code=args.language,
+        script_code=args.script,
         data_path=args.data_path,
         document_config_params=document_config_params,
         metadata_file=args.metadata_file,
@@ -242,6 +258,7 @@ def main():
         data_type=args.data_type,
         enable_language_filtering=args.enable_language_filtering,
         language_filter_threshold=args.language_filter_threshold,
+        pad_opensubtitles=args.pad_opensubtitles,
         tokenizer_name=args.tokenizer_name,
     )
 

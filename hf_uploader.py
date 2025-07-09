@@ -245,9 +245,6 @@ class HFDatasetUploader:
 
         language = config.get("language_code", "unknown")
         script = infer_field("script")
-        category = infer_field("category")
-        source = infer_field("data_source", "source")
-        age_estimate = infer_field("age_estimate")
 
         # Create README content with correct YAML indentation
         readme_content = f"""---

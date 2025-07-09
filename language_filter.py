@@ -417,6 +417,34 @@ class LanguageFilter:
         return results
 
 
+
+
+def filter_dataset_for_lang_and_script(
+        dataset_table : pd.DataFrame,
+                    language_code: str,
+                    script_code: str,
+                    language_filter_threshold: float):
+
+    lang_filter = LanguageFilter()
+
+    filter_results = lang_filter.filter_documents(
+        dataset_table,
+        expected_language=language_code,
+        expected_script=script_code,
+        min_confidence=language_filter_threshold,
+    )
+
+    print_filtering_results(filter_results, language_code, script_code)
+    # Only keep matching documents
+
+    matching_ids = set(filter_results["match_ids"])
+    dataset_table = dataset_table[
+        dataset_table["doc_id"].isin(matching_ids)
+    ]
+
+    return dataset_table
+
+
 def print_filtering_results(
     results: dict, expected_language: str, expected_script: str
 ):
