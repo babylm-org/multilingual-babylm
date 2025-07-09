@@ -50,7 +50,9 @@ def process_dataset(
         data_type: Type of loader to use
         enable_language_filtering: Whether to enable language filtering
         language_filter_threshold: Minimum confidence for language filtering
+        pad_opensubtitles: Whether to pad dataset with OpenSubtitles
         tokenizer_name: Name of the tokenizer to use for token counting (for languages like Chinese, Japanese and Korean)
+        overwrite: Whether to overwrite existing dataset instead of merging
 
     Returns:
         Path to output directory
