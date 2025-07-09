@@ -103,6 +103,22 @@ def bytes_in_text(text: str) -> int:
     return len(text.encode('utf-8')) / 1_000_000  # Convert to MB
 
 
+def normalize_script(script: str) -> str:
+    """
+    Normalize script names to a consistent format.
+    """
+    if script == "Latin":
+        return "Latn"
+    elif script == "Cyrillic":
+        return "Cyrl"
+    elif script == "Arabic":
+        return "Arab"
+    elif script == "Chinese":
+        return "Hani"
+    # Add more normalizations as needed
+    return script
+
+
 def pad_dataset_to_next_tier(
         dataset_df: pd.DataFrame,
         language_code: str,
@@ -151,14 +167,11 @@ def pad_dataset_to_next_tier(
                 break
 
         padding_df = pd.DataFrame(selected_rows)
+        padding_df['script'] = padding_df['script'].apply(normalize_script)
 
         # pass through builder to validate documents
         docs_padding = dataframe_to_docs(padding_df)
 
-        # Hot Fix
-        for d in docs_padding:
-            if d["metadata"]["script"] == "Latin" : 
-                d["metadata"]["script"] = "Latn"
 
         dataset_padding_config = DatasetConfig(language_code=language_code)
         builder_padding = BabyLMDatasetBuilder(dataset_padding_config)
