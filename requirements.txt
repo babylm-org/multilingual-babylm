@@ -20,3 +20,6 @@ pyarrow>=11.0.0  # For parquet support
 # Optional but recommended
 lxml>=4.9.0  # Better XML parsing performance
 transformers>=4.30.0  # For loading tokenizers
+
+# Validate and process language codes
+iso639-lang>=2.6.1

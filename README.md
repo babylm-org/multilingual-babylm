@@ -22,8 +22,11 @@ This pipeline provides a flexible framework for:
 ├── hf_uploader.py               # HuggingFace upload utilities
 ├── language_filter.py           # Language and script filtering (GlotLID)
 ├── language_scripts.py          # ISO 15924 script code mapping utilities
+├── pad_dataset.py               # Padding with OpenSubtitles data
 ├── requirements.txt             # Python dependencies
+├── upload_basic_json.sh         # Basic usage with a .json dataset file
 └── example_usage.sh             # Usage examples
+
 ```
 
 ## Installation
@@ -70,18 +73,19 @@ Each dataset contains documents with the following fields:
 
 ### Basic Usage (Any Text Source)
 
-- Use `--loader-path` to specify the path to your data (directory or file).
-- Use `--loader-type` to specify the input format: `text`, `csv`, `json`, `jsonl`, or `hf` (HuggingFace dataset).
-- `--data-source` and `--age-estimate` are now optional. If not provided, they default to `unknown` and `n/a` respectively.
+- Use `--data-path` to specify the path to your data (directory or file).
+- Use `--data-type` to specify the input format: `text`, `csv`, `json`, `jsonl`, or `hf` (HuggingFace dataset).
+- `--data-source`, `--age-estimate`, `--license`, `--category` and `--misc` are optional. If provided, they supplement the document metadata by filling missing values. They never override document-specific metadata.
+- `--script` (in ISO 15924) and `--language` (in ISO 693-3) should always be provided.
 - After processing, the output HuggingFace-compatible dataset will be created in a new directory named `babylm-{language}` inside a parent folder called `babylm_datasets` (e.g., `babylm_datasets/babylm-eng/`).
 
 ```bash
 python pipeline.py \
     --language eng \
-    --category "educational" \
-    --loader-path "./my_text_files" \
-    --loader-type text \
     --script Latn \
+    --category "educational" \
+    --data-path "./my_text_files" \
+    --data-type text \
     --license "cc-by"
 ```
 
@@ -90,10 +94,10 @@ python pipeline.py \
 ```bash
 python pipeline.py \
     --language eng \
-    --category "educational" \
-    --loader-path "./texts" \
-    --loader-type text \
     --script Latn \
+    --category "educational" \
+    --data-path "./texts" \
+    --data-type text \
     --license "cc-by" \
     --metadata-file "./document_metadata.json"
 ```
@@ -103,10 +107,10 @@ python pipeline.py \
 ```bash
 python pipeline.py \
     --language eng \
-    --category "educational" \
-    --loader-path "./texts" \
-    --loader-type text \
     --script Latn \
+    --category "educational" \
+    --data-path "./texts" \
+    --data-type text \
     --license "cc-by" \
     --upload \
     --repo-id "username/babylm-eng"
@@ -117,10 +121,10 @@ python pipeline.py \
 ```bash
 python pipeline.py \
     --language eng \
-    --category "educational" \
-    --loader-path "./my_text_files" \
-    --loader-type text \
     --script Latn \
+    --category "educational" \
+    --data-path "./my_text_files" \
+    --data-type text \
     --license "cc-by" \
     --preprocess-text
 ```
@@ -130,10 +134,10 @@ python pipeline.py \
 ```bash
 python pipeline.py \
     --language eng \
-    --category "educational" \
-    --loader-path "./texts" \
-    --loader-type text \
     --script Latn \
+    --category "educational" \
+    --data-path "./texts" \
+    --data-type text \
     --license "cc-by" \
     --metadata-file "./document_metadata.json" \
     --preprocess-text
@@ -145,7 +149,7 @@ python pipeline.py \
 - `csv`: CSV file (each row is a document)
 - `json`: JSON file (list of dicts, each dict is a document)
 - `jsonl`: JSON Lines file (each line is a JSON dict)
-- `hf`: HuggingFace dataset (specify path to dataset or dataset ID in `--loader-path`)
+- `hf`: HuggingFace dataset (specify path to dataset or dataset ID in `--data-path`)
 
 ### Preprocessing Steps
 
@@ -194,10 +198,10 @@ See `preprocessor.py` and `preprocessor_utils.py` for details.
 ```bash
 python pipeline.py \
     --language ind \
-    --category child-news \
-    --loader-path ./articles_cleaned_txt \
-    --loader-type text \
     --script Latn \
+    --category child-news \
+    --data-path ./articles_cleaned_txt \
+    --data-type text \
     --license cc-by \
     --enable-language-filtering \
     --language-filter-threshold 0.8
@@ -205,6 +209,23 @@ python pipeline.py \
 
 - Matching files will be used for dataset creation.
 - Mismatched files are excluded from the final dataset.
+
+
+### Pad with OpenSubtitles data
+
+```bash
+python pipeline.py \
+    --language ind \
+    --script Latn \
+    --category child-news \
+    --data-path ./articles_cleaned_txt \
+    --data-type text \
+    --license cc-by \
+    --pad-opensubtitles
+```
+- Uses subtitle data from the coressponding HF repo: `BabyLM-community/babylm-{lang_code}-subtitles`, where lang_code is the ISO 639-1 code for the language specified in `--language`.
+- Use Byte Premium factorsto calculate the required padding dataset size for a 100M words of English equivalent dataset  [(paper link)](https://aclanthology.org/2024.sigul-1.1.pdf).
+
 
 ## Output Structure
 

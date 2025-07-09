@@ -79,9 +79,25 @@ time python pipeline.py \
     --upload \
     --repo-id "username/babylm-ind"
 
+
+
+# Example 6: Pad dataset with OpenSubtitles data
+# taking into account byte premiums
+time python pipeline.py \
+    --language ind \
+    --script Latn \
+    --data-path ./articles_cleaned.json \
+    --data-type json \
+    --preprocess-text \
+    --enable-language-filtering \
+    --language-filter-threshold 0.8 \
+    --upload \
+    --repo-id "username/babylm-ind" \
+    --pad-opensubtitles # add padding with opensubtitles data
+
 # ========== Examples for specific datasets ==========
 
-# Example 6: Process subtitles
+# Example 7: Process subtitles
 time python pipeline.py \
     --language deu \
     --script Latn \
@@ -94,7 +110,7 @@ time python pipeline.py \
     --misc '{"source_url": "https://example.com/german_subs"}'
 
 
-# Example 7: Process CHILDES transcripts
+# Example 8: Process CHILDES transcripts
 time python pipeline.py \
     --language nld \
     --script Latn \
@@ -104,7 +120,7 @@ time python pipeline.py \
     --license "cc-by-sa" \
     --metadata-file "./childes_metadata.json"
 
-# Example 8: Create a multi-age educational dataset
+# Example 9: Create a multi-age educational dataset
 cat > edu_metadata.json << EOF
 {
   "kindergarten_lesson1": {"age-estimate": "4-5", "category": "educational"},

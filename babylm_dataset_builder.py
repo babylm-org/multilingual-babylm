@@ -22,7 +22,7 @@ class DocumentConfig:
     script: str  # ISO 15924 code (e.g., Latn, Cyrl, Arab, etc.)
     age_estimate: str  # Specific age, range, or "n/a"
     license: str  # cc-by, cc-by-sa, etc.
-    misc: Optional[dict] = None
+    misc: str 
 
     def __post_init__(self):
         """Post-initialization validation."""
@@ -142,6 +142,10 @@ class BabyLMDatasetBuilder:
                 misc = dict(misc)
                 misc["source_identifier"] = metadata["source_identifier"]
 
+            # Ensure misc is a valid string
+            if misc is None:
+                misc = ""
+
             try: 
                 doc_config = DocumentConfig(
                     category=metadata.get("category") or document_config_params.get("category"),
@@ -153,6 +157,7 @@ class BabyLMDatasetBuilder:
                     license=metadata.get("license") or document_config_params.get("license"),
                     misc=misc,
                 )
+
             except ValueError as e:
                 raise ValueError(f"Error in configuration of document with id {document_id}: {e}")
 
