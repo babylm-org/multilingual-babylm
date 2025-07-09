@@ -22,7 +22,7 @@ class DocumentConfig:
     script: str  # ISO 15924 code (e.g., Latn, Cyrl, Arab, etc.)
     age_estimate: str  # Specific age, range, or "n/a"
     license: str  # cc-by, cc-by-sa, etc.
-    misc: str 
+    misc: str
 
     def __post_init__(self):
         """Post-initialization validation."""
@@ -82,14 +82,39 @@ class BabyLMDatasetBuilder:
         self,
         dataset_config: DatasetConfig,
         output_dir: Path = Path("./babylm_datasets"),
+        merge_existing: bool = True,  # Merge with existing data by default
     ):
         self.dataset_config = dataset_config
-
         self.output_dir = output_dir / self.dataset_config.dataset_name
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.metadata_path = self.output_dir / "dataset_metadata.json"
-
         self.documents: list[dict] = []
+        self.dataset_table = None
+
+        # Load existing data if present and merge later
+        self._existing_doc_ids = set()
+        self._existing_documents = []
+        if merge_existing:
+            csv_path = (
+                self.output_dir / f"{self.dataset_config.dataset_name}_dataset.csv"
+            )
+            parquet_path = (
+                self.output_dir / f"{self.dataset_config.dataset_name}_dataset.parquet"
+            )
+            if csv_path.exists():
+                try:
+                    existing_df = pd.read_csv(csv_path)
+                    self._existing_doc_ids = set(existing_df["doc_id"].astype(str))
+                    self._existing_documents = existing_df.to_dict(orient="records")
+                except Exception as e:
+                    print(f"Warning: Could not load existing CSV: {e}")
+            elif parquet_path.exists():
+                try:
+                    existing_df = pd.read_parquet(parquet_path)
+                    self._existing_doc_ids = set(existing_df["doc_id"].astype(str))
+                    self._existing_documents = existing_df.to_dict(orient="records")
+                except Exception as e:
+                    print(f"Warning: Could not load existing Parquet: {e}")
 
     def add_document(
         self,
@@ -99,6 +124,9 @@ class BabyLMDatasetBuilder:
         additional_metadata: Optional[dict] = None,
     ) -> None:
         """Add a document to the dataset with its own configuration."""
+        # Avoid duplicates by doc_id
+        if hasattr(self, "_existing_doc_ids") and document_id in self._existing_doc_ids:
+            return  # Skip duplicate
         # Create document metadata
         document = {
             "doc_id": document_id,
@@ -131,7 +159,7 @@ class BabyLMDatasetBuilder:
             metadata = doc.get("metadata", {})
 
             # Prepare misc, merging with existing misc if present
-            misc = metadata.get("misc", document_config_params.get('misc'))
+            misc = metadata.get("misc", document_config_params.get("misc"))
             if misc is None:
                 misc = {}
             # Add source_url and source_identifier to misc if present
@@ -146,20 +174,25 @@ class BabyLMDatasetBuilder:
             if misc is None:
                 misc = ""
 
-            try: 
+            try:
                 doc_config = DocumentConfig(
-                    category=metadata.get("category") or document_config_params.get("category"),
+                    category=metadata.get("category")
+                    or document_config_params.get("category"),
                     data_source=metadata.get("data-source")
                     or document_config_params.get("data-source"),
-                    script=metadata.get("script") or document_config_params.get("script"),
+                    script=metadata.get("script")
+                    or document_config_params.get("script"),
                     age_estimate=metadata.get("age-estimate")
                     or document_config_params.get("age-estimate"),
-                    license=metadata.get("license") or document_config_params.get("license"),
+                    license=metadata.get("license")
+                    or document_config_params.get("license"),
                     misc=misc,
                 )
 
             except ValueError as e:
-                raise ValueError(f"Error in configuration of document with id {document_id}: {e}")
+                raise ValueError(
+                    f"Error in configuration of document with id {document_id}: {e}"
+                )
 
             config_keys = {
                 "category",
@@ -177,6 +210,10 @@ class BabyLMDatasetBuilder:
     def create_dataset_table(self) -> pd.DataFrame:
         """Create the standardized BabyLM dataset table."""
         rows = []
+        # Add existing documents first (if any)
+        if hasattr(self, "_existing_documents") and self._existing_documents:
+            rows.extend(self._existing_documents)
+        # Add new documents
         for doc in self.documents:
             # Read the text
             text = doc["text"]
@@ -198,9 +235,9 @@ class BabyLMDatasetBuilder:
             else:
                 row["misc"] = None
             rows.append(row)
-
         df = pd.DataFrame(rows)
-        # save metadata
+        # Remove duplicates by doc_id (keep first occurrence)
+        df = df.drop_duplicates(subset=["doc_id"])
         self.dataset_table = df
         return df
 
