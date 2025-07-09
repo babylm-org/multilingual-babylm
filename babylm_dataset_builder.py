@@ -104,6 +104,9 @@ class BabyLMDatasetBuilder:
             if csv_path.exists():
                 try:
                     existing_df = pd.read_csv(csv_path)
+                    print(
+                        f"Loaded existing data (CSV) with {len(existing_df)} documents."
+                    )
                     self._existing_doc_ids = set(existing_df["doc_id"].astype(str))
                     self._existing_documents = existing_df.to_dict(orient="records")
                 except Exception as e:
@@ -111,6 +114,9 @@ class BabyLMDatasetBuilder:
             elif parquet_path.exists():
                 try:
                     existing_df = pd.read_parquet(parquet_path)
+                    print(
+                        f"Loaded existing data (Parquet) with {len(existing_df)} documents."
+                    )
                     self._existing_doc_ids = set(existing_df["doc_id"].astype(str))
                     self._existing_documents = existing_df.to_dict(orient="records")
                 except Exception as e:
