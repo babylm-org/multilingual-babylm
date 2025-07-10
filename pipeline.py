@@ -37,6 +37,7 @@ def process_dataset(
     tokenizer_name: Optional[str],
     overwrite: bool = False,
     add_ririro_data: bool = False,  # new arg
+    add_glotstorybook_data: bool = False,  # new arg
 ) -> Path:
     """
     Process any data source into BabyLM format.
@@ -56,6 +57,7 @@ def process_dataset(
         tokenizer_name: Name of the tokenizer to use for token counting (for languages like Chinese, Japanese and Korean)
         overwrite: Whether to overwrite existing dataset instead of merging
         add_ririro_data: Whether to add Ririro resource for the language
+        add_glotstorybook_data: Whether to add GlotStoryBook resource for the language
 
     Returns:
         Path to output directory
@@ -68,6 +70,11 @@ def process_dataset(
         print(f"Fetching Ririro resource for language: {language_code}")
         ririro_docs = fetch_resource("ririro", language_code)
         docs.extend(ririro_docs)
+    # 0.1 Optionally fetch GlotStoryBook resource
+    if add_glotstorybook_data:
+        print(f"Fetching GlotStoryBook resource for language: {language_code}")
+        glotstorybook_docs = fetch_resource("glotstorybook", language_code)
+        docs.extend(glotstorybook_docs)
 
     # 1. Load data using loader
     loader = get_loader(data_type)
@@ -98,12 +105,12 @@ def process_dataset(
 
     # 4. Preprocess all texts (if requested)
     if preprocess_text:
-        builder.dataset_table = preprocess_dataset(builder.dataset_table)
+        builder.dataset_table = preprocess_dataset(builder.dataset_table)  # type: ignore
 
     # 5. Language filtering if enabled
     if enable_language_filtering:
         builder.dataset_table = filter_dataset_for_lang_and_script(
-            builder.dataset_table,
+            builder.dataset_table,  # type: ignore
             language_code=language_code,
             script_code=script_code,
             language_filter_threshold=language_filter_threshold,
@@ -112,13 +119,13 @@ def process_dataset(
     # 6. Pad dataset to next tier, accounting for byte premium
     if pad_opensubtitles:
         results = pad_dataset_to_next_tier(
-            dataset_df=builder.dataset_table,
+            dataset_df=builder.dataset_table,  # type: ignore
             language_code=language_code,
         )
         builder.dataset_table = results["dataset"]
         # Keep the byte premium factor and dataset size for metadata
-        builder.byte_premium_factor = results["byte_premium_factor"]
-        builder.dataset_size = results["dataset_size"]
+        builder.byte_premium_factor = results["byte_premium_factor"]  # type: ignore
+        builder.dataset_size = results["dataset_size"]  # type: ignore
 
         # assume the padding dataset is filtered for language and script
         # and has been preprocessed for the subtitles category
@@ -129,7 +136,7 @@ def process_dataset(
 
     # 7. Save and create dataset
     builder.save_dataset()
-    print(f"\nDataset created with {len(builder.dataset_table)} documents")
+    print(f"\nDataset created with {len(builder.dataset_table)} documents")  # type: ignore
 
     # 8. Upload if requested
     if upload and repo_id:
@@ -253,6 +260,11 @@ def main():
         action="store_true",
         help="If set, fetch and add Ririro resource for the given language before processing other data.",
     )
+    parser.add_argument(
+        "--add-glotstorybook-data",
+        action="store_true",
+        help="If set, fetch and add GlotStoryBook resource for the given language before processing other data.",
+    )
 
     args = parser.parse_args()
 
@@ -296,6 +308,7 @@ def main():
         tokenizer_name=args.tokenizer_name,
         overwrite=args.overwrite,
         add_ririro_data=args.add_ririro_data,
+        add_glotstorybook_data=args.add_glotstorybook_data,
     )
 
 
