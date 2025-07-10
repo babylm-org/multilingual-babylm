@@ -144,6 +144,29 @@ python pipeline.py \
     --preprocess-text
 ```
 
+### Multilingual Resource Integration
+
+You can automatically fetch and add public multilingual resources to your dataset using the following options:
+
+- `--add-ririro-data`: Fetch and add Ririro children's books for the specified language.
+- `--add-glotstorybook-data`: Fetch and add GlotStoryBook storybooks for the specified language.
+- `--add-childwiki-data`: Fetch and add ChildWiki child-friendly wiki content for the specified language.
+
+These options can be combined with any other data source. The fetched documents will be merged and deduplicated with your own data.
+
+**Example:**
+
+```bash
+python pipeline.py \
+    --language eng \
+    --script Latn \
+    --data-path ./my_text_files \
+    --data-type text \
+    --add-ririro-data \
+    --add-glotstorybook-data \
+    --add-childwiki-data
+```
+
 ### Dataset Overwrite and Merging Behavior
 
 - **Default:** If a dataset with the same language already exists in the output directory, new data will be merged with the existing dataset. Duplicate documents (by content) will be automatically deduplicated by `doc_id`.
