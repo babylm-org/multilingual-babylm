@@ -78,6 +78,7 @@ Each dataset contains documents with the following fields:
 - `--data-source`, `--age-estimate`, `--license`, `--category` and `--misc` are optional. If provided, they supplement the document metadata by filling missing values. They never override document-specific metadata.
 - `--script` (in ISO 15924) and `--language` (in ISO 693-3) should always be provided.
 - After processing, the output HuggingFace-compatible dataset will be created in a new directory named `babylm-{language}` inside a parent folder called `babylm_datasets` (e.g., `babylm_datasets/babylm-eng/`).
+- **By default, new data will be merged with any existing dataset. To overwrite, use `--overwrite`.**
 
 ```bash
 python pipeline.py \
@@ -141,6 +142,22 @@ python pipeline.py \
     --license "cc-by" \
     --metadata-file "./document_metadata.json" \
     --preprocess-text
+```
+
+### Dataset Overwrite and Merging Behavior
+
+- **Default:** If a dataset with the same language already exists in the output directory, new data will be merged with the existing dataset. Duplicate documents (by content) will be automatically deduplicated by `doc_id`.
+- **Overwrite:** To overwrite and replace the existing dataset entirely (instead of merging), pass the `--overwrite` flag to the pipeline:
+
+```bash
+python pipeline.py \
+    --language eng \
+    --script Latn \
+    --category "educational" \
+    --data-path "./my_text_files" \
+    --data-type text \
+    --license "cc-by" \
+    --overwrite
 ```
 
 ### Loader Types
@@ -210,7 +227,6 @@ python pipeline.py \
 - Matching files will be used for dataset creation.
 - Mismatched files are excluded from the final dataset.
 
-
 ### Pad with OpenSubtitles data
 
 ```bash
@@ -223,9 +239,9 @@ python pipeline.py \
     --license cc-by \
     --pad-opensubtitles
 ```
-- Uses subtitle data from the coressponding HF repo: `BabyLM-community/babylm-{lang_code}-subtitles`, where lang_code is the ISO 639-1 code for the language specified in `--language`.
-- Use Byte Premium factorsto calculate the required padding dataset size for a 100M words of English equivalent dataset  [(paper link)](https://aclanthology.org/2024.sigul-1.1.pdf).
 
+- Uses subtitle data from the coressponding HF repo: `BabyLM-community/babylm-{lang_code}-subtitles`, where lang_code is the ISO 639-1 code for the language specified in `--language`.
+- Use Byte Premium factorsto calculate the required padding dataset size for a 100M words of English equivalent dataset [(paper link)](https://aclanthology.org/2024.sigul-1.1.pdf).
 
 ## Output Structure
 

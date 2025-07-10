@@ -1,5 +1,6 @@
 import csv
 import json
+import hashlib
 from pathlib import Path
 from typing import List, Dict, Any, Optional
 from datasets import load_from_disk, load_dataset
@@ -20,8 +21,10 @@ class TextDirLoader(BaseLoader):
         docs = []
         for txt_file in sorted(source_path.glob("*.txt")):
             with open(txt_file, "r", encoding="utf-8") as f:
-                doc_id = txt_file.stem  # Use filename without .txt
-                docs.append({"text": f.read(), "doc_id": doc_id, "metadata": {}})
+                text = f.read()
+                file_name = txt_file.stem
+                doc_id = generate_doc_id(text)
+                docs.append({"text": text, "doc_id": doc_id, "file_name": file_name, "metadata": {}})
         return docs
 
 
@@ -38,11 +41,11 @@ class CSVLoader(BaseLoader):
                 if not text:
                     continue
                 meta = {k: v for k, v in row.items() if k != self.text_field}
-                doc_id = row.get("doc_id") or row.get("id") or None
+                doc_id = row.get("doc_id") or row.get("id") or generate_doc_id(text)
                 docs.append(
                     {
                         "text": text,
-                        "doc_id": doc_id if doc_id is not None else str(i),
+                        "doc_id": doc_id,
                         "metadata": meta,
                     }
                 )
@@ -68,11 +71,11 @@ class JSONLoader(BaseLoader):
             if not text:
                 continue
             meta = {k: v for k, v in row.items() if k != self.text_field}
-            doc_id = row.get("doc_id") or row.get("id") or None
+            doc_id = row.get("doc_id") or row.get("id") or generate_doc_id(text)
             docs.append(
                 {
                     "text": text,
-                    "doc_id": doc_id if doc_id is not None else str(i),
+                    "doc_id": doc_id,
                     "metadata": meta,
                 }
             )
@@ -97,11 +100,11 @@ class JSONLLoader(BaseLoader):
                 if not text:
                     continue
                 meta = {k: v for k, v in row.items() if k != self.text_field}
-                doc_id = row.get("doc_id") or row.get("id") or None
+                doc_id = row.get("doc_id") or row.get("id") or generate_doc_id(text)
                 docs.append(
                     {
                         "text": text,
-                        "doc_id": doc_id if doc_id is not None else str(i),
+                        "doc_id": doc_id,
                         "metadata": meta,
                     }
                 )
@@ -136,23 +139,28 @@ class HFLoader(BaseLoader):
             if isinstance(row, dict):
                 text = row.get(self.text_field, "")
                 meta = {k: v for k, v in row.items() if k != self.text_field}
-                doc_id = row.get("doc_id") or row.get("id") or None
+                doc_id = row.get("doc_id") or row.get("id") or generate_doc_id(text)
             else:
                 text = getattr(row, self.text_field, "")
                 meta = {k: v for k, v in row.__dict__.items() if k != self.text_field}
                 doc_id = (
-                    getattr(row, "doc_id", None) or getattr(row, "id", None) or None
+                    getattr(row, "doc_id", None) or getattr(row, "id", None) or generate_doc_id(text)
                 )
             if not text:
                 continue
             docs.append(
                 {
                     "text": text,
-                    "doc_id": doc_id if doc_id is not None else str(i),
+                    "doc_id": doc_id,
                     "metadata": meta,
                 }
             )
         return docs
+
+
+def generate_doc_id(text: str) -> str:
+    """Generate a deterministic unique ID from text content (SHA256)."""
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
 def get_loader(loader_type, **kwargs):

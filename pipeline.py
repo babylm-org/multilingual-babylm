@@ -19,6 +19,7 @@ from pad_dataset import pad_dataset_to_next_tier
 
 from iso639 import is_language
 
+
 def process_dataset(
     language_code: str,
     script_code: str,
@@ -33,6 +34,7 @@ def process_dataset(
     language_filter_threshold: float,
     pad_opensubtitles: bool,
     tokenizer_name: Optional[str],
+    overwrite: bool = False,
 ) -> Path:
     """
     Process any data source into BabyLM format.
@@ -48,7 +50,9 @@ def process_dataset(
         data_type: Type of loader to use
         enable_language_filtering: Whether to enable language filtering
         language_filter_threshold: Minimum confidence for language filtering
+        pad_opensubtitles: Whether to pad dataset with OpenSubtitles
         tokenizer_name: Name of the tokenizer to use for token counting (for languages like Chinese, Japanese and Korean)
+        overwrite: Whether to overwrite existing dataset instead of merging
 
     Returns:
         Path to output directory
@@ -66,14 +70,19 @@ def process_dataset(
             metadata_mapping = json.load(f)
     # Metadata file overrides document-level metadata
     for doc in docs:
-        doc_id = doc["doc_id"]
-        if doc_id in metadata_mapping:
-            doc["metadata"].update(metadata_mapping[doc_id])
+        # Use file_name for mapping if present, else doc_id
+        meta_key = doc.get("file_name") or doc["doc_id"]
+        if meta_key in metadata_mapping:
+            doc["metadata"].update(metadata_mapping[meta_key])
+    # Remove 'file_name' field before passing to builder
+    for doc in docs:
+        if "file_name" in doc:
+            del doc["file_name"]
 
     # 3. Build dataset
     dataset_config = DatasetConfig(language_code=language_code)
     # Zzzz : default ISO 15924 value for Unknown or Unencoded
-    builder = BabyLMDatasetBuilder(dataset_config)
+    builder = BabyLMDatasetBuilder(dataset_config, merge_existing=not overwrite)
     builder.add_documents_from_iterable(docs, document_config_params)
     builder.create_dataset_table()
 
@@ -90,7 +99,6 @@ def process_dataset(
             language_filter_threshold=language_filter_threshold,
         )
 
-    
     # 6. Pad dataset to next tier, accounting for byte premium
     if pad_opensubtitles:
         results = pad_dataset_to_next_tier(
@@ -133,7 +141,9 @@ def main():
         "--language", "-l", required=True, help="ISO 639-3 language code"
     )
     parser.add_argument(
-        "--script", required=True, help="Must be a valid ISO 15924 code (e.g., Latn, Cyrl, Arab, etc.)"
+        "--script",
+        required=True,
+        help="Must be a valid ISO 15924 code (e.g., Latn, Cyrl, Arab, etc.)",
     )
     parser.add_argument(
         "--data-path",
@@ -178,13 +188,11 @@ def main():
         type=str,
         help="Age estimate (e.g., '4', '12-17', 'n/a')",
     )
-    parser.add_argument(
-        "--license", help="License (e.g., cc-by, cc-by-sa)"
-    )
+    parser.add_argument("--license", help="License (e.g., cc-by, cc-by-sa)")
     parser.add_argument(
         "--misc", type=json.loads, help="Additional metadata as JSON string"
     )
-    
+
     parser.add_argument(
         "--metadata-file", type=Path, help="JSON file with document metadata"
     )
@@ -210,7 +218,9 @@ def main():
     )
 
     parser.add_argument(
-        "--pad-opensubtitles", action="store_true", help="Enable padding with OpenSubtitles"
+        "--pad-opensubtitles",
+        action="store_true",
+        help="Enable padding with OpenSubtitles",
     )
 
     parser.add_argument(
@@ -218,6 +228,11 @@ def main():
         type=str,
         default=None,
         help="Name of the tokenizer to use for token counting (for languages like Chinese, Japanese and Korean)",
+    )
+    parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Overwrite existing dataset instead of merging",
     )
 
     args = parser.parse_args()
@@ -260,6 +275,7 @@ def main():
         language_filter_threshold=args.language_filter_threshold,
         pad_opensubtitles=args.pad_opensubtitles,
         tokenizer_name=args.tokenizer_name,
+        overwrite=args.overwrite,
     )
 
 
