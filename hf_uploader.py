@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 from typing import Optional
 
+import hashlib
 import pandas as pd
 from datasets import Dataset, DatasetDict, load_dataset
 from datasets.exceptions import DatasetNotFoundError
@@ -84,7 +85,12 @@ class HFDatasetUploader:
                     repo_id, token=self.token, split="train"
                 ).to_pandas()
                 if isinstance(prev_data, pd.DataFrame) and isinstance(df, pd.DataFrame):
+                    print(
+                        f"Merging with existing data from {repo_id} (rows: {len(prev_data)})..."
+                    )
                     df = pd.concat([prev_data, df], ignore_index=True)
+                    print("Running deduplication on merged dataset...")
+                    df = self._deduplicate_by_text(df)
                 else:
                     raise TypeError(
                         "Both previous data and new data must be pandas DataFrames."
@@ -160,6 +166,23 @@ class HFDatasetUploader:
         print(
             f"Dataset successfully uploaded to https://huggingface.co/datasets/{repo_id}"
         )
+
+    def _deduplicate_by_text(self, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Remove exact duplicate documents based on the hash of the text field.
+        Keeps the first occurrence of each unique text.
+        """
+        before = len(df)
+        df["text_hash"] = df["text"].apply(
+            lambda x: hashlib.sha256(str(x).encode("utf-8")).hexdigest()
+        )
+        df = df.drop_duplicates(subset=["text_hash"])
+        df = df.drop(columns=["text_hash"])
+        after = len(df)
+        print(
+            f"Deduplicated merged dataset: removed {before - after} duplicates, {after} remain."
+        )
+        return df
 
     def _create_dataset_card(
         self,

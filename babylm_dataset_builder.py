@@ -9,6 +9,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional, Any
 
+import hashlib
 import pandas as pd
 from language_scripts import validate_script_code
 
@@ -284,3 +285,26 @@ class BabyLMDatasetBuilder:
 
         """
         return {"data": self.dataset_table, "metadata": self.metadata}
+
+    def deduplicate_by_text(self) -> None:
+        """
+        Remove exact duplicate documents based on the hash of the text field.
+        Keeps the first occurrence of each unique text.
+        Updates self.dataset_table in place.
+        """
+
+        if self.dataset_table is None or "text" not in self.dataset_table:
+            print("No dataset_table or 'text' column to deduplicate.")
+            return
+        before = len(self.dataset_table)
+        # Compute hash for each text
+        self.dataset_table["text_hash"] = self.dataset_table["text"].apply(
+            lambda x: hashlib.sha256(str(x).encode("utf-8")).hexdigest()
+        )
+        # Drop duplicates by text_hash
+        self.dataset_table = self.dataset_table.drop_duplicates(subset=["text_hash"])
+        self.dataset_table = self.dataset_table.drop(columns=["text_hash"])
+        after = len(self.dataset_table)
+        print(
+            f"Deduplicated dataset: removed {before - after} duplicates, {after} remain."
+        )

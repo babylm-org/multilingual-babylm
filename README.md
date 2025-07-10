@@ -160,6 +160,11 @@ python pipeline.py \
     --overwrite
 ```
 
+- **Deduplication:** The pipeline automatically removes exact duplicate documents based on the final (preprocessed) text content. Deduplication is performed:
+  - Before saving the dataset, after all preprocessing, filtering, and optional padding steps.
+  - When merging with existing datasets (e.g., on repeated runs or uploads), deduplication is also applied to the combined data to ensure no duplicate documents remain, even across multiple runs.
+  - Deduplication uses a SHA256 hash of the final text, so only truly identical documents are removed.
+
 ### Loader Types
 
 - `text`: Directory of `.txt` files (each file is a document)
