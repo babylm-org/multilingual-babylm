@@ -16,6 +16,7 @@ from language_filter import filter_dataset_for_lang_and_script
 from language_scripts import validate_script_code
 from loader import get_loader
 from pad_dataset import pad_dataset_to_next_tier
+from multilingual_res.manager import fetch_resource
 
 from iso639 import is_language
 
@@ -35,6 +36,7 @@ def process_dataset(
     pad_opensubtitles: bool,
     tokenizer_name: Optional[str],
     overwrite: bool = False,
+    add_ririro_data: bool = False,  # new arg
 ) -> Path:
     """
     Process any data source into BabyLM format.
@@ -53,15 +55,23 @@ def process_dataset(
         pad_opensubtitles: Whether to pad dataset with OpenSubtitles
         tokenizer_name: Name of the tokenizer to use for token counting (for languages like Chinese, Japanese and Korean)
         overwrite: Whether to overwrite existing dataset instead of merging
+        add_ririro_data: Whether to add Ririro resource for the language
 
     Returns:
         Path to output directory
     """
     print(f"Processing data for {language_code}...")
 
+    docs = []
+    # 0. Optionally fetch Ririro resource
+    if add_ririro_data:
+        print(f"Fetching Ririro resource for language: {language_code}")
+        ririro_docs = fetch_resource("ririro", language_code)
+        docs.extend(ririro_docs)
+
     # 1. Load data using loader
     loader = get_loader(data_type)
-    docs = loader.load_data(data_path)
+    docs.extend(loader.load_data(data_path))
 
     # 2. Load metadata file if provided and merge
     metadata_mapping = {}
@@ -238,6 +248,11 @@ def main():
         action="store_true",
         help="Overwrite existing dataset instead of merging",
     )
+    parser.add_argument(
+        "--add-ririro-data",
+        action="store_true",
+        help="If set, fetch and add Ririro resource for the given language before processing other data.",
+    )
 
     args = parser.parse_args()
 
@@ -280,6 +295,7 @@ def main():
         pad_opensubtitles=args.pad_opensubtitles,
         tokenizer_name=args.tokenizer_name,
         overwrite=args.overwrite,
+        add_ririro_data=args.add_ririro_data,
     )
 
 
