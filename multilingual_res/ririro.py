@@ -20,7 +20,6 @@ from openai import OpenAI
 from pydantic import BaseModel
 from multilingual_res.base import BaseResourceFetcher
 from typing import Optional, List, Dict
-from pydantic import BaseModel
 
 RIRIRO_LANGS = {
     "en": {"url": "https://ririro.com/", "script": "Latn"},
