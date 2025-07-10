@@ -141,3 +141,26 @@ time python pipeline.py \
     --license "cc-by-sa" \
     --metadata-file "./edu_metadata.json"
 
+# Example 10: Add multilingual resources (Ririro, GlotStoryBook, ChildWiki)
+time python pipeline.py \
+    --language eng \
+    --script Latn \
+    --data-path "./my_text_files" \
+    --data-type text \
+    --add-ririro-data \
+    --add-glotstorybook-data \
+    --add-childwiki-data \
+    --category "child-books" \
+    --license "cc-by"
+
+# Example 11: Only add GlotStoryBook and ChildWiki resources for Indonesian
+time python pipeline.py \
+    --language ind \
+    --script Latn \
+    --data-path "./articles_cleaned_txt" \
+    --data-type text \
+    --add-glotstorybook-data \
+    --add-childwiki-data \
+    --category "child-books" \
+    --license "cc-by"
+
