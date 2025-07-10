@@ -28,7 +28,7 @@ class GlotStorybookFetcher(BaseResourceFetcher):
         dataset = load_dataset("cis-lmu/GlotStoryBook", split="train")
         grouped = defaultdict(list)
         for row in dataset:
-            grouped[row["File Name"]].append(row)  # type: ignore
+            grouped[row["File Name"]].append(row)
         new_rows = []
         for rows in grouped.values():
             sorted_rows = sorted(rows, key=lambda x: x["Text Number"])
@@ -48,14 +48,14 @@ class GlotStorybookFetcher(BaseResourceFetcher):
         filtered = dataset.filter(lambda x: x["ISO639-3"] == language_code)
         results = []
         for doc in filtered:
-            text = doc["Text"]  # type: ignore
-            script = doc["Script"]  # type: ignore
-            data_license = doc["License"]  # type: ignore
-            author = doc["Text By"] if "Text By" in doc else None  # type: ignore
-            translator = doc["Translation By"] if "Translation By" in doc else None  # type: ignore
+            text = doc["Text"]
+            script = doc["Script"]
+            data_license = doc["License"]
+            author = doc["Text By"] if "Text By" in doc else None
+            translator = doc["Translation By"] if "Translation By" in doc else None
             data_source = "GlotStoryBook"
             description = "Children StoryBooks for 180 languages."
-            source_identifier = doc["Source"] if "Source" in doc else None  # type: ignore
+            source_identifier = doc["Source"] if "Source" in doc else None
             misc = {
                 "translator": translator,
                 "author": author,

@@ -36,9 +36,9 @@ def process_dataset(
     pad_opensubtitles: bool,
     tokenizer_name: Optional[str],
     overwrite: bool = False,
-    add_ririro_data: bool = False,  # new arg
-    add_glotstorybook_data: bool = False,  # new arg
-    add_childwiki_data: bool = False,  # new arg
+    add_ririro_data: bool = False,
+    add_glotstorybook_data: bool = False,
+    add_childwiki_data: bool = False,
 ) -> Path:
     """
     Process any data source into BabyLM format.
@@ -112,12 +112,12 @@ def process_dataset(
 
     # 4. Preprocess all texts (if requested)
     if preprocess_text:
-        builder.dataset_table = preprocess_dataset(builder.dataset_table)  # type: ignore
+        builder.dataset_table = preprocess_dataset(builder.dataset_table)
 
     # 5. Language filtering if enabled
     if enable_language_filtering:
         builder.dataset_table = filter_dataset_for_lang_and_script(
-            builder.dataset_table,  # type: ignore
+            builder.dataset_table,
             language_code=language_code,
             script_code=script_code,
             language_filter_threshold=language_filter_threshold,
@@ -126,13 +126,13 @@ def process_dataset(
     # 6. Pad dataset to next tier, accounting for byte premium
     if pad_opensubtitles:
         results = pad_dataset_to_next_tier(
-            dataset_df=builder.dataset_table,  # type: ignore
+            dataset_df=builder.dataset_table,
             language_code=language_code,
         )
         builder.dataset_table = results["dataset"]
         # Keep the byte premium factor and dataset size for metadata
-        builder.byte_premium_factor = results["byte_premium_factor"]  # type: ignore
-        builder.dataset_size = results["dataset_size"]  # type: ignore
+        builder.byte_premium_factor = results["byte_premium_factor"]
+        builder.dataset_size = results["dataset_size"]
 
         # assume the padding dataset is filtered for language and script
         # and has been preprocessed for the subtitles category
@@ -143,7 +143,7 @@ def process_dataset(
 
     # 7. Save and create dataset
     builder.save_dataset()
-    print(f"\nDataset created with {len(builder.dataset_table)} documents")  # type: ignore
+    print(f"\nDataset created with {len(builder.dataset_table)} documents")
 
     # 8. Upload if requested
     if upload and repo_id:

@@ -140,7 +140,7 @@ class RiriroFetcher(BaseResourceFetcher):
             return None
 
         prompt = "What is the minimum age shown in this image? Only answer with a single integer as the field 'age', e.g. {\"age\": 3}."
-        completion = client.chat.completions.parse(  # type: ignore
+        completion = client.chat.completions.parse(
             model=model,
             messages=[
                 {
