@@ -4,6 +4,7 @@ Allows fetching from any supported resource by name.
 """
 
 from multilingual_res.ririro import RiriroFetcher
+from multilingual_res.glotstorybook import GlotStorybookFetcher
 from typing import Optional
 
 
@@ -16,7 +17,10 @@ def fetch_resource(
     """
     if resource_name == "ririro":
         fetcher = RiriroFetcher()
+        return fetcher.fetch(language_code, script_code)
+    elif resource_name == "glotstorybook":
+        fetcher = GlotStorybookFetcher()
+        # GlotStorybookFetcher.fetch does not use script_code
+        return fetcher.fetch(language_code)
     else:
         raise ValueError(f"Resource '{resource_name}' not supported.")
-
-    return fetcher.fetch(language_code, script_code)
