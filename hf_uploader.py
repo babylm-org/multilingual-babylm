@@ -83,9 +83,11 @@ class HFDatasetUploader:
             try:
                 prev_data = load_dataset(
                     repo_id, token=self.token, split="train"
-                ).to_pandas() # type: ignore
+                ).to_pandas()
                 if isinstance(prev_data, pd.DataFrame) and isinstance(df, pd.DataFrame):
-                    print(f"Merging with existing data from {repo_id} (rows: {len(prev_data)})...")
+                    print(
+                        f"Merging with existing data from {repo_id} (rows: {len(prev_data)})..."
+                    )
                     df = pd.concat([prev_data, df], ignore_index=True)
                     print("Running deduplication on merged dataset...")
                     df = self._deduplicate_by_text(df)
@@ -171,11 +173,15 @@ class HFDatasetUploader:
         Keeps the first occurrence of each unique text.
         """
         before = len(df)
-        df['text_hash'] = df['text'].apply(lambda x: hashlib.sha256(str(x).encode('utf-8')).hexdigest())
-        df = df.drop_duplicates(subset=['text_hash'])
-        df = df.drop(columns=['text_hash'])
+        df["text_hash"] = df["text"].apply(
+            lambda x: hashlib.sha256(str(x).encode("utf-8")).hexdigest()
+        )
+        df = df.drop_duplicates(subset=["text_hash"])
+        df = df.drop(columns=["text_hash"])
         after = len(df)
-        print(f"Deduplicated merged dataset: removed {before - after} duplicates, {after} remain.")
+        print(
+            f"Deduplicated merged dataset: removed {before - after} duplicates, {after} remain."
+        )
         return df
 
     def _create_dataset_card(
@@ -201,7 +207,7 @@ class HFDatasetUploader:
         config = metadata.get("config", {})
 
         # Determine size category based on number of documents
-        num_documents = metadata.get("num_documents") or num_documents # type: ignore
+        num_documents = metadata.get("num_documents") or num_documents
         if num_documents is None:
             # Try to infer from dataset files if not in metadata
             data_file = next(
