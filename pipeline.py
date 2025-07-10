@@ -113,6 +113,10 @@ def process_dataset(
         # assume the padding dataset is filtered for language and script
         # and has been preprocessed for the subtitles category
 
+    # 6.5. Deduplicate by exact text before saving
+    print("Running deduplication on dataset before saving...")
+    builder.deduplicate_by_text()
+
     # 7. Save and create dataset
     builder.save_dataset()
     print(f"\nDataset created with {len(builder.dataset_table)} documents")
