@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 from typing import Optional
 
+import hashlib
 import pandas as pd
 from datasets import Dataset, DatasetDict, load_dataset
 from datasets.exceptions import DatasetNotFoundError
@@ -82,9 +83,18 @@ class HFDatasetUploader:
             try:
                 prev_data = load_dataset(
                     repo_id, token=self.token, split="train"
-                ).to_pandas()
+                ).to_pandas() # type: ignore
                 if isinstance(prev_data, pd.DataFrame) and isinstance(df, pd.DataFrame):
+                    print(f"Merging with existing data from {repo_id} (rows: {len(prev_data)})...")
                     df = pd.concat([prev_data, df], ignore_index=True)
+                    print("Running deduplication on merged dataset...")
+                    # Deduplicate by exact text after concat
+                    before = len(df)
+                    df['text_hash'] = df['text'].apply(lambda x: hashlib.sha256(str(x).encode('utf-8')).hexdigest())
+                    df = df.drop_duplicates(subset=['text_hash'])
+                    df = df.drop(columns=['text_hash'])
+                    after = len(df)
+                    print(f"Deduplicated merged dataset: removed {before - after} duplicates, {after} remain.")
                 else:
                     raise TypeError(
                         "Both previous data and new data must be pandas DataFrames."
@@ -184,7 +194,7 @@ class HFDatasetUploader:
         config = metadata.get("config", {})
 
         # Determine size category based on number of documents
-        num_documents = metadata.get("num_documents") or num_documents
+        num_documents = metadata.get("num_documents") or num_documents # type: ignore
         if num_documents is None:
             # Try to infer from dataset files if not in metadata
             data_file = next(
