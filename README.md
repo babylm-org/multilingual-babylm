@@ -186,10 +186,9 @@ Preprocessing is optional and only applied if `--preprocess-text` is passed. Whe
 
 - **TranscriptPreprocessor** (`child-directed-speech`, `child-available-speech`):
   - Remove annotation lines starting with `%Speaker:` (any case)
-  - Remove speaker labels at the start of lines (e.g., `John:`, `MOTHER:`, `John Smith:`)
   - Normalize punctuation
 - **SubtitlePreprocessor** (`subtitles`):
-  - Remove speaker labels
+  - Remove speaker labels at the start of lines (e.g., `John:`, `MOTHER:`, `John Smith:`)
   - Remove music note symbols (♪, ♫)
   - Remove stage directions (e.g., `[Music]`)
   - Remove timestamps (e.g., `[00:00:00]`)
