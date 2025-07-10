@@ -9,6 +9,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional, Any
 
+import hashlib
 import pandas as pd
 from language_scripts import validate_script_code
 
@@ -291,7 +292,6 @@ class BabyLMDatasetBuilder:
         Keeps the first occurrence of each unique text.
         Updates self.dataset_table in place.
         """
-        import hashlib
 
         if self.dataset_table is None or "text" not in self.dataset_table:
             print("No dataset_table or 'text' column to deduplicate.")
