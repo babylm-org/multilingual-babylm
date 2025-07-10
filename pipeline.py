@@ -38,6 +38,7 @@ def process_dataset(
     overwrite: bool = False,
     add_ririro_data: bool = False,  # new arg
     add_glotstorybook_data: bool = False,  # new arg
+    add_childwiki_data: bool = False,  # new arg
 ) -> Path:
     """
     Process any data source into BabyLM format.
@@ -58,6 +59,7 @@ def process_dataset(
         overwrite: Whether to overwrite existing dataset instead of merging
         add_ririro_data: Whether to add Ririro resource for the language
         add_glotstorybook_data: Whether to add GlotStoryBook resource for the language
+        add_childwiki_data: Whether to add ChildWiki resource for the language
 
     Returns:
         Path to output directory
@@ -68,13 +70,18 @@ def process_dataset(
     # 0. Optionally fetch Ririro resource
     if add_ririro_data:
         print(f"Fetching Ririro resource for language: {language_code}")
-        ririro_docs = fetch_resource("ririro", language_code)
+        ririro_docs = fetch_resource("ririro", language_code, script_code)
         docs.extend(ririro_docs)
     # 0.1 Optionally fetch GlotStoryBook resource
     if add_glotstorybook_data:
         print(f"Fetching GlotStoryBook resource for language: {language_code}")
-        glotstorybook_docs = fetch_resource("glotstorybook", language_code)
+        glotstorybook_docs = fetch_resource("glotstorybook", language_code, script_code)
         docs.extend(glotstorybook_docs)
+    # 0.2 Optionally fetch ChildWiki resource
+    if add_childwiki_data:
+        print(f"Fetching ChildWiki resource for language: {language_code}")
+        childwiki_docs = fetch_resource("childwiki", language_code, script_code)
+        docs.extend(childwiki_docs)
 
     # 1. Load data using loader
     loader = get_loader(data_type)
@@ -265,6 +272,11 @@ def main():
         action="store_true",
         help="If set, fetch and add GlotStoryBook resource for the given language before processing other data.",
     )
+    parser.add_argument(
+        "--add-childwiki-data",
+        action="store_true",
+        help="If set, fetch and add ChildWiki resource for the given language before processing other data.",
+    )
 
     args = parser.parse_args()
 
@@ -309,6 +321,7 @@ def main():
         overwrite=args.overwrite,
         add_ririro_data=args.add_ririro_data,
         add_glotstorybook_data=args.add_glotstorybook_data,
+        add_childwiki_data=args.add_childwiki_data,
     )
 
 
