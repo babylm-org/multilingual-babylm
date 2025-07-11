@@ -8,7 +8,7 @@ from typing import Optional
 
 import hashlib
 import pandas as pd
-from datasets import Dataset, DatasetDict, load_dataset
+from datasets import Dataset, DatasetDict, load_dataset, Features, Value
 from datasets.exceptions import DatasetNotFoundError
 from dotenv import load_dotenv
 from huggingface_hub import HfApi, create_repo
@@ -121,18 +121,13 @@ class HFDatasetUploader:
           
         df["num_tokens"] = df["text"].apply(count_tokens, tokenizer=tokenizer)
         total_tokens = int(df["num_tokens"].sum())
-        tokens_per_category = None
-        if "category" in df.columns:
-            tokens_per_category = df.groupby("category")["num_tokens"].sum().to_dict()
+        assert "category" in df.columns, "category must be defined"
+        tokens_per_category = df.groupby("category")["num_tokens"].sum().to_dict()
 
         print(f"Total tokens in dataset: {total_tokens}")
-        if tokens_per_category:
-            print("Tokens per category:")
-            for cat, tok in tokens_per_category.items():
-                print(f"  {cat}: {tok}")
-
-        # Convert to HuggingFace Dataset with explicit features
-        from datasets import Dataset, Features, Value
+        print("Tokens per category:")
+        for cat, tok in tokens_per_category.items():
+            print(f"  {cat}: {tok}")
         
         # Define the expected features explicitly
         features = Features({
@@ -143,7 +138,7 @@ class HFDatasetUploader:
             'age-estimate': Value('string'),
             'license': Value('string'),
             'misc': Value('string'),
-            'num_tokens': Value('int64'),  # Include num_tokens in schema
+            'num_tokens': Value('int64'),
         })
         
         dataset = Dataset.from_pandas(df, features=features)
