@@ -132,6 +132,7 @@ class HFDatasetUploader:
         # Define the expected features explicitly
         features = Features({
             'text': Value('string'),
+            'doc_id': Value('string'),
             'category': Value('string'),
             'data-source': Value('string'),
             'script': Value('string'),

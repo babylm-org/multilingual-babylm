@@ -108,6 +108,12 @@ class BabyLMDatasetBuilder:
                     print(
                         f"Loaded existing data (CSV) with {len(existing_df)} documents."
                     )
+                    # Backward compatibility: add doc_id if missing
+                    if "doc_id" not in existing_df.columns:
+                        print("doc_id column missing in existing data. Generating doc_id for each record.")
+                        existing_df["doc_id"] = existing_df["text"].apply(
+                            lambda x: hashlib.sha256(str(x).encode("utf-8")).hexdigest()
+                        )
                     self._existing_doc_ids = set(existing_df["doc_id"].astype(str))
                     self._existing_documents = existing_df.to_dict(orient="records")
                 except Exception as e:
@@ -118,6 +124,12 @@ class BabyLMDatasetBuilder:
                     print(
                         f"Loaded existing data (Parquet) with {len(existing_df)} documents."
                     )
+                    # Backward compatibility: add doc_id if missing
+                    if "doc_id" not in existing_df.columns:
+                        print("doc_id column missing in existing data. Generating doc_id for each record.")
+                        existing_df["doc_id"] = existing_df["text"].apply(
+                            lambda x: hashlib.sha256(str(x).encode("utf-8")).hexdigest()
+                        )
                     self._existing_doc_ids = set(existing_df["doc_id"].astype(str))
                     self._existing_documents = existing_df.to_dict(orient="records")
                 except Exception as e:
