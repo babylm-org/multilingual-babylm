@@ -243,7 +243,7 @@ class BabyLMDatasetBuilder:
             else:
                 row["misc"] = ""
 
-                rows.append(row)
+            rows.append(row)
         df = pd.DataFrame(rows)
         # Remove duplicates by doc_id (keep first occurrence)
         df = df.drop_duplicates(subset=["doc_id"])
