@@ -235,12 +235,14 @@ class BabyLMDatasetBuilder:
                 "script": document_config.script,
                 "age-estimate": document_config.age_estimate,
                 "license": document_config.license,
+                "num_tokens": len(text.split()),
             }
             # Add misc field if present
             if doc.get("misc"):
                 row["misc"] = json.dumps(doc["misc"])
             else:
-                row["misc"] = None
+                row["misc"] = ""
+
             rows.append(row)
         df = pd.DataFrame(rows)
         # Remove duplicates by doc_id (keep first occurrence)

@@ -8,7 +8,7 @@ from typing import Optional
 
 import hashlib
 import pandas as pd
-from datasets import Dataset, DatasetDict, load_dataset
+from datasets import Dataset, DatasetDict, load_dataset, Features, Value
 from datasets.exceptions import DatasetNotFoundError
 from dotenv import load_dotenv
 from huggingface_hub import HfApi, create_repo
@@ -112,22 +112,36 @@ class HFDatasetUploader:
                 return len(tokens)
             return len(text.split())
 
+        # Fix schema issues before uploading
+        if "misc" in df.columns:
+            # Convert None/null values to empty strings
+            df["misc"] = df["misc"].fillna("")
+            # Ensure all misc values are strings
+            df["misc"] = df["misc"].astype(str)          
+          
         df["num_tokens"] = df["text"].apply(count_tokens, tokenizer=tokenizer)
         total_tokens = int(df["num_tokens"].sum())
-        tokens_per_category = None
-        if "category" in df.columns:
-            tokens_per_category = df.groupby("category")["num_tokens"].sum().to_dict()
+        assert "category" in df.columns, "category must be defined"
+        tokens_per_category = df.groupby("category")["num_tokens"].sum().to_dict()
 
         print(f"Total tokens in dataset: {total_tokens}")
-        if tokens_per_category:
-            print("Tokens per category:")
-            for cat, tok in tokens_per_category.items():
-                print(f"  {cat}: {tok}")
-        else:
-            print("No 'category' column found in dataset.")
-
-        # Convert to HuggingFace Dataset
-        dataset = Dataset.from_pandas(df)
+        print("Tokens per category:")
+        for cat, tok in tokens_per_category.items():
+            print(f"  {cat}: {tok}")
+        
+        # Define the expected features explicitly
+        features = Features({
+            'text': Value('string'),
+            'category': Value('string'),
+            'data-source': Value('string'),
+            'script': Value('string'),
+            'age-estimate': Value('string'),
+            'license': Value('string'),
+            'misc': Value('string'),
+            'num_tokens': Value('int64'),
+        })
+        
+        dataset = Dataset.from_pandas(df, features=features)
 
         # Create DatasetDict with a single split
         dataset_dict = DatasetDict({"train": dataset})
