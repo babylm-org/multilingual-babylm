@@ -2,7 +2,7 @@ import csv
 import json
 import hashlib
 from pathlib import Path
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Union
 from datasets import load_from_disk, load_dataset
 from abc import ABC, abstractmethod
 
@@ -116,9 +116,9 @@ class HFLoader(BaseLoader):
         self.text_field = text_field
         self.split = split
 
-    def load_data(self, source_path: Path) -> List[Dict[str, Any]]:
+    def load_data(self, source_path: Union[Path, str]) -> List[Dict[str, Any]]:
         docs = []
-        if source_path.exists():
+        if isinstance(source_path, Path) and source_path.exists():
             ds = load_from_disk(str(source_path))
             # If loaded from disk, may need to select split
             if self.split and isinstance(ds, dict):
@@ -135,6 +135,7 @@ class HFLoader(BaseLoader):
             # If no split specified and ds is a dict, pick first split
             if not self.split and isinstance(ds, dict):
                 ds = next(iter(ds.values()))
+
         for i, row in enumerate(ds):
             if isinstance(row, dict):
                 text = row.get(self.text_field, "")
@@ -155,6 +156,7 @@ class HFLoader(BaseLoader):
                     "metadata": meta,
                 }
             )
+
         return docs
 
 
