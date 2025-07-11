@@ -190,9 +190,9 @@ class BabyLMDatasetBuilder:
                     script=metadata.get("script")
                     or document_config_params.get("script"),
                     age_estimate=metadata.get("age-estimate")
-                    or document_config_params.get("age-estimate"),
+                    or document_config_params.get("age-estimate", "n/a"),
                     license=metadata.get("license")
-                    or document_config_params.get("license"),
+                    or document_config_params.get("license", "n/a"),
                     misc=misc,
                 )
 
