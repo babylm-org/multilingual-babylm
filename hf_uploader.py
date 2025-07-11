@@ -5,16 +5,20 @@ HuggingFace dataset uploader for BabyLM datasets.
 import os
 from pathlib import Path
 from typing import Optional
+
+import hashlib
 import pandas as pd
+from datasets import Dataset, DatasetDict, load_dataset
+from datasets.exceptions import DatasetNotFoundError
 from dotenv import load_dotenv
 from huggingface_hub import HfApi, create_repo
-from datasets import Dataset, DatasetDict
+from transformers import AutoTokenizer
 
 
 class HFDatasetUploader:
     """Handle uploading BabyLM datasets to HuggingFace."""
 
-    def __init__(self, token: Optional[str] = None):
+    def __init__(self, token: "Optional[str]" = None):
         load_dotenv()
         self.token = token or os.getenv("HF_TOKEN")
         if not self.token:
@@ -29,6 +33,8 @@ class HFDatasetUploader:
         private: bool = True,
         create_dataset_card: bool = True,
         create_repo_if_missing: bool = True,
+        add_to_existing_data: bool = False,
+        tokenizer_name: Optional[str] = None,
     ) -> None:
         """
         Upload a BabyLM dataset to HuggingFace.
@@ -39,6 +45,8 @@ class HFDatasetUploader:
             private: Whether to make the repo private
             create_dataset_card: Whether to create a README
             create_repo_if_missing: Whether to create the repo if it doesn't exist
+            add_to_existing_data: Add to the existing dataset if it already exists. Overrides previous data if set to False.
+
         """
         # Optionally ensure repository exists
         if create_repo_if_missing:
@@ -66,36 +74,56 @@ class HFDatasetUploader:
             df = pd.read_parquet(data_file)
         elif csv_files:
             # Fallback to CSV
-            data_file = csv_files[0]
-            df = pd.read_csv(data_file)
+            csv_dfs = [pd.read_csv(f) for f in csv_files]
+            df = pd.concat(csv_dfs, ignore_index=True)
         else:
             raise ValueError(f"No dataset files found in {dataset_dir}")
+
+        if add_to_existing_data:
+            try:
+                prev_data = load_dataset(
+                    repo_id, token=self.token, split="train"
+                ).to_pandas()
+                if isinstance(prev_data, pd.DataFrame) and isinstance(df, pd.DataFrame):
+                    print(
+                        f"Merging with existing data from {repo_id} (rows: {len(prev_data)})..."
+                    )
+                    df = pd.concat([prev_data, df], ignore_index=True)
+                    print("Running deduplication on merged dataset...")
+                    df = self._deduplicate_by_text(df)
+                else:
+                    raise TypeError(
+                        "Both previous data and new data must be pandas DataFrames."
+                    )
+            except DatasetNotFoundError:
+                print("Previous data not found")
+
+        if tokenizer_name:
+            tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
+        else:
+            tokenizer = None
+
+        # Calculate token statistics
+        def count_tokens(text, tokenizer=None):
+            if not isinstance(text, str):
+                return 0
+            if tokenizer:
+                tokens = tokenizer.encode(text, add_special_tokens=False)
+                return len(tokens)
+            return len(text.split())
 
         # Fix schema issues before uploading
         if "misc" in df.columns:
             # Convert None/null values to empty strings
             df["misc"] = df["misc"].fillna("")
             # Ensure all misc values are strings
-            df["misc"] = df["misc"].astype(str)
-        
-        # Calculate token statistics
-        if "num_tokens" in df.columns:
-            total_tokens = int(df["num_tokens"].sum())
-            tokens_per_category = None
-            if "category" in df.columns:
-                tokens_per_category = df.groupby("category")["num_tokens"].sum().to_dict()
-        else:
-            # Fallback calculation if num_tokens column doesn't exist
-            def count_tokens(text):
-                if not isinstance(text, str):
-                    return 0
-                return len(text.split())
-            
-            df["num_tokens"] = df["text"].apply(count_tokens)
-            total_tokens = int(df["num_tokens"].sum())
-            tokens_per_category = None
-            if "category" in df.columns:
-                tokens_per_category = df.groupby("category")["num_tokens"].sum().to_dict()
+            df["misc"] = df["misc"].astype(str)          
+          
+        df["num_tokens"] = df["text"].apply(count_tokens, tokenizer=tokenizer)
+        total_tokens = int(df["num_tokens"].sum())
+        tokens_per_category = None
+        if "category" in df.columns:
+            tokens_per_category = df.groupby("category")["num_tokens"].sum().to_dict()
 
         print(f"Total tokens in dataset: {total_tokens}")
         if tokens_per_category:
@@ -129,8 +157,9 @@ class HFDatasetUploader:
 
         # Create dataset card if requested
         if create_dataset_card:
+            num_documents = len(df)
             self._create_dataset_card(
-                dataset_dir, repo_id, total_tokens, tokens_per_category
+                dataset_dir, repo_id, total_tokens, tokens_per_category, num_documents
             )
 
         # Upload additional files (metadata, etc.)
@@ -157,12 +186,30 @@ class HFDatasetUploader:
             f"Dataset successfully uploaded to https://huggingface.co/datasets/{repo_id}"
         )
 
+    def _deduplicate_by_text(self, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Remove exact duplicate documents based on the hash of the text field.
+        Keeps the first occurrence of each unique text.
+        """
+        before = len(df)
+        df["text_hash"] = df["text"].apply(
+            lambda x: hashlib.sha256(str(x).encode("utf-8")).hexdigest()
+        )
+        df = df.drop_duplicates(subset=["text_hash"])
+        df = df.drop(columns=["text_hash"])
+        after = len(df)
+        print(
+            f"Deduplicated merged dataset: removed {before - after} duplicates, {after} remain."
+        )
+        return df
+
     def _create_dataset_card(
         self,
         dataset_dir: Path,
         repo_id: str,
         total_tokens: int,
         tokens_per_category: Optional[dict],
+        num_documents: int,
     ) -> None:
         """Create a README.md dataset card."""
         import json
@@ -170,15 +217,16 @@ class HFDatasetUploader:
         # Load metadata
         metadata_path = dataset_dir / "dataset_metadata.json"
         if metadata_path.exists():
-            with open(metadata_path, "r", encoding="utf-8") as f:
+            with open(metadata_path, encoding="utf-8") as f:
                 metadata = json.load(f)
         else:
-            metadata = {}
+            language_code = repo_id.split("-")[-1]
+            metadata = {"config": {"language_code": language_code}}
 
         config = metadata.get("config", {})
 
         # Determine size category based on number of documents
-        num_documents = metadata.get("num_documents")
+        num_documents = metadata.get("num_documents") or num_documents
         if num_documents is None:
             # Try to infer from dataset files if not in metadata
             data_file = next(
@@ -200,14 +248,20 @@ class HFDatasetUploader:
             else:
                 num_documents = 0
 
-        if num_documents < 1000:
+        if num_documents < 1_000:
             size_category = "n<1K"
-        elif num_documents < 10000:
-            size_category = "1K<=n<10K"
-        elif num_documents < 100000:
-            size_category = "10K<=n<100K"
-        else:
-            size_category = "n>=100K"
+        elif num_documents < 10_000:
+            size_category = "1K<n<10K"
+        elif num_documents < 100_000:
+            size_category = "10K<n<100K"
+        elif num_documents < 1_000_000:
+            size_category = "100K<n<1M"
+        elif num_documents < 10_000_000:
+            size_category = "1M<n<10M"
+        elif num_documents < 100_000_000:
+            size_category = "10M<n<100M"
+        elif num_documents < 1_000_000_000:
+            size_category = "100M<n<1B"
 
         # Helper to infer a field from config or documents
         def infer_field(field_name, hf_field=None):
@@ -233,9 +287,6 @@ class HFDatasetUploader:
 
         language = config.get("language_code", "unknown")
         script = infer_field("script")
-        category = infer_field("category")
-        source = infer_field("data_source", "source")
-        age_estimate = infer_field("age_estimate")
 
         # Create README content with correct YAML indentation
         readme_content = f"""---
@@ -243,7 +294,7 @@ task_categories:
 - text-generation
 language:
 - {language}
-license: {config.get('license', 'unknown')}
+license: {config.get("license", "unknown")}
 size_categories:
 - {size_category}
 dataset_info:
@@ -266,7 +317,7 @@ dataset_info:
       dtype: int64
 ---
 
-# {metadata.get('dataset_name', 'BabyLM Dataset')}
+# {metadata.get("dataset_name", "BabyLM Dataset")}
 
 ## Dataset Description
 
@@ -276,9 +327,6 @@ This dataset is part of the BabyLM multilingual collection.
 
 - **Language:** {language}
 - **Script:** {script}
-- **Category:** {category}
-- **Source:** {source}
-- **Age Estimate:** {age_estimate}
 - **Number of Documents:** {num_documents}
 - **Total Tokens:** {total_tokens}
 
@@ -302,15 +350,15 @@ This dataset is part of the BabyLM multilingual collection.
 - `age-estimate`: Target age or age range
 - `license`: Data license
 - `misc`: Additional metadata (JSON string)
-- `num_tokens`: Number of tokens in the subtitle file
+- `num_tokens`: Number of tokens per item (based on white-space split)
 
 ### Licensing Information
 
-This dataset is licensed under: {config.get('license', 'See individual files')}
+This dataset is licensed under: {config.get("license", "See individual files")}
 
 ### Citation
 
-Please cite the original data source: {config.get('data_source', 'Unknown')}
+Please cite the original data source: {config.get("data_source", "Unknown")}
 """
 
         # Save README

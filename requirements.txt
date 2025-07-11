@@ -16,5 +16,15 @@ huggingface-hub>=0.16.0
 datasets>=2.12.0
 pyarrow>=11.0.0  # For parquet support
 
+
 # Optional but recommended
 lxml>=4.9.0  # Better XML parsing performance
+transformers>=4.30.0  # For loading tokenizers
+
+# Validate and process language codes
+iso639-lang>=2.6.1
+
+# Fetching multilngual resources
+cloudscraper>=0.1.0
+openai>=0.27.0
+beautifulsoup4>=4.12.0  # For HTML parsing
