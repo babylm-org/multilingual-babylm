@@ -212,7 +212,7 @@ class OpenSubtitlesProcessor:
             
             # Use preprocessor if provided, otherwise use default
             if preprocessor:
-                processed_text = preprocessor.process_text('\n'.join(sentences))
+                processed_text = preprocessor.process_text('\n'.join(sentences).lower())
                 # processed_sentences = preprocessor.preprocess_lines(sentences)
                 # processed_text = '\n'.join(processed_sentences)
             else:
