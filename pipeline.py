@@ -18,7 +18,7 @@ from loader import get_loader
 from pad_dataset import pad_dataset_to_next_tier
 from multilingual_res.manager import fetch_resource
 
-from iso639 import is_language
+from iso639 import is_language, Lang
 
 
 def process_dataset(
@@ -286,9 +286,12 @@ def main():
         )
 
     if not is_language(args.language, "pt3"):
-        raise ValueError(
-            f"Invalid language code '{args.language}'. Must be a valid ISO 639-3 code."
-        )
+        if is_language(Lang(args.language).pt3, "pt3"):
+            args.language = Lang(args.language).pt3 # Normalize to ISO 639-3 if needed
+        else:
+            raise ValueError(
+                f"Invalid language code '{args.language}'. Must be a valid ISO 639-3 code."
+            )
 
     document_config_params = {
         "script": args.script,
