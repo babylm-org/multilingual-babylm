@@ -297,6 +297,8 @@ dataset_info:
   features:
     - name: text
       dtype: string
+    - name: doc_id
+      dtype: string
     - name: category
       dtype: string
     - name: data-source
@@ -340,6 +342,7 @@ This dataset is part of the BabyLM multilingual collection.
 ### Data Fields
 
 - `text`: The document text
+- `doc_id`: Unique identifier for the document
 - `category`: Type of content (e.g., child-directed-speech, educational, etc.)
 - `data-source`: Original source of the data
 - `script`: Writing system used
