@@ -11,7 +11,7 @@ from typing import Optional, Any
 
 import hashlib
 import pandas as pd
-from language_scripts import validate_script_code
+from language_scripts import validate_script_code, get_script_code_by_name
 
 
 @dataclass
@@ -60,10 +60,11 @@ class DocumentConfig:
     def validate_script(self):
         """Validate that script is a valid ISO 15924 code."""
         if not validate_script_code(self.script):
-            raise ValueError(
-                f"Invalid script code '{self.script}'."
-                " Please use a valid ISO 15924 script code (e.g., Latn, Cyrl, Arab, etc.)"
-            )
+            if not validate_script_code(get_script_code_by_name(self.script)):
+                raise ValueError(
+                    f"Invalid script code '{self.script}'."
+                    " Please use a valid ISO 15924 script code (e.g., Latn, Cyrl, Arab, etc.)"
+                )
 
 
 @dataclass
@@ -111,7 +112,9 @@ class BabyLMDatasetBuilder:
                     )
                     # Backward compatibility: add doc_id if missing
                     if "doc_id" not in existing_df.columns:
-                        print("doc_id column missing in existing data. Generating doc_id for each record.")
+                        print(
+                            "doc_id column missing in existing data. Generating doc_id for each record."
+                        )
                         existing_df["doc_id"] = existing_df["text"].apply(
                             lambda x: hashlib.sha256(str(x).encode("utf-8")).hexdigest()
                         )
@@ -127,7 +130,9 @@ class BabyLMDatasetBuilder:
                     )
                     # Backward compatibility: add doc_id if missing
                     if "doc_id" not in existing_df.columns:
-                        print("doc_id column missing in existing data. Generating doc_id for each record.")
+                        print(
+                            "doc_id column missing in existing data. Generating doc_id for each record."
+                        )
                         existing_df["doc_id"] = existing_df["text"].apply(
                             lambda x: hashlib.sha256(str(x).encode("utf-8")).hexdigest()
                         )
