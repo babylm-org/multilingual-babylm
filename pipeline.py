@@ -24,13 +24,13 @@ from iso639 import is_language, Lang
 def process_dataset(
     language_code: str,
     script_code: str,
-    data_path: Path,
+    data_path: Optional[Path],
     document_config_params: dict,
     metadata_file: Optional[Path],
     upload: bool,
     repo_id: Optional[str],
     preprocess_text: bool,
-    data_type: str,
+    data_type: Optional[str],
     enable_language_filtering: bool,
     language_filter_threshold: float,
     pad_opensubtitles: bool,
@@ -39,6 +39,7 @@ def process_dataset(
     add_ririro_data: bool = False,
     add_glotstorybook_data: bool = False,
     add_childwiki_data: bool = False,
+    add_childes_data: bool = False,
 ) -> Path:
     """
     Process any data source into BabyLM format.
@@ -82,10 +83,24 @@ def process_dataset(
         print(f"Fetching ChildWiki resource for language: {language_code}")
         childwiki_docs = fetch_resource("childwiki", language_code, script_code)
         docs.extend(childwiki_docs)
+    # 0.3 Optionally fetch Childes resource
+    if add_childes_data:
+        print(f"Fetching Childes resource for language: {language_code}")
+        childes_docs = fetch_resource("childes", language_code, script_code)
+        docs.extend(childes_docs)
 
-    # 1. Load data using loader
-    loader = get_loader(data_type)
-    docs.extend(loader.load_data(data_path))
+    # 1. Load data using loader if both data_path and data_type are provided
+    if data_path is not None and data_type is not None:
+        loader = get_loader(data_type)
+        docs.extend(loader.load_data(data_path))
+
+    if len(docs) == 0:
+        print(
+            "No documents found. Please provide valid data_path and/or add multilingual resources. Aborting ..."
+        )
+        return Path()
+
+    print(f"Loaded {len(docs)} documents from data source(s)")
 
     # 2. Load metadata file if provided and merge
     metadata_mapping = {}
@@ -177,13 +192,13 @@ def main():
         "--data-path",
         "-t",
         type=Path,
-        required=True,
+        default=None,
         help="Path to data directory or file",
     )
     parser.add_argument(
         "--data-type",
         type=str,
-        required=True,
+        default=None,
         choices=["text", "json", "jsonl", "csv", "hf"],
         help="Loader type for input data",
     )
@@ -208,6 +223,7 @@ def main():
             "qed",
             "child-available-speech",
             "simplified-text",
+            "padding",
         ],
         help="Content category",
     )
@@ -277,6 +293,11 @@ def main():
         action="store_true",
         help="If set, fetch and add ChildWiki resource for the given language before processing other data.",
     )
+    parser.add_argument(
+        "--add-childes-data",
+        action="store_true",
+        help="If set, fetch and add Childes resource for the given language before processing other data.",
+    )
 
     args = parser.parse_args()
 
@@ -287,7 +308,7 @@ def main():
 
     if not is_language(args.language, "pt3"):
         if is_language(Lang(args.language).pt3, "pt3"):
-            args.language = Lang(args.language).pt3 # Normalize to ISO 639-3 if needed
+            args.language = Lang(args.language).pt3  # Normalize to ISO 639-3 if needed
         else:
             raise ValueError(
                 f"Invalid language code '{args.language}'. Must be a valid ISO 639-3 code."
@@ -325,6 +346,7 @@ def main():
         add_ririro_data=args.add_ririro_data,
         add_glotstorybook_data=args.add_glotstorybook_data,
         add_childwiki_data=args.add_childwiki_data,
+        add_childes_data=args.add_childes_data,
     )
 
 

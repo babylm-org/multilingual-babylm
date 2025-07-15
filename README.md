@@ -23,6 +23,7 @@ This pipeline provides a flexible framework for:
 ├── language_filter.py           # Language and script filtering (GlotLID)
 ├── language_scripts.py          # ISO 15924 script code mapping utilities
 ├── pad_dataset.py               # Padding with OpenSubtitles data
+├── multilingual_res/            # Fetch and integrate public multilingual resources
 ├── requirements.txt             # Python dependencies
 ├── upload_basic_json.sh         # Basic usage with a .json dataset file
 └── example_usage.sh             # Usage examples
@@ -49,6 +50,7 @@ Each dataset contains documents with the following fields:
 
 | Column       | Description                                                      | Example Values                                    |
 | ------------ | ---------------------------------------------------------------- | ------------------------------------------------- |
+| doc_id       | Unique document identifier                                       | SHA256 hash string                                |
 | text         | Document text (preserves capitalization and paragraphs)          | "This is a story.\n\nIt has multiple paragraphs." |
 | category     | Content type for this document                                   | See below                                         |
 | data-source  | Original source of this document                                 | OpenSubtitles, CHILDES, etc. (default: "unknown") |
@@ -68,6 +70,7 @@ Each dataset contains documents with the following fields:
 - `qed`
 - `child-available-speech`
 - `simplified-text`
+- `padding`
 
 ## Usage
 
@@ -151,10 +154,11 @@ You can automatically fetch and add public multilingual resources to your datase
 - `--add-ririro-data`: Fetch and add Ririro children's books for the specified language.
 - `--add-glotstorybook-data`: Fetch and add GlotStoryBook storybooks for the specified language.
 - `--add-childwiki-data`: Fetch and add ChildWiki child-friendly wiki content for the specified language.
+- `--add-childes-data`: Fetch and add child-directed speech transcripts from the CHILDES database for the specified language.
 
 These options can be combined with any other data source. The fetched documents will be merged and deduplicated with your own data.
 
-**Example:**
+**Example: Combine multilingual resources with your own data:**
 
 ```bash
 python pipeline.py \
@@ -165,6 +169,18 @@ python pipeline.py \
     --add-ririro-data \
     --add-glotstorybook-data \
     --add-childwiki-data
+```
+
+**Example: Use only multilingual resources (no data-path or data-type):**
+
+```bash
+python pipeline.py \
+    --language kor \
+    --script Kore \
+    --add-ririro-data \
+    --add-glotstorybook-data \
+    --add-childwiki-data \
+    --add-childes-data
 ```
 
 ### Dataset Overwrite and Merging Behavior
@@ -216,7 +232,7 @@ Preprocessing is optional and only applied if `--preprocess-text` is passed. Whe
   - Remove stage directions (e.g., `[Music]`)
   - Remove timestamps (e.g., `[00:00:00]`)
   - Normalize punctuation
-- **BookPreprocessor** (`educational`, `child-books`, `child-wiki`, `child-news`, `simplified-text`):
+- **BookPreprocessor** (`educational`, `child-books`, `child-wiki`, `child-news`, `simplified-text`, `padding`):
   - Remove XML/HTML tags
   - Normalize punctuation
   - Remove URLs

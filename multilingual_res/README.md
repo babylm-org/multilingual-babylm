@@ -14,6 +14,7 @@ A package for fetching and integrating public multilingual resources (e.g., Riri
 - **Ririro**: Fetches children's books from ririro.com. Use `--add-ririro-data`.
 - **GlotStoryBook**: Fetches storybooks for 180 languages from HuggingFace. Use `--add-glotstorybook-data`.
 - **ChildWiki**: Fetches child-friendly wiki content from HuggingFace. Use `--add-childwiki-data`.
+- **CHILDES**: Fetches child-directed speech transcripts from the CHILDES database via HuggingFace. Use `--add-childes-data`.
 
 ## Adding a New Resource
 

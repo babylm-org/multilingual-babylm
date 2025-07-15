@@ -1,4 +1,4 @@
-"""Resource fetcher for ChildWiki datasets from HuggingFace."""
+"""Resource fetcher for CHILDES datasets from HuggingFace."""
 
 import hashlib
 import os
@@ -8,7 +8,7 @@ from multilingual_res.base import BaseResourceFetcher
 from typing import List, Dict, Optional
 
 
-class ChildWikiFetcher(BaseResourceFetcher):
+class ChildesFetcher(BaseResourceFetcher):
     def __init__(self):
         self.hf_token = os.environ.get("HF_TOKEN")
         if not self.hf_token:
@@ -23,23 +23,22 @@ class ChildWikiFetcher(BaseResourceFetcher):
         self, language_code: str, script_code: Optional[str] = None
     ) -> List[Dict]:
         """
-        Fetch ChildWiki data for a given language code and script code.
+        Fetch CHILDES data for a given language code and script code.
         Returns a list of dicts with keys: text, doc_id, metadata (for DocumentConfig)
         """
-        dataset = load_dataset("BabyLM-community/baby-wikis", split="train")
-        filtered = dataset.filter(lambda x: x["lang"] == language_code)
+        dataset = load_dataset(
+            "BabyLM-community/formatted-CHILDES", language_code, split="train"
+        )
         results = []
-        for doc in filtered:
-            text = doc["content"]
-            data_source = doc["wiki"]
-            title = doc["title"]
+        for doc in dataset:
+            text = doc["text"]
             metadata = {
-                "category": "child-wiki",
-                "data-source": data_source,
-                "script": script_code,
-                "age-estimate": "n/a",
-                "license": "cc-by-sa",
-                "misc": {"title": title},
+                "category": doc.get("category", "child-directed-speech"),
+                "data-source": doc.get("data-source", "CHILDES"),
+                "script": doc.get("script", script_code),
+                "age-estimate": doc.get("age-estimate", "n/a"),
+                "license": doc.get("license", "unknown"),
+                "misc": "",
             }
             doc_id = hashlib.sha256(text.encode("utf-8")).hexdigest()
             results.append(
@@ -50,6 +49,6 @@ class ChildWikiFetcher(BaseResourceFetcher):
                 }
             )
         print(
-            f"Fetched {len(results)} documents from ChildWiki for language '{language_code}'"
+            f"Fetched {len(results)} documents from CHILDES for language '{language_code}'"
         )
         return results
