@@ -49,38 +49,6 @@ eng_sizes_per_tier = {
 }
 
 
-def load_dataset_fix(repo_id, HF_token):
-    from datasets import load_dataset_builder, Dataset
-    import os
-
-    # Step 1: Load builder (no schema applied)
-    builder = load_dataset_builder(repo_id, token=HF_token)
-
-    # Step 2: Download raw data (cached locally)
-    builder.download_and_prepare()
-    data_dir = builder.cache_dir
-
-    # Step 3: Load raw Parquet directly (ignore dataset_info.json)
-    dataset = Dataset.from_parquet(os.path.join(data_dir, "train"))
-
-    # Step 4: Fix 'misc' values
-    dataset = dataset.map(lambda x: {"misc": x.get("misc") or ""})
-
-    # Optional: Cast to final schema
-    from datasets import Features, Value
-    features = Features({
-        "text": Value("string"),
-        "category": Value("string"),
-        "data-source": Value("string"),
-        "script": Value("string"),
-        "age-estimate": Value("string"),
-        "license": Value("string"),
-        "misc": Value("string"),
-        "num_tokens": Value("int64"),
-    })
-    dataset = dataset.cast(features)    
-
-
 def dataframe_to_docs(dataset_df : pd.DataFrame) -> list[dict[str, Any]]:
     docs = []
     for i, row in dataset_df.iterrows():
@@ -148,10 +116,11 @@ def pad_dataset_to_next_tier(
     if padding_resource == 'open-subtitles':
         iso_639_1_code = Lang(language_code).pt1
         repo_id = f'BabyLM-community/babylm-{iso_639_1_code}-subtitles'
+        print(f"Loading OpenSubtitles data for language: {language_code} using repo: {repo_id}")
         load_dotenv()
         HF_token = os.getenv("HF_TOKEN")
         try:
-            padding_dataset = load_dataset(repo_id, streaming=False, split="train", token=HF_token)
+            padding_dataset = load_dataset(repo_id, streaming=True, split="train", token=HF_token)
         except DatasetNotFoundError as e:
             print(f"OpenSubtitles dataset not found for {repo_id}: {e}")
             return {"dataset": dataset_df, "byte_premium_factor": factor, "dataset_size": dataset_size}
@@ -174,7 +143,7 @@ def pad_dataset_to_next_tier(
 
 
         dataset_padding_config = DatasetConfig(language_code=language_code)
-        builder_padding = BabyLMDatasetBuilder(dataset_padding_config)
+        builder_padding = BabyLMDatasetBuilder(dataset_padding_config, merge_existing=False)
 
 
         builder_padding.add_documents_from_iterable(docs_padding, {})
