@@ -107,39 +107,19 @@ class BabyLMDatasetBuilder:
             if csv_path.exists():
                 try:
                     existing_df = pd.read_csv(csv_path)
-                    print(
-                        f"Loaded existing data (CSV) with {len(existing_df)} documents."
-                    )
-                    # Backward compatibility: add doc_id if missing
-                    if "doc_id" not in existing_df.columns:
-                        print(
-                            "doc_id column missing in existing data. Generating doc_id for each record."
-                        )
-                        existing_df["doc_id"] = existing_df["text"].apply(
-                            lambda x: hashlib.sha256(str(x).encode("utf-8")).hexdigest()
-                        )
-                    self._existing_doc_ids = set(existing_df["doc_id"].astype(str))
-                    self._existing_documents = existing_df.to_dict(orient="records")
                 except Exception as e:
                     print(f"Warning: Could not load existing CSV: {e}")
             elif parquet_path.exists():
                 try:
                     existing_df = pd.read_parquet(parquet_path)
-                    print(
-                        f"Loaded existing data (Parquet) with {len(existing_df)} documents."
-                    )
-                    # Backward compatibility: add doc_id if missing
-                    if "doc_id" not in existing_df.columns:
-                        print(
-                            "doc_id column missing in existing data. Generating doc_id for each record."
-                        )
-                        existing_df["doc_id"] = existing_df["text"].apply(
-                            lambda x: hashlib.sha256(str(x).encode("utf-8")).hexdigest()
-                        )
-                    self._existing_doc_ids = set(existing_df["doc_id"].astype(str))
-                    self._existing_documents = existing_df.to_dict(orient="records")
                 except Exception as e:
                     print(f"Warning: Could not load existing Parquet: {e}")
+            print(f"Loaded existing data with {len(existing_df)} documents.")
+            # Backward compatibility: add doc_id if missing
+            if "doc_id" not in existing_df.columns:
+                existing_df = self.add_missing_doc_id(existing_df)
+            self._existing_doc_ids = set(existing_df["doc_id"].astype(str))
+            self._existing_documents = existing_df.to_dict(orient="records")
 
     def add_document(
         self,
@@ -231,6 +211,19 @@ class BabyLMDatasetBuilder:
                 k: v for k, v in metadata.items() if k not in config_keys
             }
             self.add_document(text, document_id, doc_config, additional_metadata)
+
+    def add_missing_doc_id(self, df):
+        """
+        Add a 'doc_id' column to the DataFrame if it doesn't exist.
+        Generates SHA256 hash of the 'text' column for each row.
+        """
+        print(
+            "doc_id column missing in existing data. Generating doc_id for each record."
+        )
+        df["doc_id"] = df["text"].apply(
+            lambda x: hashlib.sha256(str(x).encode("utf-8")).hexdigest()
+        )
+        return df
 
     def create_dataset_table(self) -> pd.DataFrame:
         """Create the standardized BabyLM dataset table."""
