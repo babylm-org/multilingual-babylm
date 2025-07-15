@@ -26,9 +26,14 @@ class ChildesFetcher(BaseResourceFetcher):
         Fetch CHILDES data for a given language code and script code.
         Returns a list of dicts with keys: text, doc_id, metadata (for DocumentConfig)
         """
-        dataset = load_dataset(
-            "BabyLM-community/formatted-CHILDES", language_code, split="train"
-        )
+        try:
+            dataset = load_dataset(
+                "BabyLM-community/formatted-CHILDES", language_code, split="train"
+            )
+        except ValueError:
+            print(f"CHILDES not available for language: {language_code}")
+            return []
+
         results = []
         for doc in dataset:
             text = doc["text"]
