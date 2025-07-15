@@ -94,6 +94,14 @@ def process_dataset(
         loader = get_loader(data_type)
         docs.extend(loader.load_data(data_path))
 
+    if len(docs) == 0:
+        print(
+            "No documents found. Please provide valid data_path and/or add multilingual resources. Aborting ..."
+        )
+        return Path()
+
+    print(f"Loaded {len(docs)} documents from data source(s)")
+
     # 2. Load metadata file if provided and merge
     metadata_mapping = {}
     if metadata_file and metadata_file.exists():
