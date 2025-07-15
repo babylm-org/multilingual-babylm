@@ -6,6 +6,7 @@ Allows fetching from any supported resource by name.
 from multilingual_res.ririro import RiriroFetcher
 from multilingual_res.glotstorybook import GlotStorybookFetcher
 from multilingual_res.childwiki import ChildWikiFetcher
+from multilingual_res.childes import ChildesFetcher
 from typing import Optional
 
 
@@ -25,6 +26,9 @@ def fetch_resource(
         return fetcher.fetch(language_code)
     elif resource_name == "childwiki":
         fetcher = ChildWikiFetcher()
+        return fetcher.fetch(language_code, script_code)
+    elif resource_name == "childes":
+        fetcher = ChildesFetcher()
         return fetcher.fetch(language_code, script_code)
     else:
         raise ValueError(f"Resource '{resource_name}' not supported.")
