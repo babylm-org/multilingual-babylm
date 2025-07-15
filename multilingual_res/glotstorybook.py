@@ -78,4 +78,7 @@ class GlotStorybookFetcher(BaseResourceFetcher):
                     "metadata": metadata,
                 }
             )
+        print(
+            f"Fetched {len(results)} documents from GlotStoryBook for language '{language_code}'"
+        )
         return results

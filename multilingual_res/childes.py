@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from multilingual_res.base import BaseResourceFetcher
 from typing import List, Dict, Optional
 
+
 class ChildesFetcher(BaseResourceFetcher):
     def __init__(self):
         self.hf_token = os.environ.get("HF_TOKEN")
@@ -18,12 +19,16 @@ class ChildesFetcher(BaseResourceFetcher):
                 "HF_TOKEN environment variable not set. Please set it or add it to your .env file."
             )
 
-    def fetch(self, language_code: str, script_code: Optional[str] = None) -> List[Dict]:
+    def fetch(
+        self, language_code: str, script_code: Optional[str] = None
+    ) -> List[Dict]:
         """
         Fetch CHILDES data for a given language code and script code.
         Returns a list of dicts with keys: text, doc_id, metadata (for DocumentConfig)
         """
-        dataset = load_dataset("BabyLM-community/formatted-CHILDES", language_code, split="train")
+        dataset = load_dataset(
+            "BabyLM-community/formatted-CHILDES", language_code, split="train"
+        )
         results = []
         for doc in dataset:
             text = doc["text"]
@@ -33,12 +38,17 @@ class ChildesFetcher(BaseResourceFetcher):
                 "script": doc.get("script", script_code),
                 "age-estimate": doc.get("age-estimate", "n/a"),
                 "license": doc.get("license", "unknown"),
-                "misc": ""
+                "misc": "",
             }
             doc_id = hashlib.sha256(text.encode("utf-8")).hexdigest()
-            results.append({
-                "text": text,
-                "doc_id": doc_id,
-                "metadata": metadata,
-            })
+            results.append(
+                {
+                    "text": text,
+                    "doc_id": doc_id,
+                    "metadata": metadata,
+                }
+            )
+        print(
+            f"Fetched {len(results)} documents from CHILDES for language '{language_code}'"
+        )
         return results

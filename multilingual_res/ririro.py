@@ -224,4 +224,7 @@ class RiriroFetcher(BaseResourceFetcher):
             except Exception as e:
                 print(f"  Error fetching {url}: {e}")
             time.sleep(1)
+        print(
+            f"Fetched {len(results)} documents from Ririro for language '{language_code}'"
+        )
         return results
