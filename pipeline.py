@@ -208,6 +208,7 @@ def main():
             "qed",
             "child-available-speech",
             "simplified-text",
+            "padding",
         ],
         help="Content category",
     )

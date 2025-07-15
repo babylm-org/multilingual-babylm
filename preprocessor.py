@@ -129,13 +129,13 @@ def create_preprocessor(category: str) -> BasePreprocessor:
         "child-wiki": BookPreprocessor,
         "child-news": BookPreprocessor,
         "simplified-text": BookPreprocessor,
+        "padding": BookPreprocessor,
         # transcript-like, speech
         "subtitles": SubtitlePreprocessor,
         "child-directed-speech": TranscriptPreprocessor,
         "child-available-speech": TranscriptPreprocessor,
         # special
         "qed": QEDPreprocessor,
-        # padding-wikipedia padding-xxx?
     }
     return preprocessors[category]()
 

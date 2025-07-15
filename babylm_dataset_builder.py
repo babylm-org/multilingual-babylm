@@ -50,6 +50,7 @@ class DocumentConfig:
             "qed",
             "child-available-speech",
             "simplified-text",
+            "padding",
         }
         if self.category not in allowed_categories:
             raise ValueError(
