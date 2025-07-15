@@ -164,3 +164,11 @@ time python pipeline.py \
     --category "child-books" \
     --license "cc-by"
 
+# Example 12: Only add multilingual resources (no data-path or data-type)
+time python pipeline.py \
+    --language kor \
+    --script Kore \
+    --add-ririro-data \
+    --add-glotstorybook-data \
+    --add-childwiki-data \
+    --add-childes-data
