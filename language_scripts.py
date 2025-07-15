@@ -157,7 +157,7 @@ def validate_script_code(script_code: str) -> bool:
     return script_code in SCRIPT_NAMES
 
 
-def get_script_code_by_name(script_name: str) -> str | None:
+def get_script_code_by_name(script_name: str) -> str:
     """Return the script code (key) for a given script name (value) in SCRIPT_NAMES, or None if not found."""
     for code, name in SCRIPT_NAMES.items():
         if script_name == name:
