@@ -179,10 +179,12 @@ class RiriroFetcher(BaseResourceFetcher):
             try:
                 lang_key = Lang(language_code).pt1
             except Exception:
-                raise ValueError(f"Ririro not available for language: {language_code}")
+                print(f"Ririro not available for language: {language_code}")
+                return []
         lang_info = RIRIRO_LANGS.get(lang_key)
         if not lang_info:
-            raise ValueError(f"Ririro not available for language: {language_code}")
+            print(f"Ririro not available for language: {language_code}")
+            return []
         main_url = lang_info["url"]
         script = script_code if script_code else lang_info["script"]
         book_links = self._get_book_links(main_url)
