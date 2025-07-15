@@ -9,6 +9,11 @@ from babylm_dataset_builder import BabyLMDatasetBuilder, DatasetConfig
 import os
 from dotenv import load_dotenv
 
+import warnings
+from tqdm import tqdm, TqdmWarning
+warnings.filterwarnings("ignore", category=TqdmWarning)
+
+
 byte_premium_factors = {
     "eng" : 1.0000000,
     "nld" : 1.0516739,
@@ -128,13 +133,17 @@ def pad_dataset_to_next_tier(
         # dataset might be huge so we stream it
         data_count = 0
         selected_rows = []
+        # update tqdm bar with data_count, for a final of required_padding_in_mb
+        pbar = tqdm(total=required_padding_in_mb, bar_format='{l_bar}{bar}')
         for row in padding_dataset:
             num_bytes = bytes_in_text(row['text'])
             data_count += num_bytes
             selected_rows.append(row)
+            pbar.update(num_bytes)
             if data_count >= required_padding_in_mb:
                 break
 
+        pbar.close()
         padding_df = pd.DataFrame(selected_rows)
         padding_df['script'] = padding_df['script'].apply(normalize_script)
 
