@@ -24,13 +24,13 @@ from iso639 import is_language, Lang
 def process_dataset(
     language_code: str,
     script_code: str,
-    data_path: Path,
+    data_path: Optional[Path],
     document_config_params: dict,
     metadata_file: Optional[Path],
     upload: bool,
     repo_id: Optional[str],
     preprocess_text: bool,
-    data_type: str,
+    data_type: Optional[str],
     enable_language_filtering: bool,
     language_filter_threshold: float,
     pad_opensubtitles: bool,
@@ -89,9 +89,10 @@ def process_dataset(
         childes_docs = fetch_resource("childes", language_code, script_code)
         docs.extend(childes_docs)
 
-    # 1. Load data using loader
-    loader = get_loader(data_type)
-    docs.extend(loader.load_data(data_path))
+    # 1. Load data using loader if both data_path and data_type are provided
+    if data_path is not None and data_type is not None:
+        loader = get_loader(data_type)
+        docs.extend(loader.load_data(data_path))
 
     # 2. Load metadata file if provided and merge
     metadata_mapping = {}
@@ -183,13 +184,13 @@ def main():
         "--data-path",
         "-t",
         type=Path,
-        required=True,
+        default=None,
         help="Path to data directory or file",
     )
     parser.add_argument(
         "--data-type",
         type=str,
-        required=True,
+        default=None,
         choices=["text", "json", "jsonl", "csv", "hf"],
         help="Loader type for input data",
     )
