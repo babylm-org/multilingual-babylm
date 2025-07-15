@@ -105,6 +105,7 @@ def process_dataset(
     # 2. Load metadata file if provided and merge
     metadata_mapping = {}
     if metadata_file and metadata_file.exists():
+        print(f"Loading metadata from {metadata_file}")
         with open(metadata_file, "r", encoding="utf-8") as f:
             metadata_mapping = json.load(f)
     # Metadata file overrides document-level metadata
@@ -119,6 +120,7 @@ def process_dataset(
             del doc["file_name"]
 
     # 3. Build dataset
+    print("Building dataset...")
     dataset_config = DatasetConfig(language_code=language_code)
     # Zzzz : default ISO 15924 value for Unknown or Unencoded
     builder = BabyLMDatasetBuilder(dataset_config, merge_existing=not overwrite)
@@ -127,10 +129,12 @@ def process_dataset(
 
     # 4. Preprocess all texts (if requested)
     if preprocess_text:
+        print("Preprocessing document texts...")
         builder.dataset_table = preprocess_dataset(builder.dataset_table)
 
     # 5. Language filtering if enabled
     if enable_language_filtering:
+        print(f"Filtering dataset for language {language_code} and script {script_code}...")
         builder.dataset_table = filter_dataset_for_lang_and_script(
             builder.dataset_table,
             language_code=language_code,
@@ -140,6 +144,7 @@ def process_dataset(
 
     # 6. Pad dataset to next tier, accounting for byte premium
     if pad_opensubtitles:
+        print(f"Padding dataset for {language_code} using OpenSubtitles...")
         results = pad_dataset_to_next_tier(
             dataset_df=builder.dataset_table,
             language_code=language_code,
