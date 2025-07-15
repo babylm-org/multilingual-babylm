@@ -104,6 +104,7 @@ class BabyLMDatasetBuilder:
             parquet_path = (
                 self.output_dir / f"{self.dataset_config.dataset_name}_dataset.parquet"
             )
+            existing_df = None
             if csv_path.exists():
                 try:
                     existing_df = pd.read_csv(csv_path)
@@ -114,12 +115,15 @@ class BabyLMDatasetBuilder:
                     existing_df = pd.read_parquet(parquet_path)
                 except Exception as e:
                     print(f"Warning: Could not load existing Parquet: {e}")
-            print(f"Loaded existing data with {len(existing_df)} documents.")
-            # Backward compatibility: add doc_id if missing
-            if "doc_id" not in existing_df.columns:
-                existing_df = self.add_missing_doc_id(existing_df)
-            self._existing_doc_ids = set(existing_df["doc_id"].astype(str))
-            self._existing_documents = existing_df.to_dict(orient="records")
+            if existing_df is not None:
+                print(f"Loaded existing data with {len(existing_df)} documents.")
+                # Backward compatibility: add doc_id if missing
+                if "doc_id" not in existing_df.columns:
+                    existing_df = self.add_missing_doc_id(existing_df)
+                self._existing_doc_ids = set(existing_df["doc_id"].astype(str))
+                self._existing_documents = existing_df.to_dict(orient="records")
+            else:
+                print("Existing dataset not found for merge.")
 
     def add_document(
         self,
