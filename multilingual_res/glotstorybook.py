@@ -49,35 +49,36 @@ class GlotStorybookFetcher(BaseResourceFetcher):
         results = []
         for doc in filtered:
             text = doc["Text"]
-            script = doc["Script"]
-            data_license = doc["License"]
-            author = doc["Text By"] if "Text By" in doc else None
-            translator = doc["Translation By"] if "Translation By" in doc else None
-            data_source = "GlotStoryBook"
-            description = "Children StoryBooks for 180 languages."
-            source_identifier = doc["Source"] if "Source" in doc else None
-            misc = {
-                "translator": translator,
-                "author": author,
-                "description": description,
-                "source_identifier": source_identifier,
-            }
-            metadata = {
-                "category": "child-books",
-                "data-source": data_source,
-                "script": script,
-                "age-estimate": "n/a",
-                "license": data_license,
-                "misc": misc,
-            }
-            doc_id = hashlib.sha256(text.encode("utf-8")).hexdigest()
-            results.append(
-                {
-                    "text": text,
-                    "doc_id": doc_id,
-                    "metadata": metadata,
+            if text is not None:
+                script = doc["Script"]
+                data_license = doc["License"]
+                author = doc["Text By"] if "Text By" in doc else None
+                translator = doc["Translation By"] if "Translation By" in doc else None
+                data_source = "GlotStoryBook"
+                description = "Children StoryBooks for 180 languages."
+                source_identifier = doc["Source"] if "Source" in doc else None
+                misc = {
+                    "translator": translator,
+                    "author": author,
+                    "description": description,
+                    "source_identifier": source_identifier,
                 }
-            )
+                metadata = {
+                    "category": "child-books",
+                    "data-source": data_source,
+                    "script": script,
+                    "age-estimate": "n/a",
+                    "license": data_license,
+                    "misc": misc,
+                }
+                doc_id = hashlib.sha256(text.encode("utf-8")).hexdigest()
+                results.append(
+                    {
+                        "text": text,
+                        "doc_id": doc_id,
+                        "metadata": metadata,
+                    }
+                )
         print(
             f"Fetched {len(results)} documents from GlotStoryBook for language '{language_code}'"
         )

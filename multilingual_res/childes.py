@@ -37,22 +37,23 @@ class ChildesFetcher(BaseResourceFetcher):
         results = []
         for doc in dataset:
             text = doc["text"]
-            metadata = {
-                "category": doc.get("category", "child-directed-speech"),
-                "data-source": doc.get("data-source", "CHILDES"),
-                "script": doc.get("script", script_code),
-                "age-estimate": doc.get("age-estimate", "n/a"),
-                "license": doc.get("license", "unknown"),
-                "misc": "",
-            }
-            doc_id = hashlib.sha256(text.encode("utf-8")).hexdigest()
-            results.append(
-                {
-                    "text": text,
-                    "doc_id": doc_id,
-                    "metadata": metadata,
+            if text is not None:
+                metadata = {
+                    "category": doc.get("category", "child-directed-speech"),
+                    "data-source": doc.get("data-source", "CHILDES"),
+                    "script": doc.get("script", script_code),
+                    "age-estimate": doc.get("age-estimate", "n/a"),
+                    "license": doc.get("license", "unknown"),
+                    "misc": "",
                 }
-            )
+                doc_id = hashlib.sha256(text.encode("utf-8")).hexdigest()
+                results.append(
+                    {
+                        "text": text,
+                        "doc_id": doc_id,
+                        "metadata": metadata,
+                    }
+                )
         print(
             f"Fetched {len(results)} documents from CHILDES for language '{language_code}'"
         )

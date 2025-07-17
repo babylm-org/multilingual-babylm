@@ -212,7 +212,7 @@ class RiriroFetcher(BaseResourceFetcher):
                     "script": script,
                     "age-estimate": age_estimate,
                     "license": "cc-by-nc-4.0",
-                    "misc": {"source_url": url},
+                    "misc": {"source_url": url, "title": title},
                 }
                 results.append(
                     {
