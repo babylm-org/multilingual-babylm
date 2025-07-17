@@ -150,6 +150,7 @@ def process_dataset(
         results = pad_dataset_to_next_tier(
             dataset_df=builder.dataset_table,
             language_code=language_code,
+            script_code=script_code,
         )
         builder.dataset_table = results["dataset"]
         # Keep the byte premium factor and dataset size for metadata
