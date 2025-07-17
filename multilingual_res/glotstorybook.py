@@ -65,7 +65,7 @@ class GlotStorybookFetcher(BaseResourceFetcher):
                 }
                 metadata = {
                     "category": "child-books",
-                    "data-source": data_source,
+                    "data-source": f"GlotStoryBook - {data_source}",
                     "script": script,
                     "age-estimate": "n/a",
                     "license": data_license,

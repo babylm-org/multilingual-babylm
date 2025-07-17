@@ -36,7 +36,7 @@ class ChildWikiFetcher(BaseResourceFetcher):
                 title = doc["title"]
                 metadata = {
                     "category": "child-wiki",
-                    "data-source": data_source,
+                    "data-source": f"ChildWiki - {data_source}",
                     "script": script_code,
                     "age-estimate": "n/a",
                     "license": "cc-by-sa",

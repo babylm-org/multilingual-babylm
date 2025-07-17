@@ -40,7 +40,7 @@ class ChildesFetcher(BaseResourceFetcher):
             if text is not None:
                 metadata = {
                     "category": doc.get("category", "child-directed-speech"),
-                    "data-source": doc.get("data-source", "CHILDES"),
+                    "data-source": f"CHILDES - {doc.get('data-source', 'unknown')}",
                     "script": doc.get("script", script_code),
                     "age-estimate": doc.get("age-estimate", "n/a"),
                     "license": doc.get("license", "unknown"),
