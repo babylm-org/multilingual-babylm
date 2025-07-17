@@ -6,6 +6,7 @@ from typing import Any
 from babylm_dataset_builder import BabyLMDatasetBuilder, DatasetConfig
 
 import os
+import hashlib
 from dotenv import load_dotenv
 
 import warnings
@@ -99,11 +100,11 @@ def dataframe_to_docs(dataset_df: pd.DataFrame) -> list[dict[str, Any]]:
         if not text:
             continue
         meta = {k: v for k, v in row.items() if k != "text"}
-        doc_id = row.get("doc_id") or row.get("id") or None
+        doc_id = hashlib.sha256(text.encode("utf-8")).hexdigest()
         docs.append(
             {
                 "text": text,
-                "doc_id": doc_id if doc_id is not None else str(i),
+                "doc_id": doc_id,
                 "metadata": meta,
             }
         )
