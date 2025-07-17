@@ -16,7 +16,7 @@ from language_filter import filter_dataset_for_lang_and_script
 from language_scripts import validate_script_code
 from loader import get_loader
 from pad_dataset import pad_dataset_to_next_tier
-from multilingual_res.manager import fetch_resource
+from multilingual_res.manager import fetch_resource, remove_resource    
 
 from iso639 import is_language, Lang
 
@@ -40,6 +40,11 @@ def process_dataset(
     add_glotstorybook_data: bool = False,
     add_childwiki_data: bool = False,
     add_childes_data: bool = False,
+    remove_previous_ririro_data: bool = False,
+    remove_previous_glotstorybook_data: bool = False,
+    remove_previous_childwiki_data: bool = False,
+    remove_previous_childes_data: bool = False,
+    remove_previous_padding: bool = False,
 ) -> Path:
     """
     Process any data source into BabyLM format.
@@ -68,31 +73,49 @@ def process_dataset(
     print(f"Processing data for {language_code}...")
 
     docs = []
-    # 0. Optionally fetch Ririro resource
+    # 0. Load data using loader if both data_path and data_type are provided
+    if data_path is not None and data_type is not None:
+        loader = get_loader(data_type)
+        docs.extend(loader.load_data(data_path))
+
+    # 0.5 Remove previously added resources if requested
+    if remove_previous_ririro_data:
+        print(f"Removing previously added Ririro resource for language: {language_code}")
+        remove_resource("ririro", docs)
+
+    if remove_previous_glotstorybook_data:
+        print(f"Removing previously added GlotStoryBook resource for language: {language_code}")
+        remove_resource("glotstorybook", docs)
+
+    if remove_previous_childwiki_data:
+        print(f"Removing previously added ChildWiki resource for language: {language_code}")
+        remove_resource("childwiki", docs)
+
+    if remove_previous_childes_data:
+        print(f"Removing previously added Childes resource for language: {language_code}")
+        remove_resource("childes", docs)
+
+    # 1.0 Optionally fetch Ririro resource
     if add_ririro_data:
         print(f"Fetching Ririro resource for language: {language_code}")
         ririro_docs = fetch_resource("ririro", language_code, script_code)
         docs.extend(ririro_docs)
-    # 0.1 Optionally fetch GlotStoryBook resource
+    # 1.1 Optionally fetch GlotStoryBook resource
     if add_glotstorybook_data:
         print(f"Fetching GlotStoryBook resource for language: {language_code}")
         glotstorybook_docs = fetch_resource("glotstorybook", language_code, script_code)
         docs.extend(glotstorybook_docs)
-    # 0.2 Optionally fetch ChildWiki resource
+    # 1.2 Optionally fetch ChildWiki resource
     if add_childwiki_data:
         print(f"Fetching ChildWiki resource for language: {language_code}")
         childwiki_docs = fetch_resource("childwiki", language_code, script_code)
         docs.extend(childwiki_docs)
-    # 0.3 Optionally fetch Childes resource
+    # 1.3 Optionally fetch Childes resource
     if add_childes_data:
         print(f"Fetching Childes resource for language: {language_code}")
         childes_docs = fetch_resource("childes", language_code, script_code)
         docs.extend(childes_docs)
 
-    # 1. Load data using loader if both data_path and data_type are provided
-    if data_path is not None and data_type is not None:
-        loader = get_loader(data_type)
-        docs.extend(loader.load_data(data_path))
 
     if len(docs) == 0:
         print(
@@ -127,6 +150,8 @@ def process_dataset(
     builder.add_documents_from_iterable(docs, document_config_params)
     builder.create_dataset_table()
 
+
+
     # 4. Preprocess all texts (if requested)
     if preprocess_text:
         print("Preprocessing document texts...")
@@ -151,6 +176,8 @@ def process_dataset(
             dataset_df=builder.dataset_table,
             language_code=language_code,
             script_code=script_code,
+            remove_previous_padding=remove_previous_padding,
+
         )
         builder.dataset_table = results["dataset"]
         # Keep the byte premium factor and dataset size for metadata
@@ -282,6 +309,14 @@ def main():
     )
 
     parser.add_argument(
+        "--remove-previous-padding",
+        action="store_true",
+        help="If set, remove previously added padding for the given language.",
+    )
+
+
+
+    parser.add_argument(
         "--tokenizer-name",
         type=str,
         default=None,
@@ -312,6 +347,29 @@ def main():
         action="store_true",
         help="If set, fetch and add Childes resource for the given language before processing other data.",
     )
+
+    parser.add_argument(
+        "--remove-previous-ririro-data",
+        action="store_true",
+        help="If set, remove Ririro previously added resource for the given language.",
+    )
+    parser.add_argument(
+        "--remove-previous-glotstorybook-data",
+        action="store_true",
+        help="If set, remove GlotStoryBook previously added resource for the given language.",
+    )
+    parser.add_argument(
+        "--remove-previous-childwiki-data",
+        action="store_true",
+        help="If set, remove ChildWiki previously added resource for the given language.",
+    )
+    parser.add_argument(
+        "--remove-previous-childes-data",
+        action="store_true",
+        help="If set, remove Childes previously added resource for the given language.",
+    )
+
+
 
     args = parser.parse_args()
 
@@ -361,6 +419,11 @@ def main():
         add_glotstorybook_data=args.add_glotstorybook_data,
         add_childwiki_data=args.add_childwiki_data,
         add_childes_data=args.add_childes_data,
+        remove_previous_ririro_data=args.remove_previous_ririro_data,
+        remove_previous_glotstorybook_data=args.remove_previous_glotstorybook_data,
+        remove_previous_childwiki_data=args.remove_previous_childwiki_data,
+        remove_previous_childes_data=args.remove_previous_childes_data,
+        remove_previous_padding=args.remove_previous_padding, 
     )
 
 

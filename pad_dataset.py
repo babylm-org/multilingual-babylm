@@ -74,6 +74,19 @@ eng_sizes_per_tier = {
 }
 
 
+
+def remove_padding(dataset_df: pd.DataFrame):
+    """
+    Remove padding from the dataset.
+    """
+    filter_mask = dataset_df["category"].str.startswith(
+        "padding-"
+    )
+    filter_mask = filter_mask | dataset_df["data-source"] == 'OpenSubtitles'
+    dataset_df = dataset_df[~filter_mask]
+    return dataset_df
+
+
 def count_tokens(text: str) -> int:
     # Simple whitespace tokenization
     return len(text.split())
@@ -162,8 +175,9 @@ def pad_with_opensubtitles(
             data_count += num
             selected_rows.append(row)
             pbar.update(num)
-            if data_count >= required_padding:
+            if data_count >= required_padding:    
                 break
+
         pbar.close()
         return selected_rows, data_count, repo_id
     except Exception as e:
@@ -389,6 +403,15 @@ def pad_by_byte_factor(
 
     final_dataset_size = dataset_df["text"].apply(bytes_in_text).sum()
     tier_words = dataset_tier.split("_")[-1]
+
+
+    if final_dataset_size < eng_sizes_per_tier[dataset_tier] * factor:
+        print(
+            f"Warning: Final dataset size {final_dataset_size:.3f} MB is less than required {eng_sizes_per_tier[dataset_tier] * factor:.3f} MB for tier {dataset_tier}."
+        )
+        print(f"Not enough padding data available to reach the target tier {dataset_tier}.")
+
+
     print(f"\n{'=' * 60}")
     print("PADDING RESULTS")
     print(f"{'=' * 60}")
@@ -487,6 +510,8 @@ def pad_by_token_count(
             "dataset_size": dataset_df["text"].apply(count_tokens).sum(),
         }
 
+
+
     final_token_count = dataset_df["text"].apply(count_tokens).sum()
     tier_words = dataset_tier.split("_")[-1]
     token_tiers = {
@@ -494,6 +519,16 @@ def pad_by_token_count(
         "tier_10M": 10_000_000,
         "tier_100M": 100_000_000,
     }
+
+
+    if final_token_count < token_tiers[dataset_tier]:
+        print(
+            f"Warning: Final token count {final_token_count} is less than required {token_tiers[dataset_tier]} tokens for tier {dataset_tier}."
+        )
+        print(f"Not enough padding data available to reach the target tier {dataset_tier}.")
+
+
+
     print(f"\n{'=' * 60}")
     print("PADDING RESULTS (TOKEN COUNT)")
     print(f"{'=' * 60}")
@@ -510,6 +545,8 @@ def pad_by_token_count(
     print(f"Padding data token count: {data_count}")
     print(f"Final dataset token count after padding: {final_token_count}")
     print(f"{'=' * 60}\n")
+
+
     return {
         "dataset": dataset_df,
         "byte_premium_factor": None,
@@ -521,7 +558,12 @@ def pad_dataset_to_next_tier(
     dataset_df: pd.DataFrame,
     language_code: str,
     script_code: str,
+    remove_previous_padding: bool = False,
 ) -> dict[str, Any]:
+
+    if remove_previous_padding:
+        print("Removing existing padding from dataset.")
+        dataset_df = remove_padding(dataset_df)
 
     factor = byte_premium_factors.get(language_code)
     load_dotenv()

@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 from multilingual_res.base import BaseResourceFetcher
 from typing import List, Dict, Optional
 
-
 class ChildWikiFetcher(BaseResourceFetcher):
     def __init__(self):
         self.hf_token = os.environ.get("HF_TOKEN")
@@ -36,11 +35,11 @@ class ChildWikiFetcher(BaseResourceFetcher):
                 title = doc["title"]
                 metadata = {
                     "category": "child-wiki",
-                    "data-source": f"ChildWiki - {data_source}",
+                    "data-source": data_source,
                     "script": script_code,
                     "age-estimate": "n/a",
                     "license": "cc-by-sa",
-                    "misc": {"title": title},
+                    "misc": {"title": title, "multilingual_resource": "childwiki"},
                 }
                 doc_id = hashlib.sha256(text.encode("utf-8")).hexdigest()
                 results.append(

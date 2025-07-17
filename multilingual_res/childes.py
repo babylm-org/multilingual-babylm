@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 from multilingual_res.base import BaseResourceFetcher
 from typing import List, Dict, Optional
 
-
 class ChildesFetcher(BaseResourceFetcher):
     def __init__(self):
         self.hf_token = os.environ.get("HF_TOKEN")
@@ -40,11 +39,11 @@ class ChildesFetcher(BaseResourceFetcher):
             if text is not None:
                 metadata = {
                     "category": doc.get("category", "child-directed-speech"),
-                    "data-source": f"CHILDES - {doc.get('data-source', 'unknown')}",
+                    "data-source": doc.get('data-source', 'unknown'),
                     "script": doc.get("script", script_code),
                     "age-estimate": doc.get("age-estimate", "n/a"),
                     "license": doc.get("license", "unknown"),
-                    "misc": "",
+                    "misc": {"multilingual_resource": "childes"},
                 }
                 doc_id = hashlib.sha256(text.encode("utf-8")).hexdigest()
                 results.append(
