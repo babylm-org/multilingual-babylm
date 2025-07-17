@@ -134,7 +134,9 @@ def process_dataset(
 
     # 5. Language filtering if enabled
     if enable_language_filtering:
-        print(f"Filtering dataset for language {language_code} and script {script_code}...")
+        print(
+            f"Filtering dataset for language {language_code} and script {script_code}..."
+        )
         builder.dataset_table = filter_dataset_for_lang_and_script(
             builder.dataset_table,
             language_code=language_code,
@@ -263,13 +265,17 @@ def main():
         help="Minimum confidence threshold for language filtering (0.0-1.0)",
     )
     parser.add_argument(
-        "--preprocess-text", action="store_true", help="Enable text preprocessing"
+        "--preprocess",
+        "--preprocess-text",
+        action="store_true",
+        help="Enable text preprocessing",
     )
 
     parser.add_argument(
+        "--pad",
         "--pad-opensubtitles",
         action="store_true",
-        help="Enable padding with OpenSubtitles",
+        help="Enable padding with OpenSubtitles, FineWeb-C, or Wikipedia (alias: --pad)",
     )
 
     parser.add_argument(
