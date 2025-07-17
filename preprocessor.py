@@ -129,7 +129,6 @@ def create_preprocessor(category: str) -> BasePreprocessor:
         "child-wiki": BookPreprocessor,
         "child-news": BookPreprocessor,
         "simplified-text": BookPreprocessor,
-        "padding": BookPreprocessor,
         # transcript-like, speech
         "subtitles": SubtitlePreprocessor,
         "child-directed-speech": TranscriptPreprocessor,
@@ -137,6 +136,8 @@ def create_preprocessor(category: str) -> BasePreprocessor:
         # special
         "qed": QEDPreprocessor,
     }
+    if category.startswith("padding"):
+        return BookPreprocessor()
     return preprocessors[category]()
 
 
