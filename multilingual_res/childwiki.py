@@ -31,24 +31,25 @@ class ChildWikiFetcher(BaseResourceFetcher):
         results = []
         for doc in filtered:
             text = doc["content"]
-            data_source = doc["wiki"]
-            title = doc["title"]
-            metadata = {
-                "category": "child-wiki",
-                "data-source": data_source,
-                "script": script_code,
-                "age-estimate": "n/a",
-                "license": "cc-by-sa",
-                "misc": {"title": title},
-            }
-            doc_id = hashlib.sha256(text.encode("utf-8")).hexdigest()
-            results.append(
-                {
-                    "text": text,
-                    "doc_id": doc_id,
-                    "metadata": metadata,
+            if text is not None:
+                data_source = doc["wiki"]
+                title = doc["title"]
+                metadata = {
+                    "category": "child-wiki",
+                    "data-source": f"ChildWiki - {data_source}",
+                    "script": script_code,
+                    "age-estimate": "n/a",
+                    "license": "cc-by-sa",
+                    "misc": {"title": title},
                 }
-            )
+                doc_id = hashlib.sha256(text.encode("utf-8")).hexdigest()
+                results.append(
+                    {
+                        "text": text,
+                        "doc_id": doc_id,
+                        "metadata": metadata,
+                    }
+                )
         print(
             f"Fetched {len(results)} documents from ChildWiki for language '{language_code}'"
         )

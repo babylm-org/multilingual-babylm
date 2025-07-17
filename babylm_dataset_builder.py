@@ -52,9 +52,11 @@ class DocumentConfig:
             "simplified-text",
             "padding",
         }
-        if self.category not in allowed_categories:
+        if self.category not in allowed_categories and not self.category.startswith(
+            "padding-"
+        ):
             raise ValueError(
-                f"Category '{self.category}' must be one of: {allowed_categories}"
+                f"Category '{self.category}' must be one of: {allowed_categories} or start with 'padding-'"
             )
 
     def validate_script(self):
