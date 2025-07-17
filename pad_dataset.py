@@ -1,6 +1,5 @@
 import pandas as pd
-from datasets import load_dataset
-from datasets.exceptions import DatasetNotFoundError
+from datasets import load_dataset, get_dataset_config_names
 from iso639 import Lang
 from typing import Any
 
@@ -11,72 +10,76 @@ from dotenv import load_dotenv
 
 import warnings
 from tqdm import tqdm, TqdmWarning
+
 warnings.filterwarnings("ignore", category=TqdmWarning)
 
 
 byte_premium_factors = {
-    "eng" : 1.0,
-    "nld" : 1.0516739,
-    "ukr" : 1.7514786,
-    "zho" : 0.9893825,
-    "bul" : 1.8123562,
-    "ind" : 1.1788023,
-    "fra" : 1.1742064,
-    "deu" : 1.0537171,
-    "jpn" : 1.322025,
-    "ita" : 1.066923,
-    "spa" : 1.0838621,
-    "ell" : 1.9673049,
-    "pol" : 1.0774161,
-    "eus" : 1.0595837,
-    "ara" : 1.4651134,
-    "srp" : 1.4249495,
-    "por" : 1.097927,
-    "heb" : 1.3555346,
-    "est" : 0.9677856,
-    "cym" : 1.0265667,
-    "hrv" : 0.9897218,
-    "swe" : 1.0210256,
-    "ron" : 1.1151666,
-    "kor" : 1.2933602,
-    "isl" : 1.1543925,
-    "afr" : 1.0373004,
-    "xho" : 1.198886,
-    "zul" : 1.1639372,
-    "sot" : 1.1661078,
-    "nso" : 1.1156964,
-    "hun" : 1.0199851,
-    "ces" : 1.0358867,
-    "yue" : 0.8624614,
-    "cat" : 1.0926706,
-    "jav" : 1.1468458,
-    "dan" : 1.0210658,
-    "tha" : 2.7416472,
-    "nor" : 1.125316,
-    "tur" : 1.0444815,
-    "fas" : 1.5973263,
-    "rus" : 1.8228284,
-    "gle" : 1.9749562,
-    "crl" : 2.6007383,
-    "tsn" : 1.1739403,
-    "yuw" : 1.605417,
-    "tam" : 2.7290997,
-    "slv" : 0.97215,
-    "mop" : 1.6077918,
-    "mar" : 2.4793565,
-    "ltz" : 1.225349
+    "eng": 1.0,
+    "nld": 1.0516739,
+    "ukr": 1.7514786,
+    "zho": 0.9893825,
+    "bul": 1.8123562,
+    "ind": 1.1788023,
+    "fra": 1.1742064,
+    "deu": 1.0537171,
+    "jpn": 1.322025,
+    "ita": 1.066923,
+    "spa": 1.0838621,
+    "ell": 1.9673049,
+    "pol": 1.0774161,
+    "eus": 1.0595837,
+    "ara": 1.4651134,
+    "srp": 1.4249495,
+    "por": 1.097927,
+    "heb": 1.3555346,
+    "est": 0.9677856,
+    "cym": 1.0265667,
+    "hrv": 0.9897218,
+    "swe": 1.0210256,
+    "ron": 1.1151666,
+    "kor": 1.2933602,
+    "isl": 1.1543925,
+    "afr": 1.0373004,
+    "xho": 1.198886,
+    "zul": 1.1639372,
+    "sot": 1.1661078,
+    "nso": 1.1156964,
+    "hun": 1.0199851,
+    "ces": 1.0358867,
+    "yue": 0.8624614,
+    "cat": 1.0926706,
+    "jav": 1.1468458,
+    "dan": 1.0210658,
+    "tha": 2.7416472,
+    "nor": 1.125316,
+    "tur": 1.0444815,
+    "fas": 1.5973263,
+    "rus": 1.8228284,
+    "gle": 1.9749562,
+    "crl": 2.6007383,
+    "tsn": 1.1739403,
+    "yuw": 1.605417,
+    "tam": 2.7290997,
+    "slv": 0.97215,
+    "mop": 1.6077918,
+    "mar": 2.4793565,
+    "ltz": 1.225349,
 }
-
-
 
 eng_sizes_per_tier = {
-    "tier_1M" : 5.430,
-    "tier_10M" : 54.30,
-    "tier_100M" : 543.00,
+    "tier_1M": 5.430,
+    "tier_10M": 54.30,
+    "tier_100M": 543.00,
 }
 
 
-def dataframe_to_docs(dataset_df : pd.DataFrame) -> list[dict[str, Any]]:
+def count_tokens(text: str) -> int:
+    # Simple whitespace tokenization
+    return len(text.split())
+
+
+def dataframe_to_docs(dataset_df: pd.DataFrame) -> list[dict[str, Any]]:
     docs = []
     for i, row in dataset_df.iterrows():
         text = row.get("text", "")
@@ -94,8 +97,8 @@ def dataframe_to_docs(dataset_df : pd.DataFrame) -> list[dict[str, Any]]:
     return docs
 
 
-def bytes_in_text(text: str) -> int:
-    return len(text.encode('utf-8')) / 1_000_000  # Convert to MB
+def bytes_in_text(text: str) -> float:
+    return len(text.encode("utf-8")) / 1_000_000  # Convert to MB
 
 
 def normalize_script(script: str) -> str:
@@ -114,95 +117,355 @@ def normalize_script(script: str) -> str:
     return script
 
 
-def pad_dataset_to_next_tier(
-        dataset_df: pd.DataFrame,
-        language_code: str,
-        padding_resource: str = 'open-subtitles'
-    ) -> dict[str, Any]:
-
-    factor = byte_premium_factors.get(language_code)
-    # calculate dataset size in Byte Premium space in MB
-    dataset_size = dataset_df['text'].apply(bytes_in_text).sum()
-
-    if factor is None:
-        print('Byte premium for language code:', language_code, 'not found. Available codes:', list(byte_premium_factors.keys()))
-        return {"dataset": dataset_df, "byte_premium_factor": factor, "dataset_size": dataset_size}
-
-    # get tier to pad to
-    if dataset_size < eng_sizes_per_tier["tier_1M"] * factor:
+def get_dataset_tier(dataset_size, tier_sizes, factor=1.0):
+    """
+    Determine the tier based on dataset size.
+    """
+    if dataset_size < tier_sizes["tier_1M"] * factor:
         dataset_tier = "tier_1M"
-    elif dataset_size < eng_sizes_per_tier["tier_10M"] * factor:
+    elif dataset_size < tier_sizes["tier_10M"] * factor:
         dataset_tier = "tier_10M"
-    elif dataset_size < eng_sizes_per_tier["tier_100M"] * factor:
+    elif dataset_size < tier_sizes["tier_100M"] * factor:
         dataset_tier = "tier_100M"
     else:
-        print('Dataset size exceeds the largest tier of 100M equivalent English words, no need for padding')
-        return {"dataset": dataset_df, "byte_premium_factor": factor, "dataset_size": dataset_size}
+        dataset_tier = None
+        print("Dataset size exceeds the largest tier of 100M MB, no need for padding")
+    return dataset_tier
 
-    required_padding_in_mb = eng_sizes_per_tier[dataset_tier] * factor - dataset_size
-    if padding_resource == 'open-subtitles':
-        iso_639_1_code = Lang(language_code).pt1
-        repo_id = f'BabyLM-community/babylm-{iso_639_1_code}-subtitles'
-        print(f"Loading OpenSubtitles data for language: {language_code} using repo: {repo_id}")
-        load_dotenv()
-        HF_token = os.getenv("HF_TOKEN")
-        try:
-            padding_dataset = load_dataset(repo_id, streaming=True, split="train", token=HF_token)
-        except DatasetNotFoundError as e:
-            print(f"OpenSubtitles dataset not found for {repo_id}: {e}")
-            return {"dataset": dataset_df, "byte_premium_factor": factor, "dataset_size": dataset_size}
 
-        # dataset might be huge so we stream it
-        data_count = 0
-        selected_rows = []
-        # update tqdm bar with data_count, for a final of required_padding_in_mb
-        pbar = tqdm(total=required_padding_in_mb, bar_format='{l_bar}{bar}')
+def pad_with_opensubtitles(
+    language_code: str,
+    required_padding: float,
+    HF_token: str,
+    pad_by_tokens: bool = False,
+):
+    data_count = 0
+    selected_rows = []
+    iso_639_1_code = Lang(language_code).pt1
+    repo_id = f"BabyLM-community/babylm-{iso_639_1_code}-subtitles"
+    print(
+        f"Loading OpenSubtitles data for language: {language_code} using repo: {repo_id}"
+    )
+    try:
+        padding_dataset = load_dataset(
+            repo_id, streaming=True, split="train", token=HF_token
+        )
+        pbar = tqdm(total=required_padding, bar_format="{l_bar}{bar}")
         for row in padding_dataset:
-            num_bytes = bytes_in_text(row['text'])
-            data_count += num_bytes
+            if not isinstance(row, dict):
+                continue
+            text = row.get("text", "")
+            if pad_by_tokens:
+                num = count_tokens(text)
+            else:
+                num = bytes_in_text(text)
+            data_count += num
             selected_rows.append(row)
-            pbar.update(num_bytes)
-            if data_count >= required_padding_in_mb:
+            pbar.update(num)
+            if data_count >= required_padding:
                 break
-
         pbar.close()
+        return selected_rows, data_count, repo_id
+    except Exception as e:
+        print(f"OpenSubtitles dataset not found or error for {repo_id}: {e}")
+        return [], 0, repo_id
+
+
+def pad_with_fineweb_c(
+    language_code: str,
+    required_padding: float,
+    HF_token: str,
+    pad_by_tokens: bool = False,
+):
+    data_count = 0
+    selected_rows = []
+    fineweb_repo = "data-is-better-together/fineweb-c"
+    all_subsets = get_dataset_config_names(fineweb_repo)
+    matching_subsets = [s for s in all_subsets if s.startswith(f"{language_code}_")]
+    try:
+        for fineweb_subset in matching_subsets:
+            print(
+                f"Loading fineweb-c data for language: {language_code}, subset: {fineweb_subset}"
+            )
+            fineweb_dataset = load_dataset(
+                fineweb_repo,
+                name=fineweb_subset,
+                split="train",
+                streaming=True,
+                token=HF_token,
+            )
+            script_code = fineweb_subset.split("_")[-1]
+            pbar = tqdm(total=required_padding, bar_format="{l_bar}{bar}")
+            for row in fineweb_dataset:
+                if not isinstance(row, dict):
+                    continue
+                if row.get("problematic_content_label_present", True):
+                    continue
+                labels = row.get("educational_value_labels", [])
+                if len(set(labels)) == 1 and (
+                    list(set(labels))[0] is None or list(set(labels))[0] == "None"
+                ):
+                    continue
+                if pad_by_tokens:
+                    num = count_tokens(row.get("text", ""))
+                else:
+                    num = bytes_in_text(row.get("text", ""))
+                row["script"] = script_code
+                row["category"] = "padding-fineweb-c"
+                row["data-source"] = f"{fineweb_repo}/{fineweb_subset}"
+                row["age-estimate"] = "n/a"
+                row["license"] = "ODC-By"
+                data_count += num
+                selected_rows.append(row)
+                pbar.update(num)
+                if data_count >= required_padding:
+                    break
+            pbar.close()
+        return selected_rows, data_count, f"{fineweb_repo}/{fineweb_subset}"
+    except Exception as e:
+        print(
+            f"fineweb-c dataset not found or error for {fineweb_repo}/{fineweb_subset}: {e}"
+        )
+        return [], 0, f"{fineweb_repo}/{fineweb_subset}"
+
+
+def pad_by_byte_factor(
+    dataset_df: pd.DataFrame,
+    language_code: str,
+    factor: float,
+    dataset_size: float,
+    dataset_tier: str,
+    required_padding_in_mb: float,
+    padding_resource: str,
+    HF_token: str,
+):
+    used_resources = []
+    selected_rows = []
+    data_count = 0
+    # 1. Try OpenSubtitles
+    os_rows, os_count, os_repo = pad_with_opensubtitles(
+        language_code, required_padding_in_mb, HF_token, pad_by_tokens=False
+    )
+    selected_rows.extend(os_rows)
+    data_count += os_count
+    if os_rows:
+        used_resources.append(f"open-subtitles:{os_repo}")
+
+    # 2. If still not enough, try fineweb-c
+    if data_count < required_padding_in_mb:
+        fw_rows, fw_count, fw_repo = pad_with_fineweb_c(
+            language_code,
+            required_padding_in_mb - data_count,
+            HF_token,
+            pad_by_tokens=False,
+        )
+        selected_rows.extend(fw_rows)
+        data_count += fw_count
+        if fw_rows:
+            used_resources.append(f"fineweb-c:{fw_repo}")
+
+    if selected_rows:
         padding_df = pd.DataFrame(selected_rows)
-        padding_df['script'] = padding_df['script'].apply(normalize_script)
+        if "script" in padding_df.columns:
+            padding_df["script"] = padding_df["script"].apply(normalize_script)
 
         # pass through builder to validate documents
         docs_padding = dataframe_to_docs(padding_df)
 
-
         dataset_padding_config = DatasetConfig(language_code=language_code)
-        builder_padding = BabyLMDatasetBuilder(dataset_padding_config, merge_existing=False)
-
+        builder_padding = BabyLMDatasetBuilder(
+            dataset_padding_config, merge_existing=False
+        )
 
         builder_padding.add_documents_from_iterable(docs_padding, {})
         dataset_padding_df = builder_padding.create_dataset_table()
 
+        # concatenate the original dataset with the padding dataset
+        dataset_df = pd.concat([dataset_df, dataset_padding_df], ignore_index=True)
+        dataset_df.reset_index(drop=True, inplace=True)
+    else:
+        print("No padding data could be loaded from any resource.")
+        return {
+            "dataset": dataset_df,
+            "byte_premium_factor": factor,
+            "dataset_size": dataset_df["text"].apply(bytes_in_text).sum(),
+        }
+
+    final_dataset_size = dataset_df["text"].apply(bytes_in_text).sum()
+    tier_words = dataset_tier.split("_")[-1]
+    print(f"\n{'=' * 60}")
+    print("PADDING RESULTS")
+    print(f"{'=' * 60}")
+    print(
+        f"Padding language: {language_code} with data from {padding_resource} to tier {tier_words} words"
+    )
+    print(
+        f"Downloaded data from repos: {', '.join(used_resources) if used_resources else 'None'}"
+    )
+    print(f"Initial dataset size: {dataset_size:.3f} MB")
+    print(f"Byte Premium factor for {language_code}: {factor}")
+    print(
+        f"Required dataset size to match {tier_words} words of English ({eng_sizes_per_tier[dataset_tier]} MB) is {eng_sizes_per_tier[dataset_tier] * factor:.3f} MB"
+    )
+    print(f"Padding data size: {data_count:.3f} MB")
+    print(f"Final dataset size after padding: {final_dataset_size:.3f} MB")
+    print(f"{'=' * 60}\n")
+    return {
+        "dataset": dataset_df,
+        "byte_premium_factor": factor,
+        "dataset_size": final_dataset_size,
+    }
+
+
+def pad_by_token_count(
+    dataset_df: pd.DataFrame,
+    language_code: str,
+    dataset_tokens: int,
+    dataset_tier: str,
+    required_padding_in_tokens: int,
+    padding_resource: str,
+    HF_token: str,
+):
+    used_resources = []
+    selected_rows = []
+    data_count = 0
+    # 1. Try OpenSubtitles
+    os_rows, os_count, os_repo = pad_with_opensubtitles(
+        language_code, required_padding_in_tokens, HF_token, pad_by_tokens=True
+    )
+    selected_rows.extend(os_rows)
+    data_count += os_count
+    if os_rows:
+        used_resources.append(f"open-subtitles:{os_repo}")
+    # Stop if enough tokens
+    if data_count < required_padding_in_tokens:
+        # 2. Try fineweb-c
+        fw_rows, fw_count, fw_repo = pad_with_fineweb_c(
+            language_code,
+            required_padding_in_tokens - data_count,
+            HF_token,
+            pad_by_tokens=True,
+        )
+        selected_rows.extend(fw_rows)
+        data_count += fw_count
+        if fw_rows:
+            used_resources.append(f"fineweb-c:{fw_repo}")
+
+    if selected_rows:
+        padding_df = pd.DataFrame(selected_rows)
+        if "script" in padding_df.columns:
+            padding_df["script"] = padding_df["script"].apply(normalize_script)
+
+        # pass through builder to validate documents
+        docs_padding = dataframe_to_docs(padding_df)
+
+        dataset_padding_config = DatasetConfig(language_code=language_code)
+        builder_padding = BabyLMDatasetBuilder(
+            dataset_padding_config, merge_existing=False
+        )
+
+        builder_padding.add_documents_from_iterable(docs_padding, {})
+        dataset_padding_df = builder_padding.create_dataset_table()
 
         # concatenate the original dataset with the padding dataset
         dataset_df = pd.concat([dataset_df, dataset_padding_df], ignore_index=True)
         dataset_df.reset_index(drop=True, inplace=True)
-
     else:
-        print(f"Padding resource '{padding_resource}' is not supported.")
-        return {"dataset": dataset_df, "byte_premium_factor": factor, "dataset_size": dataset_size}
+        print("No padding data could be loaded from any resource.")
+        return {
+            "dataset": dataset_df,
+            "byte_premium_factor": None,
+            "dataset_size": dataset_df["text"].apply(count_tokens).sum(),
+        }
 
-    final_dataset_size = dataset_df['text'].apply(bytes_in_text).sum()
-
-    tier_words = dataset_tier.split('_')[-1]
+    final_token_count = dataset_df["text"].apply(count_tokens).sum()
+    tier_words = dataset_tier.split("_")[-1]
+    token_tiers = {
+        "tier_1M": 1_000_000,
+        "tier_10M": 10_000_000,
+        "tier_100M": 100_000_000,
+    }
     print(f"\n{'=' * 60}")
-    print("PADDING RESULTS")
+    print("PADDING RESULTS (TOKEN COUNT)")
     print(f"{'=' * 60}")
-    print(f"Padding language: {language_code} with data from {padding_resource} to tier {tier_words} words")
-    print(f"Downloaded data from repo: {repo_id}")
-    print(f'Initial dataset size: {dataset_size:.3f} MB')
-    print(f"Byte Premium factor for {language_code}: {factor}")
-    print(f'Required dataset size to match {tier_words} words of English ({eng_sizes_per_tier[dataset_tier]} MB) is {eng_sizes_per_tier[dataset_tier] * factor:.3f} MB')
-    print(f"Padding data size: {data_count:.3f} MB")
-    print(f"Final dataset size after padding: {final_dataset_size:.3f} MB")
+    print(
+        f"Padding language: {language_code} with data from {padding_resource} to tier {tier_words} tokens"
+    )
+    print(
+        f"Downloaded data from repos: {', '.join(used_resources) if used_resources else 'None'}"
+    )
+    print(f"Initial dataset token count: {dataset_tokens}")
+    print(
+        f"Required dataset size to match {tier_words} tokens is {token_tiers[dataset_tier]}"
+    )
+    print(f"Padding data token count: {data_count}")
+    print(f"Final dataset token count after padding: {final_token_count}")
     print(f"{'=' * 60}\n")
+    return {
+        "dataset": dataset_df,
+        "byte_premium_factor": None,
+        "dataset_size": final_token_count,
+    }
 
 
-    return {"dataset": dataset_df, "byte_premium_factor": factor, "dataset_size": final_dataset_size}
+def pad_dataset_to_next_tier(
+    dataset_df: pd.DataFrame,
+    language_code: str,
+    padding_resource: str = "open-subtitles",
+) -> dict[str, Any]:
+
+    factor = byte_premium_factors.get(language_code)
+    load_dotenv()
+    HF_token = os.getenv("HF_TOKEN") or ""
+
+    if factor is not None:
+        # MB-based padding (byte premium factor exists)
+        dataset_size = dataset_df["text"].apply(bytes_in_text).sum()
+        dataset_tier = get_dataset_tier(dataset_size, eng_sizes_per_tier, factor)
+        if dataset_tier is None:
+            return {
+                "dataset": dataset_df,
+                "byte_premium_factor": factor,
+                "dataset_size": dataset_size,
+            }
+        required_padding_in_mb = (
+            eng_sizes_per_tier[dataset_tier] * factor - dataset_size
+        )
+        return pad_by_byte_factor(
+            dataset_df,
+            language_code,
+            factor,
+            dataset_size,
+            dataset_tier,
+            required_padding_in_mb,
+            padding_resource,
+            HF_token,
+        )
+    else:
+        # Token-based padding (no byte premium factor)
+        print(
+            f"No byte premium factor for language code: {language_code}. Padding by token count."
+        )
+        dataset_tokens = dataset_df["text"].apply(count_tokens).sum()
+        token_tiers = {
+            "tier_1M": 1_000_000,
+            "tier_10M": 10_000_000,
+            "tier_100M": 100_000_000,
+        }
+        dataset_tier = get_dataset_tier(dataset_tokens, token_tiers, factor=1.0)
+        if dataset_tier is None:
+            return {
+                "dataset": dataset_df,
+                "byte_premium_factor": None,
+                "dataset_size": dataset_tokens,
+            }
+        required_padding_in_tokens = token_tiers[dataset_tier] - dataset_tokens
+        return pad_by_token_count(
+            dataset_df,
+            language_code,
+            dataset_tokens,
+            dataset_tier,
+            required_padding_in_tokens,
+            padding_resource,
+            HF_token,
+        )
