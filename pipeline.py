@@ -267,6 +267,7 @@ def main():
     parser.add_argument(
         "--preprocess",
         "--preprocess-text",
+        dest="preprocess_text",
         action="store_true",
         help="Enable text preprocessing",
     )
@@ -274,6 +275,7 @@ def main():
     parser.add_argument(
         "--pad",
         "--pad-opensubtitles",
+        dest="pad_opensubtitles",
         action="store_true",
         help="Enable padding with OpenSubtitles, FineWeb-C, or Wikipedia (alias: --pad)",
     )
