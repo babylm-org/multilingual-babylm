@@ -171,8 +171,82 @@ def pad_with_opensubtitles(
         return [], 0, repo_id
 
 
+def pad_with_wikipedia(
+    language_code: str,
+    script_code: str,
+    required_padding: float,
+    HF_token: str,
+    pad_by_tokens: bool = False,
+):
+    from iso639 import Lang
+
+    data_count = 0
+    selected_rows = []
+    wiki_repo = "omarkamali/wikipedia-monthly"
+    all_subsets = get_dataset_config_names(wiki_repo)
+    lang_code_lower = language_code.lower()
+    matching_subsets = [s for s in all_subsets if s.endswith(lang_code_lower)]
+    if not matching_subsets:
+        # Try iso639-1
+        try:
+            iso1 = Lang(language_code).pt1.lower()
+        except Exception:
+            iso1 = None
+        if iso1:
+            matching_subsets = [s for s in all_subsets if s.endswith(iso1)]
+    if not matching_subsets:
+        print(f"Wikipedia: No matching subset found for language {language_code}")
+        return [], 0, wiki_repo
+    last_subset = None
+    try:
+        for wiki_subset in matching_subsets:
+            last_subset = wiki_subset
+            print(
+                f"Loading Wikipedia data for language: {language_code}, subset: {wiki_subset}"
+            )
+            wiki_dataset = load_dataset(
+                wiki_repo,
+                name=wiki_subset,
+                split="train",
+                streaming=True,
+                token=HF_token,
+            )
+            pbar = tqdm(total=required_padding, bar_format="{l_bar}{bar}")
+            for row in wiki_dataset:
+                if not isinstance(row, dict):
+                    continue
+                row.pop("id", None)
+                row["script"] = script_code
+                row["category"] = "padding-wikipedia"
+                row["data-source"] = "Wikipedia"
+                row["age-estimate"] = "n/a"
+                row["license"] = "cc-by-sa-4.0"
+                if pad_by_tokens:
+                    num = count_tokens(row.get("text", ""))
+                else:
+                    num = bytes_in_text(row.get("text", ""))
+                data_count += num
+                selected_rows.append(row)
+                pbar.update(num)
+                if data_count >= required_padding:
+                    break
+            pbar.close()
+        if last_subset is not None:
+            return selected_rows, data_count, f"{wiki_repo}/{last_subset}"
+        else:
+            return [], 0, wiki_repo
+    except Exception as e:
+        msg = f"Wikipedia dataset not found or error for {wiki_repo}/{last_subset}: {e}"
+        print(msg)
+        if last_subset is not None:
+            return [], 0, f"{wiki_repo}/{last_subset}"
+        else:
+            return [], 0, wiki_repo
+
+
 def pad_with_fineweb_c(
     language_code: str,
+    script_code: str,
     required_padding: float,
     HF_token: str,
     pad_by_tokens: bool = False,
@@ -182,8 +256,10 @@ def pad_with_fineweb_c(
     fineweb_repo = "data-is-better-together/fineweb-c"
     all_subsets = get_dataset_config_names(fineweb_repo)
     matching_subsets = [s for s in all_subsets if s.startswith(f"{language_code}_")]
+    last_subset = None
     try:
         for fineweb_subset in matching_subsets:
+            last_subset = fineweb_subset
             print(
                 f"Loading fineweb-c data for language: {language_code}, subset: {fineweb_subset}"
             )
@@ -194,7 +270,7 @@ def pad_with_fineweb_c(
                 streaming=True,
                 token=HF_token,
             )
-            script_code = fineweb_subset.split("_")[-1]
+            script_code_fw = fineweb_subset.split("_")[-1]
             pbar = tqdm(total=required_padding, bar_format="{l_bar}{bar}")
             for row in fineweb_dataset:
                 if not isinstance(row, dict):
@@ -210,7 +286,7 @@ def pad_with_fineweb_c(
                     num = count_tokens(row.get("text", ""))
                 else:
                     num = bytes_in_text(row.get("text", ""))
-                row["script"] = script_code
+                row["script"] = script_code_fw or script_code
                 row["category"] = "padding-fineweb-c"
                 row["data-source"] = f"{fineweb_repo}/{fineweb_subset}"
                 row["age-estimate"] = "n/a"
@@ -221,22 +297,27 @@ def pad_with_fineweb_c(
                 if data_count >= required_padding:
                     break
             pbar.close()
-        return selected_rows, data_count, f"{fineweb_repo}/{fineweb_subset}"
+        if last_subset is not None:
+            return selected_rows, data_count, f"{fineweb_repo}/{last_subset}"
+        else:
+            return [], 0, fineweb_repo
     except Exception as e:
-        print(
-            f"fineweb-c dataset not found or error for {fineweb_repo}/{fineweb_subset}: {e}"
-        )
-        return [], 0, f"{fineweb_repo}/{fineweb_subset}"
+        msg = f"fineweb-c dataset not found or error for {fineweb_repo}/{last_subset}: {e}"
+        print(msg)
+        if last_subset is not None:
+            return [], 0, f"{fineweb_repo}/{last_subset}"
+        else:
+            return [], 0, fineweb_repo
 
 
 def pad_by_byte_factor(
     dataset_df: pd.DataFrame,
     language_code: str,
+    script_code: str,
     factor: float,
     dataset_size: float,
     dataset_tier: str,
     required_padding_in_mb: float,
-    padding_resource: str,
     HF_token: str,
 ):
     used_resources = []
@@ -255,6 +336,7 @@ def pad_by_byte_factor(
     if data_count < required_padding_in_mb:
         fw_rows, fw_count, fw_repo = pad_with_fineweb_c(
             language_code,
+            script_code,
             required_padding_in_mb - data_count,
             HF_token,
             pad_by_tokens=False,
@@ -263,6 +345,20 @@ def pad_by_byte_factor(
         data_count += fw_count
         if fw_rows:
             used_resources.append(f"fineweb-c:{fw_repo}")
+
+    # 3. If still not enough, try Wikipedia
+    if data_count < required_padding_in_mb:
+        wiki_rows, wiki_count, wiki_repo = pad_with_wikipedia(
+            language_code,
+            script_code,
+            required_padding_in_mb - data_count,
+            HF_token,
+            pad_by_tokens=False,
+        )
+        selected_rows.extend(wiki_rows)
+        data_count += wiki_count
+        if wiki_rows:
+            used_resources.append(f"wikipedia:{wiki_repo}")
 
     if selected_rows:
         padding_df = pd.DataFrame(selected_rows)
@@ -297,7 +393,7 @@ def pad_by_byte_factor(
     print("PADDING RESULTS")
     print(f"{'=' * 60}")
     print(
-        f"Padding language: {language_code} with data from {padding_resource} to tier {tier_words} words"
+        f"Padding language: {language_code} with data from OpenSubtitles, FineWeb-C, and Wikipedia to tier {tier_words} words"
     )
     print(
         f"Downloaded data from repos: {', '.join(used_resources) if used_resources else 'None'}"
@@ -320,10 +416,10 @@ def pad_by_byte_factor(
 def pad_by_token_count(
     dataset_df: pd.DataFrame,
     language_code: str,
+    script_code: str,
     dataset_tokens: int,
     dataset_tier: str,
     required_padding_in_tokens: int,
-    padding_resource: str,
     HF_token: str,
 ):
     used_resources = []
@@ -337,11 +433,11 @@ def pad_by_token_count(
     data_count += os_count
     if os_rows:
         used_resources.append(f"open-subtitles:{os_repo}")
-    # Stop if enough tokens
+    # 2. Try fineweb-c
     if data_count < required_padding_in_tokens:
-        # 2. Try fineweb-c
         fw_rows, fw_count, fw_repo = pad_with_fineweb_c(
             language_code,
+            script_code,
             required_padding_in_tokens - data_count,
             HF_token,
             pad_by_tokens=True,
@@ -350,6 +446,19 @@ def pad_by_token_count(
         data_count += fw_count
         if fw_rows:
             used_resources.append(f"fineweb-c:{fw_repo}")
+    # 3. Try Wikipedia
+    if data_count < required_padding_in_tokens:
+        wiki_rows, wiki_count, wiki_repo = pad_with_wikipedia(
+            language_code,
+            script_code,
+            required_padding_in_tokens - data_count,
+            HF_token,
+            pad_by_tokens=True,
+        )
+        selected_rows.extend(wiki_rows)
+        data_count += wiki_count
+        if wiki_rows:
+            used_resources.append(f"wikipedia:{wiki_repo}")
 
     if selected_rows:
         padding_df = pd.DataFrame(selected_rows)
@@ -389,7 +498,7 @@ def pad_by_token_count(
     print("PADDING RESULTS (TOKEN COUNT)")
     print(f"{'=' * 60}")
     print(
-        f"Padding language: {language_code} with data from {padding_resource} to tier {tier_words} tokens"
+        f"Padding language: {language_code} with data from OpenSubtitles, FineWeb-C, and Wikipedia to tier {tier_words} tokens"
     )
     print(
         f"Downloaded data from repos: {', '.join(used_resources) if used_resources else 'None'}"
@@ -411,7 +520,7 @@ def pad_by_token_count(
 def pad_dataset_to_next_tier(
     dataset_df: pd.DataFrame,
     language_code: str,
-    padding_resource: str = "open-subtitles",
+    script_code: str,
 ) -> dict[str, Any]:
 
     factor = byte_premium_factors.get(language_code)
@@ -431,14 +540,15 @@ def pad_dataset_to_next_tier(
         required_padding_in_mb = (
             eng_sizes_per_tier[dataset_tier] * factor - dataset_size
         )
+
         return pad_by_byte_factor(
             dataset_df,
             language_code,
+            script_code,
             factor,
             dataset_size,
             dataset_tier,
             required_padding_in_mb,
-            padding_resource,
             HF_token,
         )
     else:
@@ -460,12 +570,13 @@ def pad_dataset_to_next_tier(
                 "dataset_size": dataset_tokens,
             }
         required_padding_in_tokens = token_tiers[dataset_tier] - dataset_tokens
+
         return pad_by_token_count(
             dataset_df,
             language_code,
+            script_code,
             dataset_tokens,
             dataset_tier,
             required_padding_in_tokens,
-            padding_resource,
             HF_token,
         )
