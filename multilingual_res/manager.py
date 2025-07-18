@@ -73,16 +73,17 @@ def remove_resource(resource_name: str, docs: list[dict[str, Any]]) ->  list[dic
         elif resource_name == "childes":
             condition = category == "child-directed-speech"
             condition &= (
-                data_source.lower() == "childes"
-                or re.fullmatch(r"\S+/\d+", data_source) is not None
+                (data_source.lower() == "childes")
+                or (re.fullmatch(r"\S+/\d+", data_source) is not None)
             )
-            condition &= (
-                age_estimate == "n/a"
-                or ";" in age_estimate
-                or age_estimate == "nan"
-            )
-            if condition:
-                continue
+            if age_estimate is not None:
+                condition &= (                
+                    (age_estimate == "n/a")
+                    or (";" in age_estimate)
+                    or (age_estimate == "nan")
+                )
+                if condition:
+                    continue
 
         processed_docs.append(doc)
 
