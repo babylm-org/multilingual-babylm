@@ -6,6 +6,10 @@ from typing import List, Dict, Any, Optional, Union
 from datasets import load_from_disk, load_dataset
 from abc import ABC, abstractmethod
 
+import sys
+# Increase CSV field size limit to avoid error
+csv.field_size_limit(sys.maxsize)
+
 
 class BaseLoader(ABC):
     @abstractmethod

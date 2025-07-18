@@ -13,7 +13,7 @@ import warnings
 from tqdm import tqdm, TqdmWarning
 
 warnings.filterwarnings("ignore", category=TqdmWarning)
-
+from copy import deepcopy
 
 byte_premium_factors = {
     "eng": 1.0,
@@ -76,16 +76,32 @@ eng_sizes_per_tier = {
 
 
 
-def remove_padding(dataset_df: pd.DataFrame):
+def remove_padding_data(docs: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """
     Remove padding from the dataset.
     """
-    filter_mask = dataset_df["category"].str.startswith(
-        "padding-"
-    )
-    filter_mask = filter_mask | dataset_df["data-source"] == 'OpenSubtitles'
-    dataset_df = dataset_df[~filter_mask]
-    return dataset_df
+
+    filtered_docs = []
+    categories_removed = set()
+    categories_kept = set()
+    for doc in docs:
+        metadata = doc.get("metadata", {})
+        category = metadata.get("category", "n/a")
+        data_source = metadata.get("data-source", "n/a")
+
+        if category.startswith("padding-") or data_source == "OpenSubtitles":
+            categories_removed.add(category)
+            continue
+
+        categories_kept.add(category)
+
+        filtered_docs.append(doc)
+
+    print(f"Removed {len(docs) - len(filtered_docs)} padding documents from dataset.")
+    print(f"Document categories removed: {categories_removed}")
+    print(f"Document categories kept: {categories_kept}")
+
+    return filtered_docs
 
 
 def count_tokens(text: str) -> int:
@@ -174,7 +190,7 @@ def pad_with_opensubtitles(
             else:
                 num = bytes_in_text(text)
             data_count += num
-            selected_rows.append(row)
+            selected_rows.append(deepcopy(row))
             pbar.update(num)
             if data_count >= required_padding:    
                 break
@@ -241,7 +257,7 @@ def pad_with_wikipedia(
                 else:
                     num = bytes_in_text(row.get("text", ""))
                 data_count += num
-                selected_rows.append(row)
+                selected_rows.append(deepcopy(row))
                 pbar.update(num)
                 if data_count >= required_padding:
                     break
@@ -307,7 +323,7 @@ def pad_with_fineweb_c(
                 row["age-estimate"] = "n/a"
                 row["license"] = "ODC-By"
                 data_count += num
-                selected_rows.append(row)
+                selected_rows.append(deepcopy(row))
                 pbar.update(num)
                 if data_count >= required_padding:
                     break
@@ -410,7 +426,7 @@ def pad_by_byte_factor(
         print(
             f"Warning: Final dataset size {final_dataset_size:.3f} MB is less than required {eng_sizes_per_tier[dataset_tier] * factor:.3f} MB for tier {dataset_tier}."
         )
-        print(f"Not enough padding data available to reach the target tier {dataset_tier}.")
+        print(f"Missing {eng_sizes_per_tier[dataset_tier] * factor - final_dataset_size:.3f} MB")
 
 
     print(f"\n{'=' * 60}")
@@ -526,7 +542,7 @@ def pad_by_token_count(
         print(
             f"Warning: Final token count {final_token_count} is less than required {token_tiers[dataset_tier]} tokens for tier {dataset_tier}."
         )
-        print(f"Not enough padding data available to reach the target tier {dataset_tier}.")
+        print(f"Missing {token_tiers[dataset_tier] - final_token_count:.3f} tokens")
 
 
 
@@ -559,17 +575,13 @@ def pad_dataset_to_next_tier(
     dataset_df: pd.DataFrame,
     language_code: str,
     script_code: str,
-    remove_previous_padding: bool = False,
 ) -> dict[str, Any]:
 
-    if remove_previous_padding:
-        print("Removing existing padding from dataset.")
-        dataset_df = remove_padding(dataset_df)
 
     factor = byte_premium_factors.get(language_code)
     load_dotenv()
     HF_token = os.getenv("HF_TOKEN") or ""
-
+    
     if factor is not None:
         # MB-based padding (byte premium factor exists)
         dataset_size = dataset_df["text"].apply(bytes_in_text).sum()

@@ -15,7 +15,7 @@ from preprocessor import preprocess_dataset
 from language_filter import filter_dataset_for_lang_and_script
 from language_scripts import validate_script_code
 from loader import get_loader
-from pad_dataset import pad_dataset_to_next_tier
+from pad_dataset import pad_dataset_to_next_tier, remove_padding_data
 from multilingual_res.manager import fetch_resource, remove_resource    
 
 from iso639 import is_language, Lang
@@ -78,38 +78,46 @@ def process_dataset(
         loader = get_loader(data_type)
         docs.extend(loader.load_data(data_path))
 
+
     # 0.5 Remove previously added resources if requested
     if remove_previous_ririro_data:
         print(f"Removing previously added Ririro resource for language: {language_code}")
-        remove_resource("ririro", docs)
+        docs = remove_resource("ririro", docs)
 
     if remove_previous_glotstorybook_data:
         print(f"Removing previously added GlotStoryBook resource for language: {language_code}")
-        remove_resource("glotstorybook", docs)
+        docs = remove_resource("glotstorybook", docs)
 
     if remove_previous_childwiki_data:
         print(f"Removing previously added ChildWiki resource for language: {language_code}")
-        remove_resource("childwiki", docs)
+        docs = remove_resource("childwiki", docs)
 
     if remove_previous_childes_data:
         print(f"Removing previously added Childes resource for language: {language_code}")
-        remove_resource("childes", docs)
+        docs = remove_resource("childes", docs)
 
+    # remove padding data if requested
+    if remove_previous_padding:
+        docs = remove_padding_data(docs)
+    
     # 1.0 Optionally fetch Ririro resource
     if add_ririro_data:
         print(f"Fetching Ririro resource for language: {language_code}")
         ririro_docs = fetch_resource("ririro", language_code, script_code)
         docs.extend(ririro_docs)
+
     # 1.1 Optionally fetch GlotStoryBook resource
     if add_glotstorybook_data:
         print(f"Fetching GlotStoryBook resource for language: {language_code}")
         glotstorybook_docs = fetch_resource("glotstorybook", language_code, script_code)
         docs.extend(glotstorybook_docs)
+
     # 1.2 Optionally fetch ChildWiki resource
     if add_childwiki_data:
         print(f"Fetching ChildWiki resource for language: {language_code}")
         childwiki_docs = fetch_resource("childwiki", language_code, script_code)
         docs.extend(childwiki_docs)
+
     # 1.3 Optionally fetch Childes resource
     if add_childes_data:
         print(f"Fetching Childes resource for language: {language_code}")
@@ -169,6 +177,8 @@ def process_dataset(
             language_filter_threshold=language_filter_threshold,
         )
 
+
+
     # 6. Pad dataset to next tier, accounting for byte premium
     if pad_opensubtitles:
         print(f"Padding dataset for {language_code} using OpenSubtitles...")
@@ -176,14 +186,12 @@ def process_dataset(
             dataset_df=builder.dataset_table,
             language_code=language_code,
             script_code=script_code,
-            remove_previous_padding=remove_previous_padding,
-
         )
         builder.dataset_table = results["dataset"]
         # Keep the byte premium factor and dataset size for metadata
         builder.byte_premium_factor = results["byte_premium_factor"]
         builder.dataset_size = results["dataset_size"]
-
+        
         # assume the padding dataset is filtered for language and script
         # and has been preprocessed for the subtitles category
 
@@ -194,6 +202,7 @@ def process_dataset(
     # 7. Save and create dataset
     builder.save_dataset()
     print(f"\nDataset created with {len(builder.dataset_table)} documents")
+
 
     # 8. Upload if requested
     if upload and repo_id:
@@ -368,8 +377,6 @@ def main():
         action="store_true",
         help="If set, remove Childes previously added resource for the given language.",
     )
-
-
 
     args = parser.parse_args()
 
