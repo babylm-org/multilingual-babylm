@@ -81,6 +81,13 @@ class DatasetConfig:
 
 
 class BabyLMDatasetBuilder:
+    @staticmethod
+    def bytes_in_text(text: str) -> float:
+        """
+        Calculate the size of text in MB (UTF-8 encoded).
+        """
+        return len(text.encode("utf-8")) / 1_000_000
+
     """Build and manage BabyLM datasets from various sources."""
 
     def __init__(
@@ -126,6 +133,14 @@ class BabyLMDatasetBuilder:
                 self._existing_documents = existing_df.to_dict(orient="records")
             else:
                 print("Existing dataset not found for merge.")
+
+    def calculate_dataset_size_mb(self) -> float:
+        """
+        Calculate the total dataset size in MB by summing the size of each text row.
+        """
+        if self.dataset_table is None or "text" not in self.dataset_table:
+            return 0.0
+        return self.dataset_table["text"].apply(self.bytes_in_text).sum()
 
     def add_document(
         self,
@@ -264,6 +279,8 @@ class BabyLMDatasetBuilder:
         df = pd.DataFrame(rows)
         # Remove duplicates by doc_id (keep first occurrence)
         df = df.drop_duplicates(subset=["doc_id"])
+        # Remove rows where 'text' is None, empty string, or not a string
+        df = df[df["text"].apply(lambda x: isinstance(x, str) and x.strip() != "")]
         self.dataset_table = df
         return df
 
@@ -280,6 +297,10 @@ class BabyLMDatasetBuilder:
         print("Dataset table saved to:")
         print(f"  - {csv_path}")
         print(f"  - {parquet_path}")
+
+        # Print dataset size in MB
+        size_mb = self.calculate_dataset_size_mb()
+        print(f"Final dataset size: {size_mb:.2f} MB (UTF-8 bytes)")
 
         metadata = {
             "dataset_name": self.dataset_config.dataset_name,
