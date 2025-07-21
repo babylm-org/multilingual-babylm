@@ -168,9 +168,27 @@ def deduplicate_rows(
     """
     Deduplicate rows based on the 'text' field.
     """
-    deduped = {r["text"]: r for r in selected_rows if r.get("text")}.values()
+    df = pd.DataFrame(selected_rows)
+    deduped_df = df.drop_duplicates(subset=["text"], keep="first")
+    deduped = [
+        {str(k): v for k, v in row.items()}
+        for row in deduped_df.to_dict(orient="records")
+    ]
     data_count = sum(bytes_in_text(r["text"]) for r in deduped)
     return list(deduped), data_count
+
+
+def check_if_required_padding_met(
+    rows: list[dict[str, Any]], data_count: float, required_padding: float
+) -> bool:
+    """
+    Check if the required padding has been met.
+    """
+    if data_count >= required_padding:
+        rows, data_count = deduplicate_rows(rows)
+        if data_count >= required_padding:
+            return True
+    return False
 
 
 def pad_with_opensubtitles(
@@ -198,10 +216,10 @@ def pad_with_opensubtitles(
             data_count += num
             selected_rows.append(deepcopy(row))
             pbar.update(num)
-            if data_count >= required_padding:
-                selected_rows, data_count = deduplicate_rows(selected_rows)
-                if data_count >= required_padding:
-                    break
+            if check_if_required_padding_met(
+                selected_rows, data_count, required_padding
+            ):
+                break
         pbar.close()
         selected_rows, data_count = deduplicate_rows(selected_rows)
         return selected_rows, data_count, repo_id
@@ -270,10 +288,10 @@ def pad_with_wikipedia(
                 data_count += num
                 selected_rows.append(deepcopy(row))
                 pbar.update(num)
-                if data_count >= required_padding:
-                    selected_rows, data_count = deduplicate_rows(selected_rows)
-                    if data_count >= required_padding:
-                        break
+                if check_if_required_padding_met(
+                    selected_rows, data_count, required_padding
+                ):
+                    break
             pbar.close()
             selected_rows, data_count = deduplicate_rows(selected_rows)
             if data_count >= required_padding:
@@ -337,10 +355,10 @@ def pad_with_fineweb_c(
                 data_count += num
                 selected_rows.append(deepcopy(row))
                 pbar.update(num)
-                if data_count >= required_padding:
-                    selected_rows, data_count = deduplicate_rows(selected_rows)
-                    if data_count >= required_padding:
-                        break
+                if check_if_required_padding_met(
+                    selected_rows, data_count, required_padding
+                ):
+                    break
             pbar.close()
             selected_rows, data_count = deduplicate_rows(selected_rows)
             if data_count >= required_padding:
