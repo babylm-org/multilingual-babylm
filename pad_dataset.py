@@ -88,6 +88,7 @@ def remove_padding_data(docs: list[dict[str, Any]]) -> list[dict[str, Any]]:
     filtered_docs = []
     categories_removed = set()
     categories_kept = set()
+    sources_kept = set()
     for doc in docs:
         metadata = doc.get("metadata", {})
         category = metadata.get("category", "n/a")
@@ -98,12 +99,14 @@ def remove_padding_data(docs: list[dict[str, Any]]) -> list[dict[str, Any]]:
             continue
 
         categories_kept.add(category)
+        sources_kept.add(data_source)
 
         filtered_docs.append(doc)
 
     print(f"Removed {len(docs) - len(filtered_docs)} padding documents from dataset.")
     print(f"Document categories removed: {categories_removed}")
     print(f"Document categories kept: {categories_kept}")
+    print(f"Data sources kept: {sources_kept}")
 
     return filtered_docs
 
