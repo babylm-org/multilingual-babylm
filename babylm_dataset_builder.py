@@ -279,8 +279,10 @@ class BabyLMDatasetBuilder:
         df = pd.DataFrame(rows)
         # Remove duplicates by doc_id (keep first occurrence)
         df = df.drop_duplicates(subset=["doc_id"])
-        # Remove rows where 'text' is None, empty string, or not a string
-        df = df[df["text"].apply(lambda x: isinstance(x, str) and x.strip() != "")]
+        # Ensure all values in 'text' column are strings
+        df["text"] = df["text"].astype(str)
+        # Filter rows where 'text' is not empty after stripping whitespace
+        df = df[df["text"].str.strip().str.len() > 0]
         self.dataset_table = df
         return df
 
