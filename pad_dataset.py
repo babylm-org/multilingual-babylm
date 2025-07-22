@@ -7,77 +7,27 @@ from babylm_dataset_builder import BabyLMDatasetBuilder, DatasetConfig
 from preprocessor import preprocess_dataset
 
 import os
-import hashlib
 from dotenv import load_dotenv
 
 import warnings
+from copy import deepcopy
+
+from pad_utils import (
+    bytes_in_text,
+    check_if_required_padding_met,
+    deduplicate_rows,
+    normalize_script,
+    dataframe_to_docs,
+    eng_sizes_per_tier,
+    byte_premium_factors,
+    get_dataset_tier,
+)
+
+from pad_language_specific import pad_language_specific, language_specific_pads
+
 from tqdm import tqdm, TqdmWarning
 
 warnings.filterwarnings("ignore", category=TqdmWarning)
-from copy import deepcopy
-
-byte_premium_factors = {
-    "eng": 1.0,
-    "nld": 1.0516739,
-    "ukr": 1.7514786,
-    "zho": 0.9893825,
-    "bul": 1.8123562,
-    "ind": 1.1788023,
-    "fra": 1.1742064,
-    "deu": 1.0537171,
-    "jpn": 1.322025,
-    "ita": 1.066923,
-    "spa": 1.0838621,
-    "ell": 1.9673049,
-    "pol": 1.0774161,
-    "eus": 1.0595837,
-    "ara": 1.4651134,
-    "srp": 1.4249495,
-    "por": 1.097927,
-    "heb": 1.3555346,
-    "est": 0.9677856,
-    "cym": 1.0265667,
-    "hrv": 0.9897218,
-    "swe": 1.0210256,
-    "ron": 1.1151666,
-    "kor": 1.2933602,
-    "isl": 1.1543925,
-    "afr": 1.0373004,
-    "xho": 1.198886,
-    "zul": 1.1639372,
-    "sot": 1.1661078,
-    "nso": 1.1156964,
-    "hun": 1.0199851,
-    "ces": 1.0358867,
-    "yue": 0.8624614,
-    "cat": 1.0926706,
-    "jav": 1.1468458,
-    "dan": 1.0210658,
-    "tha": 2.7416472,
-    "nor": 1.125316,
-    "tur": 1.0444815,
-    "fas": 1.5973263,
-    "rus": 1.8228284,
-    "gle": 1.9749562,
-    "crl": 2.6007383,
-    "tsn": 1.1739403,
-    "yuw": 1.605417,
-    "tam": 2.7290997,
-    "slv": 0.97215,
-    "mop": 1.6077918,
-    "mar": 2.4793565,
-    "ltz": 1.225349,
-    "bug": 1.2279017,
-    "ace": 1.2419926,
-    "ban": 1.2695436,
-    "mak": 1.250697369,
-}
-
-eng_sizes_per_tier = {
-    "tier_1M": 5.430,
-    "tier_10M": 54.30,
-    "tier_100M": 543.00,
-}
 
 
 def remove_padding_data(docs: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -107,92 +57,9 @@ def remove_padding_data(docs: list[dict[str, Any]]) -> list[dict[str, Any]]:
     print(f"Removed {len(docs) - len(filtered_docs)} padding documents from dataset.")
     print(f"Document categories removed: {categories_removed}")
     print(f"Document categories kept: {categories_kept}")
-    print(f"Data-sources kept for category \"subtitles\" : {sources_kept_subtitles}")
+    print(f'Data-sources kept for category "subtitles" : {sources_kept_subtitles}')
 
     return filtered_docs
-
-
-def dataframe_to_docs(dataset_df: pd.DataFrame) -> list[dict[str, Any]]:
-    docs = []
-    for i, row in dataset_df.iterrows():
-        text = row.get("text", "")
-        if not text:
-            continue
-        meta = {k: v for k, v in row.items() if k != "text"}
-        doc_id = hashlib.sha256(text.encode("utf-8")).hexdigest()
-        docs.append(
-            {
-                "text": text,
-                "doc_id": doc_id,
-                "metadata": meta,
-            }
-        )
-    return docs
-
-
-def bytes_in_text(text: str) -> float:
-    return len(text.encode("utf-8")) / 1_000_000  # Convert to MB
-
-
-def normalize_script(script: str) -> str:
-    """
-    Normalize script names to a consistent format.
-    """
-    if script == "Latin":
-        return "Latn"
-    elif script == "Cyrillic":
-        return "Cyrl"
-    elif script == "Arabic":
-        return "Arab"
-    elif script == "Chinese":
-        return "Hani"
-    # Add more normalizations as needed
-    return script
-
-
-def get_dataset_tier(dataset_size, tier_sizes, factor=1.0):
-    """
-    Determine the tier based on dataset size.
-    """
-    if dataset_size < tier_sizes["tier_1M"] * factor:
-        dataset_tier = "tier_1M"
-    elif dataset_size < tier_sizes["tier_10M"] * factor:
-        dataset_tier = "tier_10M"
-    elif dataset_size < tier_sizes["tier_100M"] * factor:
-        dataset_tier = "tier_100M"
-    else:
-        dataset_tier = None
-        print("Dataset size exceeds the largest tier of 100M MB, no need for padding")
-    return dataset_tier
-
-
-def deduplicate_rows(
-    selected_rows: list[dict[str, Any]],
-) -> tuple[list[dict[str, Any]], float]:
-    """
-    Deduplicate rows based on the 'text' field.
-    """
-    df = pd.DataFrame(selected_rows)
-    deduped_df = df.drop_duplicates(subset=["text"], keep="first")
-    deduped = [
-        {str(k): v for k, v in row.items()}
-        for row in deduped_df.to_dict(orient="records")
-    ]
-    data_count = sum(bytes_in_text(r["text"]) for r in deduped)
-    return list(deduped), data_count
-
-
-def check_if_required_padding_met(
-    rows: list[dict[str, Any]], data_count: float, required_padding: float
-) -> bool:
-    """
-    Check if the required padding has been met.
-    """
-    if data_count >= required_padding:
-        rows, data_count = deduplicate_rows(rows)
-        if data_count >= required_padding:
-            return True
-    return False
 
 
 def pad_with_opensubtitles(
@@ -393,14 +260,26 @@ def pad_by_byte_factor(
     used_resources = []
     selected_rows = []
     data_count = 0
+
+    # try with language specific first
+    if language_code in language_specific_pads:
+        lang_rows, lang_count, lang_repo = pad_language_specific(
+            required_padding_in_mb - data_count, language_code, script_code, HF_token
+        )
+        selected_rows.extend(lang_rows)
+        data_count += lang_count
+        if lang_rows:
+            used_resources.append(f"language-specific:{lang_repo}")
+
     # 1. Try OpenSubtitles
-    os_rows, os_count, os_repo = pad_with_opensubtitles(
-        language_code, required_padding_in_mb, HF_token
-    )
-    selected_rows.extend(os_rows)
-    data_count += os_count
-    if os_rows:
-        used_resources.append(f"open-subtitles:{os_repo}")
+    if data_count < required_padding_in_mb:
+        os_rows, os_count, os_repo = pad_with_opensubtitles(
+            language_code, required_padding_in_mb - data_count, HF_token
+        )
+        selected_rows.extend(os_rows)
+        data_count += os_count
+        if os_rows:
+            used_resources.append(f"open-subtitles:{os_repo}")
 
     # 2. If still not enough, try fineweb-c
     if data_count < required_padding_in_mb:
@@ -495,7 +374,6 @@ def pad_dataset_to_next_tier(
     language_code: str,
     script_code: str,
 ) -> dict[str, Any]:
-
     factor = byte_premium_factors.get(language_code)
     load_dotenv()
     HF_token = os.getenv("HF_TOKEN") or ""
