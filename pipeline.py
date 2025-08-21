@@ -210,6 +210,7 @@ def process_dataset(
         print(f"\nUploading to HuggingFace: {repo_id}")
         uploader = HFDatasetUploader()
         uploader.upload_babylm_dataset(
+            language_code=language_code,
             dataset_dir=builder.output_dir,
             repo_id=repo_id,
             create_repo_if_missing=True,

@@ -28,6 +28,7 @@ class HFDatasetUploader:
 
     def upload_babylm_dataset(
         self,
+        language_code: str,
         dataset_dir: Path,
         repo_id: str,
         private: bool = True,
@@ -113,12 +114,18 @@ class HFDatasetUploader:
 
         # Fix schema issues before uploading
         if "misc" in df.columns:
-            # Convert None/null values to empty strings
-            df["misc"] = df["misc"].fillna("").astype(str)
+            # Convert None/null values to json string
+            df["misc"] = df["misc"].fillna("{}").astype(str)
 
+
+        # assign language to documents
+        df["language"] = language_code
         df["num_tokens"] = df["text"].apply(count_tokens, tokenizer=tokenizer)
         total_tokens = int(df["num_tokens"].sum())
+
         assert "category" in df.columns, "category must be defined"
+
+
         tokens_per_category = df.groupby("category")["num_tokens"].sum().to_dict()
         # NEW: scripts list
         scripts_list = sorted(
@@ -151,6 +158,7 @@ class HFDatasetUploader:
                 "license": Value("string"),
                 "misc": Value("string"),
                 "num_tokens": Value("int64"),
+                "language": Value("string"),
             }
         )
 
@@ -323,6 +331,8 @@ dataset_info:
       dtype: string
     - name: num_tokens
       dtype: int64
+    - name: language
+      dtype: string
 ---
 
 # {metadata.get("dataset_name", "BabyLM Dataset")}
@@ -363,11 +373,12 @@ This dataset is part of the BabyLM multilingual collection.
 - `doc_id`: Unique identifier for the document
 - `category`: Type of content (e.g., child-directed-speech, educational, etc.)
 - `data-source`: Original source of the data
-- `script`: Writing system used
+- `script`: Writing system used (ISO 15924)
 - `age-estimate`: Target age or age range
 - `license`: Data license
 - `misc`: Additional metadata (JSON string)
 - `num_tokens`: Number of tokens per item (based on white-space split)
+- `language`: Language code (ISO 639-3)
 
 ### Licensing Information
 
@@ -452,7 +463,7 @@ Please cite the original data source: {config.get("data_source", "Unknown")}
             except Exception:
                 pass
 
-    def _discover_babylm_repos(self) -> List[str]:
+    def _discover_babylm_repos(self, check_empty: bool = True) -> List[str]:
         """Return sorted list of active (non-archived, non-empty) BabyLM dataset repo_ids.
 
         Filtering steps:
@@ -486,17 +497,19 @@ Please cite the original data source: {config.get("data_source", "Unknown")}
             candidates.append(ds_id)
         active: List[str] = []
         for repo_id in sorted(set(candidates)):
-            try:
-                ds = load_dataset(repo_id, split='train', token=self.token)
-                # Quickly assess emptiness (cast for type checker)
-                from datasets import Dataset as HFDataset  # local import to avoid top-level clash
-                if len(cast(HFDataset, ds)) == 0:  # type: ignore[arg-type]
-                     print(f"Skipping empty dataset: {repo_id}")
-                     continue
-            except Exception as e:
-                print(f"Skipping dataset (load failed): {repo_id} ({e})")
-                continue
+            if check_empty:
+                try:
+                    ds = load_dataset(repo_id, split='train', token=self.token)
+                    # Quickly assess emptiness (cast for type checker)
+                    from datasets import Dataset as HFDataset  # local import to avoid top-level clash
+                    if len(cast(HFDataset, ds)) == 0:  # type: ignore[arg-type]
+                        print(f"Skipping empty dataset: {repo_id}")
+                        continue
+                except Exception as e:
+                    print(f"Skipping dataset (load failed): {repo_id} ({e})")
+                    continue
             active.append(repo_id)
+
         return active
 
 

@@ -29,6 +29,7 @@ class DocumentConfig:
         """Post-initialization validation."""
         self.validate_category()
         self.validate_script()
+        self.validate_misc()
 
         # check for None values
         if self.license is None:
@@ -66,6 +67,26 @@ class DocumentConfig:
                 raise ValueError(
                     f"Invalid script code '{self.script}'."
                     " Please use a valid ISO 15924 script code (e.g., Latn, Cyrl, Arab, etc.)"
+                )
+    
+    def validate_misc(self):
+
+        # convert to string
+        if isinstance(self.misc, dict):
+            self.misc = json.dumps(self.misc)
+        else:
+            self.misc = str(self.misc)
+
+        # check valid JSON string
+        try: 
+            json.loads(self.misc)
+        except json.JSONDecodeError:
+            # fix if just empty
+            if self.misc.strip() == '':
+                self.misc = "{}"
+            else:
+                raise ValueError(
+                    f"Misc field must be a valid JSON string. Got: {self.misc}"
                 )
 
 
@@ -196,9 +217,6 @@ class BabyLMDatasetBuilder:
                 misc = dict(misc)
                 misc["source_identifier"] = metadata["source_identifier"]
 
-            # Ensure misc is a valid string
-            if misc is None:
-                misc = ""
 
             try:
                 doc_config = DocumentConfig(
@@ -267,13 +285,9 @@ class BabyLMDatasetBuilder:
                 "script": document_config.script,
                 "age-estimate": document_config.age_estimate,
                 "license": document_config.license,
-                "num_tokens": len(text.split()),
+                "misc" : document_config.misc
+                
             }
-            # Add misc field if present
-            if doc.get("misc"):
-                row["misc"] = json.dumps(doc["misc"])
-            else:
-                row["misc"] = ""
 
             rows.append(row)
         df = pd.DataFrame(rows)
