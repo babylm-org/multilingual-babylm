@@ -83,25 +83,25 @@ def process_dataset(
         print(
             f"Removing previously added Ririro resource for language: {language_code}"
         )
-        docs = remove_resource("ririro", docs)
+        docs = remove_resource("ririro", docs, language_code, script_code)
 
     if remove_previous_glotstorybook_data:
         print(
             f"Removing previously added GlotStoryBook resource for language: {language_code}"
         )
-        docs = remove_resource("glotstorybook", docs)
+        docs = remove_resource("glotstorybook", docs, language_code, script_code)
 
     if remove_previous_childwiki_data:
         print(
             f"Removing previously added ChildWiki resource for language: {language_code}"
         )
-        docs = remove_resource("childwiki", docs)
+        docs = remove_resource("childwiki", docs, language_code, script_code)
 
     if remove_previous_childes_data:
         print(
             f"Removing previously added Childes resource for language: {language_code}"
         )
-        docs = remove_resource("childes", docs)
+        docs = remove_resource("childes", docs, language_code, script_code)
 
     # remove padding data if requested
     if remove_previous_padding:
