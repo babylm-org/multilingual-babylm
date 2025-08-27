@@ -15,7 +15,6 @@ def process_dataframe(dataset_df: pd.DataFrame, lang) -> pd.DataFrame:
 
 
 def main():
-
     data_uploader = HFDatasetUploader(token=HF_TOKEN)
     repos = data_uploader._discover_babylm_repos(check_empty=False)
     # ignore subtitles repos
@@ -48,12 +47,12 @@ def main():
         upload = True
 
         # add known tokenizers used in BabyLMs
-        if lang == 'jpn':
-            tokenizer_name = 'tohoku-nlp/bert-base-japanese'
-        elif lang == 'zho':
-            tokenizer_name = 'Qwen/Qwen3-0.6B'
-        elif lang == 'yue':
-            tokenizer_name = 'Qwen/Qwen1.5-7B-Chat'
+        if lang == "jpn":
+            tokenizer_name = "tohoku-nlp/bert-base-japanese"
+        elif lang == "zho":
+            tokenizer_name = "Qwen/Qwen3-0.6B"
+        elif lang == "yue":
+            tokenizer_name = "Qwen/Qwen1.5-7B-Chat"
         else:
             tokenizer_name = None
 
@@ -101,6 +100,7 @@ def main():
             remove_previous_padding=remove_previous_padding,
         )
         print("Done")
+
 
 if __name__ == "__main__":
     main()

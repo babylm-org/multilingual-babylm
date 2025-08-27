@@ -108,13 +108,13 @@ def remove_extra_spaces(text: str, preserve_tab: bool = False) -> str:
     text = re.sub(space_re, " ", text).strip()
     return text
 
+
 def normalize_whitespace(
     text: str,
     preserve_paragraphs: bool = True,
     remove_newlines: bool = False,
-    preserve_tab: bool = False
+    preserve_tab: bool = False,
 ) -> str:
-
     space_re = r"[ ]+" if preserve_tab else r"[ \t]+"
 
     # normalize paragraphs
@@ -153,4 +153,3 @@ def normalize_whitespace(
     text = re.sub(space_re, " ", text)
 
     return text.strip()
-

@@ -7,6 +7,7 @@ from datasets import load_from_disk, load_dataset
 from abc import ABC, abstractmethod
 
 import sys
+
 # Increase CSV field size limit to avoid error
 csv.field_size_limit(sys.maxsize)
 
@@ -28,7 +29,14 @@ class TextDirLoader(BaseLoader):
                 text = f.read()
                 file_name = txt_file.stem
                 doc_id = generate_doc_id(text)
-                docs.append({"text": text, "doc_id": doc_id, "file_name": file_name, "metadata": {}})
+                docs.append(
+                    {
+                        "text": text,
+                        "doc_id": doc_id,
+                        "file_name": file_name,
+                        "metadata": {},
+                    }
+                )
         return docs
 
 
@@ -149,7 +157,9 @@ class HFLoader(BaseLoader):
                 text = getattr(row, self.text_field, "")
                 meta = {k: v for k, v in row.__dict__.items() if k != self.text_field}
                 doc_id = (
-                    getattr(row, "doc_id", None) or getattr(row, "id", None) or generate_doc_id(text)
+                    getattr(row, "doc_id", None)
+                    or getattr(row, "id", None)
+                    or generate_doc_id(text)
                 )
             if not text:
                 continue

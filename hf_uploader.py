@@ -12,7 +12,7 @@ from datasets import Dataset, DatasetDict, load_dataset, Features, Value
 from datasets.exceptions import DatasetNotFoundError
 from dotenv import load_dotenv
 from huggingface_hub import HfApi, create_repo
-from transformers import AutoTokenizer # type: ignore
+from transformers import AutoTokenizer  # type: ignore
 
 
 class HFDatasetUploader:
@@ -117,14 +117,12 @@ class HFDatasetUploader:
             # Convert None/null values to json string
             df["misc"] = df["misc"].fillna("{}").astype(str)
 
-
         # assign language to documents
         df["language"] = language_code
         df["num_tokens"] = df["text"].apply(count_tokens, tokenizer=tokenizer)
         total_tokens = int(df["num_tokens"].sum())
 
         assert "category" in df.columns, "category must be defined"
-
 
         tokens_per_category = df.groupby("category")["num_tokens"].sum().to_dict()
         # NEW: scripts list
@@ -270,7 +268,7 @@ class HFDatasetUploader:
         config = metadata.get("config", {})
 
         # Determine size category based on number of documents
-        num_documents = metadata.get("num_documents") or num_documents # type: ignore
+        num_documents = metadata.get("num_documents") or num_documents  # type: ignore
         md_num_docs = metadata.get("num_documents")
         if isinstance(md_num_docs, int):
             num_documents = md_num_docs
@@ -426,7 +424,9 @@ Please cite the original data source: {config.get("data_source", "Unknown")}
             try:
                 ds = load_dataset(repo_id, split="train", token=self.token)
                 df_obj = ds.to_pandas()  # type: ignore[attr-defined]
-                assert isinstance(df_obj, pd.DataFrame), "Expected pandas DataFrame from dataset"
+                assert isinstance(df_obj, pd.DataFrame), (
+                    "Expected pandas DataFrame from dataset"
+                )
                 df: pd.DataFrame = cast(pd.DataFrame, df_obj)
             except Exception as e:
                 print(f"  Could not load dataset: {e}")
@@ -439,10 +439,13 @@ Please cite the original data source: {config.get("data_source", "Unknown")}
                 continue
             tokens_per_category = df.groupby("category")["num_tokens"].sum().to_dict()
             if "script" in df.columns:
-                scripts_list = sorted({
-                    str(s).strip() for s in df["script"].astype(str).unique()
-                    if str(s).strip() and str(s).lower() != "nan"
-                })
+                scripts_list = sorted(
+                    {
+                        str(s).strip()
+                        for s in df["script"].astype(str).unique()
+                        if str(s).strip() and str(s).lower() != "nan"
+                    }
+                )
             else:
                 scripts_list = []
             tokens_per_group = self._compute_group_tokens(tokens_per_category)
@@ -480,16 +483,16 @@ Please cite the original data source: {config.get("data_source", "Unknown")}
             return []
         candidates: List[str] = []
         for d in all_ds:
-            ds_id = getattr(d, 'id', None)
+            ds_id = getattr(d, "id", None)
             if not isinstance(ds_id, str) or not ds_id.startswith(prefix):
                 continue
             # Check archive/deprecation indicators
-            tags = set(getattr(d, 'tags', []) or [])
-            card_data = getattr(d, 'cardData', {}) or {}
+            tags = set(getattr(d, "tags", []) or [])
+            card_data = getattr(d, "cardData", {}) or {}
             archived_flag = False
-            if isinstance(card_data, dict) and card_data.get('archived') is True:
+            if isinstance(card_data, dict) and card_data.get("archived") is True:
                 archived_flag = True
-            if 'archived' in tags or 'deprecated' in tags:
+            if "archived" in tags or "deprecated" in tags:
                 archived_flag = True
             if archived_flag:
                 print(f"Skipping archived/deprecated dataset: {ds_id}")
@@ -499,9 +502,12 @@ Please cite the original data source: {config.get("data_source", "Unknown")}
         for repo_id in sorted(set(candidates)):
             if check_empty:
                 try:
-                    ds = load_dataset(repo_id, split='train', token=self.token)
+                    ds = load_dataset(repo_id, split="train", token=self.token)
                     # Quickly assess emptiness (cast for type checker)
-                    from datasets import Dataset as HFDataset  # local import to avoid top-level clash
+                    from datasets import (
+                        Dataset as HFDataset,
+                    )  # local import to avoid top-level clash
+
                     if len(cast(HFDataset, ds)) == 0:  # type: ignore[arg-type]
                         print(f"Skipping empty dataset: {repo_id}")
                         continue

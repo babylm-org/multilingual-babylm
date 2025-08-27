@@ -382,7 +382,7 @@ class LanguageFilter:
                 lang_match = pred_lang.lower() == expected_language.lower()
                 script_match = pred_script.lower() == expected_script.lower()
                 document_id = row["doc_id"]
-                
+
                 file_info = {
                     "filename": document_id + ".txt",
                     "predicted_language": pred_lang,
@@ -417,14 +417,12 @@ class LanguageFilter:
         return results
 
 
-
-
 def filter_dataset_for_lang_and_script(
-        dataset_table : pd.DataFrame,
-                    language_code: str,
-                    script_code: str,
-                    language_filter_threshold: float):
-
+    dataset_table: pd.DataFrame,
+    language_code: str,
+    script_code: str,
+    language_filter_threshold: float,
+):
     lang_filter = LanguageFilter()
 
     filter_results = lang_filter.filter_documents(
@@ -438,9 +436,7 @@ def filter_dataset_for_lang_and_script(
     # Only keep matching documents
 
     matching_ids = set(filter_results["match_ids"])
-    dataset_table = dataset_table[
-        dataset_table["doc_id"].isin(matching_ids)
-    ]
+    dataset_table = dataset_table[dataset_table["doc_id"].isin(matching_ids)]
 
     return dataset_table
 

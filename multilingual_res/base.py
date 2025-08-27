@@ -8,7 +8,9 @@ from typing import List, Dict, Optional
 
 class BaseResourceFetcher(ABC):
     @abstractmethod
-    def fetch(self, language_code: str, script_code: Optional[str] = None) -> List[Dict]:
+    def fetch(
+        self, language_code: str, script_code: Optional[str] = None
+    ) -> List[Dict]:
         """
         Fetch data for a given language code and optional script code.
         Returns a list of dicts (see resource fetcher for format).

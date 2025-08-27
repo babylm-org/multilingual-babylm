@@ -68,9 +68,8 @@ class DocumentConfig:
                     f"Invalid script code '{self.script}'."
                     " Please use a valid ISO 15924 script code (e.g., Latn, Cyrl, Arab, etc.)"
                 )
-    
-    def validate_misc(self):
 
+    def validate_misc(self):
         # convert to string
         if isinstance(self.misc, dict):
             self.misc = json.dumps(self.misc)
@@ -78,11 +77,11 @@ class DocumentConfig:
             self.misc = str(self.misc)
 
         # check valid JSON string
-        try: 
+        try:
             json.loads(self.misc)
         except json.JSONDecodeError:
             # fix if just empty
-            if self.misc.strip() == '':
+            if self.misc.strip() == "":
                 self.misc = "{}"
             else:
                 raise ValueError(
@@ -217,7 +216,6 @@ class BabyLMDatasetBuilder:
                 misc = dict(misc)
                 misc["source_identifier"] = metadata["source_identifier"]
 
-
             try:
                 doc_config = DocumentConfig(
                     category=metadata.get("category")
@@ -285,8 +283,7 @@ class BabyLMDatasetBuilder:
                 "script": document_config.script,
                 "age-estimate": document_config.age_estimate,
                 "license": document_config.license,
-                "misc" : document_config.misc
-                
+                "misc": document_config.misc,
             }
 
             rows.append(row)

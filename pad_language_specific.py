@@ -81,7 +81,7 @@ language_specific_pads = {
 def pad_language_specific(
     required_padding_in_mb, language_code, script_code, HF_token=None
 ):
-    print('Padding using language-specific data for language:', language_code)
+    print("Padding using language-specific data for language:", language_code)
     padding_function = language_specific_pads.get(language_code)
     if padding_function:
         return padding_function(
