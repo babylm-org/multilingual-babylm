@@ -11,7 +11,6 @@ HF_TOKEN = os.getenv("HF_TOKEN")
 
 def process_dataframe(dataset_df: pd.DataFrame, lang) -> pd.DataFrame:
     # ... do stuff like removing, adding new data
-
     return dataset_df
 
 
@@ -27,6 +26,7 @@ def main():
 
     for repo in repos:
         lang = repo.split("-")[-1]
+        print(f"Processing {repo}...")
 
         # load updated dataset
         dataset = load_dataset(
