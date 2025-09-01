@@ -512,6 +512,7 @@ class HFDatasetUploader:
                 except Exception as e:
                     print(f"Skipping dataset (load failed): {repo_id} ({e})")
                     continue
+            print(f'Discovered repo: {repo_id}')
             active.append(repo_id)
 
         return active
