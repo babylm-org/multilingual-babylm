@@ -17,6 +17,7 @@ from pad_utils import get_byte_premium_factor, get_dataset_tier, get_dataset_siz
 
 TEMPLATE_PATH = "readme_template.txt"
 
+
 # Calculate token statistics
 def count_tokens(text, tokenizer=None):
     if not isinstance(text, str):
@@ -125,7 +126,7 @@ class HFDatasetUploader:
         df["language"] = language_code
 
         # most frequent script should be the given script
-        major_script = df['script'].mode()[0]
+        major_script = df["script"].mode()[0]
         assert script_code == major_script
 
         # Assume hyphenated schema; compute num-tokens if missing
@@ -320,10 +321,8 @@ class HFDatasetUploader:
         else:
             script_display = ", ".join(scripts_list)
 
-    
         byte_premium_factor = get_byte_premium_factor(language, major_script)
 
-    
         # calculate dataset_tier, allowing for at most 1% difference from the required size
         dataset_tier = get_dataset_tier(
             dataset_size, byte_premium_factor, percent_tolerance=0.01
@@ -413,6 +412,8 @@ class HFDatasetUploader:
         print(f"Discovered {len(repo_ids)} BabyLM dataset repos to update.")
         for repo_id in repo_ids:
             language_code = repo_id.split("-")[-1]
+            if language_code < "zho":
+                continue
             tokenizer_name = tokenizers.get(language_code, None)
 
             suffix = repo_id.split("babylm-")[-1]
@@ -451,8 +452,8 @@ class HFDatasetUploader:
                 scripts_list = []
 
             # median script value is the dominating script
-            major_script = df['script'].mode()[0] 
-            
+            major_script = df["script"].mode()[0]
+
             tokens_per_group = self._compute_group_tokens(tokens_per_category)
             dataset_size = get_dataset_size(df)
             tmp_dir = Path(f"_tmp_readme_{suffix}")
@@ -465,7 +466,7 @@ class HFDatasetUploader:
                 num_documents=len(df),
                 dataset_size=dataset_size,
                 scripts_list=scripts_list,
-                major_script = major_script,
+                major_script=major_script,
                 tokens_per_group=tokens_per_group,
                 tokenizer_name=tokenizer_name,
             )
@@ -529,7 +530,7 @@ class HFDatasetUploader:
                 except Exception as e:
                     print(f"Skipping dataset (load failed): {repo_id} ({e})")
                     continue
-            print(f'Discovered repo: {repo_id}')
+            print(f"Discovered repo: {repo_id}")
             active.append(repo_id)
 
         return active
@@ -555,12 +556,14 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--no-check",
-        action='store_true',
+        action="store_true",
         help="Don't check if repo is empty (reduce time in repo discovery)",
     )
     args = parser.parse_args()
     uploader = HFDatasetUploader(token=args.token)
     if args.repo_id is None:
-        uploader.update_all_readmes(check_empty = not args.no_check)
-    else: 
-        uploader.update_all_readmes(repo_ids=[args.repo_id], check_empty = not args.no_check)
+        uploader.update_all_readmes(check_empty=not args.no_check)
+    else:
+        uploader.update_all_readmes(
+            repo_ids=[args.repo_id], check_empty=not args.no_check
+        )
