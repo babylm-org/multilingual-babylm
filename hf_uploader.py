@@ -537,4 +537,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     uploader = HFDatasetUploader(token=args.token)
-    uploader.update_all_readmes(repo_ids=[args.repo_id])
+    if args.repo_id is None:
+        uploader.update_all_readmes()
+    else: 
+        uploader.update_all_readmes(repo_ids=[args.repo_id])
