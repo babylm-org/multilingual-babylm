@@ -2,62 +2,9 @@ import pandas as pd
 from typing import Any
 import hashlib
 
-byte_premium_factors = {
-    "eng": 1.0,
-    "nld": 1.0516739,
-    "ukr": 1.7514786,
-    "zho": 0.9893825,
-    "bul": 1.8123562,
-    "ind": 1.1788023,
-    "fra": 1.1742064,
-    "deu": 1.0537171,
-    "jpn": 1.322025,
-    "ita": 1.066923,
-    "spa": 1.0838621,
-    "ell": 1.9673049,
-    "pol": 1.0774161,
-    "eus": 1.0595837,
-    "ara": 1.4651134,
-    "srp": 1.4249495,
-    "por": 1.097927,
-    "heb": 1.3555346,
-    "est": 0.9677856,
-    "cym": 1.0265667,
-    "hrv": 0.9897218,
-    "swe": 1.0210256,
-    "ron": 1.1151666,
-    "kor": 1.2933602,
-    "isl": 1.1543925,
-    "afr": 1.0373004,
-    "xho": 1.198886,
-    "zul": 1.1639372,
-    "sot": 1.1661078,
-    "nso": 1.1156964,
-    "hun": 1.0199851,
-    "ces": 1.0358867,
-    "yue": 0.8624614,
-    "cat": 1.0926706,
-    "jav": 1.1468458,
-    "dan": 1.0210658,
-    "tha": 2.7416472,
-    "nor": 1.125316,
-    "tur": 1.0444815,
-    "fas": 1.5973263,
-    "rus": 1.8228284,
-    "gle": 1.9749562,
-    "crl": 2.6007383,
-    "tsn": 1.1739403,
-    "yuw": 1.605417,
-    "tam": 2.7290997,
-    "slv": 0.97215,
-    "mop": 1.6077918,
-    "mar": 2.4793565,
-    "ltz": 1.225349,
-    "bug": 1.2279017,
-    "ace": 1.2419926,
-    "ban": 1.2695436,
-    "mak": 1.250697369,
-}
+
+BYTE_PREMIUMS_PATH = 'byte_coefs_20240233.tsv'
+
 
 eng_sizes_per_tier = {
     "tier_1M": 5.430,
@@ -84,8 +31,23 @@ def dataframe_to_docs(dataset_df: pd.DataFrame) -> list[dict[str, Any]]:
     return docs
 
 
-def get_byte_premium_factor(lang: str):
-    return byte_premium_factors.get(lang)
+def get_byte_premium_factor(lang: str, script: str):
+    all_data_df = pd.read_csv(BYTE_PREMIUMS_PATH, sep='\t', header=0)
+    all_data_df = all_data_df[all_data_df['byte_coef'].notnull()]
+
+    lang_entries = all_data_df[all_data_df['lang'] == lang]
+    num_lang_entries = len(lang_entries)
+    if num_lang_entries == 0: 
+        print("No pre-calculated byte-premium factor, see instructions on README on how to calculate it.")
+        return None
+    elif num_lang_entries == 1:
+        return lang_entries['byte_coef'].values[0]
+    else:
+        lang_script_entries = all_data_df[all_data_df['lang_script'] == f'{lang}_{script}']
+        assert len(lang_entries) == 1
+        return lang_script_entries['byte_coeff'].values[0]
+
+
 
 
 def bytes_in_text(text: str) -> float:

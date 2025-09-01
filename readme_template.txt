@@ -44,8 +44,8 @@ For more information: [babylm.github.io/multilingual](https://babylm.github.io/m
 - **Tier:** {dataset_tier}
 - **Size (MB):** {dataset_size:.2f}
 - **Byte Premium Factor:** {byte_premium_factor}
-- **Number of Documents:** {num_documents}
-- **Total Tokens:** {total_tokens}
+- **Number of Documents:** {num_documents:,}
+- **Total Tokens:** {total_tokens:,}
 - **Tokenizer:** {tokenizer_name}
 
 ### Tokens Per Category

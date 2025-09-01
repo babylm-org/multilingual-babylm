@@ -375,7 +375,7 @@ def pad_dataset_to_next_tier(
     language_code: str,
     script_code: str,
 ) -> dict[str, Any]:
-    factor = get_byte_premium_factor(language_code)
+    factor = get_byte_premium_factor(language_code, script_code)
 
     load_dotenv()
     HF_token = os.getenv("HF_TOKEN") or ""

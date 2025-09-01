@@ -15,6 +15,7 @@ from huggingface_hub import HfApi, create_repo
 from transformers import AutoTokenizer  # type: ignore
 from pad_utils import get_byte_premium_factor, get_dataset_tier, get_dataset_size
 
+TEMPLATE_PATH = "readme_template.txt"
 
 # Calculate token statistics
 def count_tokens(text, tokenizer=None):
@@ -40,6 +41,7 @@ class HFDatasetUploader:
     def upload_babylm_dataset(
         self,
         language_code: str,
+        script_code: str,
         dataset_dir: Path,
         repo_id: str,
         private: bool = True,
@@ -121,6 +123,11 @@ class HFDatasetUploader:
 
         # assign language to documents
         df["language"] = language_code
+
+        # most frequent script should be the given script
+        major_script = df['script'].mode()[0]
+        assert script_code == major_script
+
         # Assume hyphenated schema; compute num-tokens if missing
         if "num-tokens" not in df.columns:
             df["num-tokens"] = df["text"].apply(count_tokens, tokenizer=tokenizer)
@@ -143,7 +150,7 @@ class HFDatasetUploader:
         # NEW: group category counts
         tokens_per_group = self._compute_group_tokens(tokens_per_category)
 
-        print(f"Total tokens in dataset: {total_tokens}")
+        print(f"Total tokens in dataset: {total_tokens:,}")
         print("Tokens per category:")
         for cat, tok in tokens_per_category.items():
             print(f"  {cat}: {tok}")
@@ -186,6 +193,7 @@ class HFDatasetUploader:
                 tokens_per_category=tokens_per_category,
                 num_documents=num_documents,
                 dataset_size=dataset_size,
+                major_script=script_code,
                 scripts_list=scripts_list,
                 tokens_per_group=tokens_per_group,
                 tokenizer_name=tokenizer_name,
@@ -260,6 +268,7 @@ class HFDatasetUploader:
         tokens_per_category: Optional[dict],
         num_documents: int,
         dataset_size: float,
+        major_script: str,
         scripts_list: Optional[List[str]] = None,
         tokens_per_group: Optional[Dict[str, int]] = None,
         tokenizer_name: str = None,
@@ -311,7 +320,10 @@ class HFDatasetUploader:
         else:
             script_display = ", ".join(scripts_list)
 
-        byte_premium_factor = get_byte_premium_factor(language)
+    
+        byte_premium_factor = get_byte_premium_factor(language, major_script)
+
+    
         # calculate dataset_tier, allowing for at most 1% difference from the required size
         dataset_tier = get_dataset_tier(
             dataset_size, byte_premium_factor, percent_tolerance=0.01
@@ -334,7 +346,7 @@ class HFDatasetUploader:
         else:
             tokens_per_category_content += "No group data available.\n"
 
-        with open("readme_upload.txt", "r") as f:
+        with open(TEMPLATE_PATH, "r") as f:
             readme_content = f.read()
 
         dataset_name = metadata.get("dataset_name", "BabyLM Dataset")
@@ -377,7 +389,7 @@ class HFDatasetUploader:
         except Exception as e:
             print(f"Error uploading README: {e}")
 
-    def update_all_readmes(self, repo_ids: list[str] = None):
+    def update_all_readmes(self, repo_ids: list[str] = None, check_empty: bool = True):
         """Bulk update README files for all BabyLM language datasets discovered dynamically.
 
         Discovery logic:
@@ -386,7 +398,7 @@ class HFDatasetUploader:
           3. Iterate each repo and regenerate README with scripts list + grouped category counts.
         """
         if repo_ids is None:
-            repo_ids = self._discover_babylm_repos()
+            repo_ids = self._discover_babylm_repos(check_empty=check_empty)
 
         tokenizers = {
             "jpn": "tohoku-nlp/bert-base-japanese",
@@ -437,6 +449,10 @@ class HFDatasetUploader:
                 )
             else:
                 scripts_list = []
+
+            # median script value is the dominating script
+            major_script = df['script'].mode()[0] 
+            
             tokens_per_group = self._compute_group_tokens(tokens_per_category)
             dataset_size = get_dataset_size(df)
             tmp_dir = Path(f"_tmp_readme_{suffix}")
@@ -449,6 +465,7 @@ class HFDatasetUploader:
                 num_documents=len(df),
                 dataset_size=dataset_size,
                 scripts_list=scripts_list,
+                major_script = major_script,
                 tokens_per_group=tokens_per_group,
                 tokenizer_name=tokenizer_name,
             )
@@ -531,14 +548,19 @@ if __name__ == "__main__":
         help="HuggingFace token (optional, will use env if not provided).",
     )
     parser.add_argument(
-        "--repo_id",
+        "--repo-id",
         type=str,
         default=None,
         help="Update a specific BabyLM repo, specified with --repo_id",
     )
+    parser.add_argument(
+        "--no-check",
+        action='store_true',
+        help="Don't check if repo is empty (reduce time in repo discovery)",
+    )
     args = parser.parse_args()
     uploader = HFDatasetUploader(token=args.token)
     if args.repo_id is None:
-        uploader.update_all_readmes()
+        uploader.update_all_readmes(check_empty = not args.no_check)
     else: 
-        uploader.update_all_readmes(repo_ids=[args.repo_id])
+        uploader.update_all_readmes(repo_ids=[args.repo_id], check_empty = not args.no_check)
