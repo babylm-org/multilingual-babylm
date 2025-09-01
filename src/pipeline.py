@@ -222,6 +222,7 @@ def process_dataset(
         uploader = HFDatasetUploader()
         uploader.upload_babylm_dataset(
             language_code=language_code,
+            script_code=script_code,
             dataset_dir=builder.output_dir,
             repo_id=repo_id,
             create_repo_if_missing=True,
