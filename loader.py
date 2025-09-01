@@ -32,7 +32,7 @@ class TextDirLoader(BaseLoader):
                 docs.append(
                     {
                         "text": text,
-                        "doc_id": doc_id,
+                        "doc-id": doc_id,
                         "file_name": file_name,
                         "metadata": {},
                     }
@@ -53,11 +53,16 @@ class CSVLoader(BaseLoader):
                 if not text:
                     continue
                 meta = {k: v for k, v in row.items() if k != self.text_field}
-                doc_id = row.get("doc_id") or row.get("id") or generate_doc_id(text)
+                doc_id = (
+                    row.get("doc-id")
+                    or row.get("doc_id")
+                    or row.get("id")
+                    or generate_doc_id(text)
+                )
                 docs.append(
                     {
                         "text": text,
-                        "doc_id": doc_id,
+                        "doc-id": doc_id,
                         "metadata": meta,
                     }
                 )
@@ -83,11 +88,16 @@ class JSONLoader(BaseLoader):
             if not text:
                 continue
             meta = {k: v for k, v in row.items() if k != self.text_field}
-            doc_id = row.get("doc_id") or row.get("id") or generate_doc_id(text)
+            doc_id = (
+                row.get("doc-id")
+                or row.get("doc_id")
+                or row.get("id")
+                or generate_doc_id(text)
+            )
             docs.append(
                 {
                     "text": text,
-                    "doc_id": doc_id,
+                    "doc-id": doc_id,
                     "metadata": meta,
                 }
             )
@@ -112,11 +122,16 @@ class JSONLLoader(BaseLoader):
                 if not text:
                     continue
                 meta = {k: v for k, v in row.items() if k != self.text_field}
-                doc_id = row.get("doc_id") or row.get("id") or generate_doc_id(text)
+                doc_id = (
+                    row.get("doc-id")
+                    or row.get("doc_id")
+                    or row.get("id")
+                    or generate_doc_id(text)
+                )
                 docs.append(
                     {
                         "text": text,
-                        "doc_id": doc_id,
+                        "doc-id": doc_id,
                         "metadata": meta,
                     }
                 )
@@ -152,12 +167,18 @@ class HFLoader(BaseLoader):
             if isinstance(row, dict):
                 text = row.get(self.text_field, "")
                 meta = {k: v for k, v in row.items() if k != self.text_field}
-                doc_id = row.get("doc_id") or row.get("id") or generate_doc_id(text)
+                doc_id = (
+                    row.get("doc-id")
+                    or row.get("doc_id")
+                    or row.get("id")
+                    or generate_doc_id(text)
+                )
             else:
                 text = getattr(row, self.text_field, "")
                 meta = {k: v for k, v in row.__dict__.items() if k != self.text_field}
                 doc_id = (
-                    getattr(row, "doc_id", None)
+                    getattr(row, "doc-id", None)
+                    or getattr(row, "doc_id", None)
                     or getattr(row, "id", None)
                     or generate_doc_id(text)
                 )
@@ -166,7 +187,7 @@ class HFLoader(BaseLoader):
             docs.append(
                 {
                     "text": text,
-                    "doc_id": doc_id,
+                    "doc-id": doc_id,
                     "metadata": meta,
                 }
             )

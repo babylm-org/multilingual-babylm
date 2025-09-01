@@ -77,7 +77,7 @@ def dataframe_to_docs(dataset_df: pd.DataFrame) -> list[dict[str, Any]]:
         docs.append(
             {
                 "text": text,
-                "doc_id": doc_id,
+                "doc-id": doc_id,
                 "metadata": meta,
             }
         )

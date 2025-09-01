@@ -67,7 +67,7 @@ class LanguageFilter:
         results = []
         for label, prob in zip(labels, probs):
             # Remove '__label__' prefix
-            label_clean = label.replace("__label__", "")
+            label_clean: str = str(label).replace("__label__", "")
 
             # Extract language and script
             if "_" in label_clean:
@@ -381,7 +381,8 @@ class LanguageFilter:
                 # Check if it matches expected language and script
                 lang_match = pred_lang.lower() == expected_language.lower()
                 script_match = pred_script.lower() == expected_script.lower()
-                document_id = row["doc_id"]
+                # Backward-compat for identifier column on a Pandas Series
+                document_id = row["doc-id"] if "doc-id" in row else row["doc_id"]
 
                 file_info = {
                     "filename": document_id + ".txt",
@@ -436,7 +437,9 @@ def filter_dataset_for_lang_and_script(
     # Only keep matching documents
 
     matching_ids = set(filter_results["match_ids"])
-    dataset_table = dataset_table[dataset_table["doc_id"].isin(matching_ids)]
+    # Support either 'doc-id' or legacy 'doc_id'
+    id_col = "doc-id" if "doc-id" in dataset_table.columns else "doc_id"
+    dataset_table = dataset_table[dataset_table[id_col].isin(matching_ids)]
 
     return dataset_table
 
