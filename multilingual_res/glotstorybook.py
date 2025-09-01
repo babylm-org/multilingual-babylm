@@ -6,7 +6,7 @@ import os
 from datasets import Dataset, load_dataset
 from dotenv import load_dotenv
 from multilingual_res.base import BaseResourceFetcher
-from typing import List, Dict
+from typing import List, Dict, cast
 
 
 class GlotStorybookFetcher(BaseResourceFetcher):
@@ -23,18 +23,17 @@ class GlotStorybookFetcher(BaseResourceFetcher):
     def fetch(self, language_code: str) -> List[Dict]:
         """
         Fetch GlotStoryBook data for a given language code and optional script code.
-        Returns a list of dicts with keys: text, doc_id, metadata (for DocumentConfig)
+        Returns a list of dicts with keys: text, doc-id, metadata (for DocumentConfig)
         """
         dataset = load_dataset("cis-lmu/GlotStoryBook", split="train")
         grouped = defaultdict(list)
         for row in dataset:
-            grouped[row["File Name"]].append(row)
+            d = cast(dict, row)
+            grouped[d["File Name"]].append(d)
         new_rows = []
         for rows in grouped.values():
             sorted_rows = sorted(rows, key=lambda x: x["Text Number"])
-            full_text = " ".join(
-                row["Text"] for row in sorted_rows if row["Text"] is not None
-            )
+            full_text = " ".join(r["Text"] for r in sorted_rows if r.get("Text"))
             merged_row = {
                 key: sorted_rows[0][key]
                 for key in sorted_rows[0]
@@ -48,15 +47,16 @@ class GlotStorybookFetcher(BaseResourceFetcher):
         filtered = dataset.filter(lambda x: x["ISO639-3"] == language_code)
         results = []
         for doc in filtered:
-            text = doc["Text"]
-            if text is not None:
-                script = doc["Script"]
-                data_license = doc["License"]
-                author = doc["Text By"] if "Text By" in doc else None
-                translator = doc["Translation By"] if "Translation By" in doc else None
+            d = cast(dict, doc)
+            text = d.get("Text")
+            if text:
+                script = d.get("Script")
+                data_license = d.get("License")
+                author = d.get("Text By")
+                translator = d.get("Translation By")
                 data_source = "GlotStoryBook"
                 description = "Children StoryBooks for 180 languages."
-                source_identifier = doc["Source"] if "Source" in doc else None
+                source_identifier = d.get("Source")
                 misc = {
                     "translator": translator,
                     "author": author,
@@ -73,13 +73,7 @@ class GlotStorybookFetcher(BaseResourceFetcher):
                     "misc": misc,
                 }
                 doc_id = hashlib.sha256(text.encode("utf-8")).hexdigest()
-                results.append(
-                    {
-                        "text": text,
-                        "doc_id": doc_id,
-                        "metadata": metadata,
-                    }
-                )
+                results.append({"text": text, "doc-id": doc_id, "metadata": metadata})
         print(
             f"Fetched {len(results)} documents from GlotStoryBook for language '{language_code}'"
         )

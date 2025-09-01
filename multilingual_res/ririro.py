@@ -14,7 +14,10 @@ from urllib.parse import urljoin, urlparse
 from bs4 import BeautifulSoup
 from bs4.element import Tag
 
-from iso639 import Lang
+try:
+    from iso639 import Lang  # type: ignore
+except Exception:
+    Lang = None  # type: ignore
 
 from openai import OpenAI
 from pydantic import BaseModel
@@ -131,6 +134,8 @@ class RiriroFetcher(BaseResourceFetcher):
         return base64.b64encode(resp.content).decode("utf-8")
 
     def _get_lower_age_from_image_b64(self, base64_image):
+        if self.client is None:
+            return None
         if self.llm_mode == "gemini":
             model = "gemini-2.5-flash"
         elif self.llm_mode == "openai":
@@ -171,13 +176,15 @@ class RiriroFetcher(BaseResourceFetcher):
     ) -> List[Dict]:
         """
         Fetch Ririro data for a given language code and optional script code.
-        Returns a list of dicts with keys: text, doc_id, metadata (for DocumentConfig)
+        Returns a list of dicts with keys: text, doc-id, metadata (for DocumentConfig)
         """
         # Normalize language code to ISO-639-1 if needed
         lang_key = language_code
         if lang_key not in RIRIRO_LANGS or len(lang_key) != 2:
             try:
-                lang_key = Lang(language_code).pt1
+                lang_key = (
+                    Lang(language_code).pt1 if Lang is not None else language_code
+                )
             except Exception:
                 print(f"Ririro not available for language: {language_code}")
                 return []
@@ -219,11 +226,7 @@ class RiriroFetcher(BaseResourceFetcher):
                     },
                 }
                 results.append(
-                    {
-                        "text": content,
-                        "doc_id": doc_id,
-                        "metadata": metadata,
-                    }
+                    {"text": content, "doc-id": doc_id, "metadata": metadata}
                 )
             except Exception as e:
                 print(f"  Error fetching {url}: {e}")

@@ -16,8 +16,6 @@ from transformers import AutoTokenizer  # type: ignore
 from pad_utils import get_byte_premium_factor, get_dataset_tier, get_dataset_size
 
 
-
-
 # Calculate token statistics
 def count_tokens(text, tokenizer=None):
     if not isinstance(text, str):
@@ -123,15 +121,17 @@ class HFDatasetUploader:
 
         # assign language to documents
         df["language"] = language_code
-        df["num_tokens"] = df["text"].apply(count_tokens, tokenizer=tokenizer)
-        total_tokens = int(df["num_tokens"].sum())
+        # Assume hyphenated schema; compute num-tokens if missing
+        if "num-tokens" not in df.columns:
+            df["num-tokens"] = df["text"].apply(count_tokens, tokenizer=tokenizer)
+        total_tokens = int(df["num-tokens"].sum())
 
         # get the dataset size in MB
         dataset_size = get_dataset_size(df)
 
         assert "category" in df.columns, "category must be defined"
 
-        tokens_per_category = df.groupby("category")["num_tokens"].sum().to_dict()
+        tokens_per_category = df.groupby("category")["num-tokens"].sum().to_dict()
         # NEW: scripts list
         scripts_list = sorted(
             {
@@ -155,14 +155,14 @@ class HFDatasetUploader:
         features = Features(
             {
                 "text": Value("string"),
-                "doc_id": Value("string"),
+                "doc-id": Value("string"),
                 "category": Value("string"),
                 "data-source": Value("string"),
                 "script": Value("string"),
                 "age-estimate": Value("string"),
                 "license": Value("string"),
                 "misc": Value("string"),
-                "num_tokens": Value("int64"),
+                "num-tokens": Value("int64"),
                 "language": Value("string"),
             }
         )
@@ -313,13 +313,9 @@ class HFDatasetUploader:
 
         byte_premium_factor = get_byte_premium_factor(language)
         # calculate dataset_tier, allowing for at most 1% difference from the required size
-        dataset_tier = get_dataset_tier(dataset_size, byte_premium_factor, percent_tolerance = 0.01)
-        if dataset_tier is None:
-            dataset_tier = "Exceeds largest tier (100M)"
-        else:
-            # tier_10M -> 10M
-            dataset_tier = dataset_tier.split("_")[-1]
-
+        dataset_tier = get_dataset_tier(
+            dataset_size, byte_premium_factor, percent_tolerance=0.01
+        )
         license_metadata = config.get("license", "unknown")
         data_source = config.get("data_source", "Unknown")
 
@@ -419,18 +415,18 @@ class HFDatasetUploader:
             except Exception as e:
                 print(f"  Could not load dataset: {e}")
                 continue
-            if "num_tokens" not in df.columns:
+            if "num-tokens" not in df.columns:
                 tokenizer = (
                     AutoTokenizer.from_pretrained(tokenizer_name)
                     if tokenizer_name
                     else None
                 )
-                df["num_tokens"] = df["text"].apply(count_tokens, tokenizer=tokenizer)
-            total_tokens = int(df["num_tokens"].sum())
+                df["num-tokens"] = df["text"].apply(count_tokens, tokenizer=tokenizer)
+            total_tokens = int(df["num-tokens"].sum())
             if "category" not in df.columns:
                 print("  Missing 'category' column; skipping.")
                 continue
-            tokens_per_category = df.groupby("category")["num_tokens"].sum().to_dict()
+            tokens_per_category = df.groupby("category")["num-tokens"].sum().to_dict()
             if "script" in df.columns:
                 scripts_list = sorted(
                     {
@@ -462,6 +458,8 @@ class HFDatasetUploader:
             except Exception:
                 pass
 
+    # Migration helpers removed: migration is complete and schema is canonical.
+
     def _discover_babylm_repos(self, check_empty: bool = True) -> List[str]:
         """Return sorted list of active (non-archived, non-empty) BabyLM dataset repo_ids.
 
@@ -480,7 +478,11 @@ class HFDatasetUploader:
         candidates: List[str] = []
         for d in all_ds:
             ds_id = getattr(d, "id", None)
-            if not isinstance(ds_id, str) or not ds_id.startswith(prefix):
+            if (
+                not isinstance(ds_id, str)
+                or not ds_id.startswith(prefix)
+                or "subtitles" in ds_id
+            ):
                 continue
             # Check archive/deprecation indicators
             tags = set(getattr(d, "tags", []) or [])
@@ -519,7 +521,7 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(
-        description="Bulk update BabyLM language dataset READMEs (scripts list + grouped category counts)."
+        description="Manage BabyLM language datasets on the Hub (update READMEs)."
     )
     parser.add_argument(
         "--token",

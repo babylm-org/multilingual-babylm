@@ -77,7 +77,7 @@ def dataframe_to_docs(dataset_df: pd.DataFrame) -> list[dict[str, Any]]:
         docs.append(
             {
                 "text": text,
-                "doc_id": doc_id,
+                "doc-id": doc_id,
                 "metadata": meta,
             }
         )
@@ -108,7 +108,6 @@ def normalize_script(script: str) -> str:
     return script
 
 
-
 def get_dataset_tier(dataset_size, factor, percent_tolerance):
     """
     Determine the tier based on dataset size.
@@ -119,7 +118,9 @@ def get_dataset_tier(dataset_size, factor, percent_tolerance):
         return abs(x - target) <= (percent_tolerance) * abs(target)
 
     tiers = eng_sizes_per_tier.copy()
-    target_sizes = [(name.split('_')[-1], size * factor) for name, size in tiers.items()]
+    target_sizes = [
+        (name.split("_")[-1], size * factor) for name, size in tiers.items()
+    ]
     sorted_pairs = sorted(target_sizes, key=lambda x: x[1])
 
     for name, target in target_sizes:
@@ -133,7 +134,6 @@ def get_dataset_tier(dataset_size, factor, percent_tolerance):
 
     # dataset_size exceeds largest tier threshold
     return "> " + sorted_pairs[-1]
-
 
 
 def get_dataset_tier_to_pad(dataset_size, factor):

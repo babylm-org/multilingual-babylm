@@ -146,10 +146,15 @@ class BabyLMDatasetBuilder:
                     print(f"Warning: Could not load existing Parquet: {e}")
             if existing_df is not None:
                 print(f"Loaded existing data with {len(existing_df)} documents.")
-                # Backward compatibility: add doc_id if missing
-                if "doc_id" not in existing_df.columns:
-                    existing_df = self.add_missing_doc_id(existing_df)
-                self._existing_doc_ids = set(existing_df["doc_id"].astype(str))
+                # Ensure identifier column exists
+                if (
+                    "doc-id" not in existing_df.columns
+                    and "text" in existing_df.columns
+                ):
+                    existing_df["doc-id"] = existing_df["text"].apply(
+                        lambda x: hashlib.sha256(str(x).encode("utf-8")).hexdigest()
+                    )
+                self._existing_doc_ids = set(existing_df["doc-id"].astype(str))
                 self._existing_documents = existing_df.to_dict(orient="records")
             else:
                 print("Existing dataset not found for merge.")
@@ -170,12 +175,12 @@ class BabyLMDatasetBuilder:
         additional_metadata: Optional[dict] = None,
     ) -> None:
         """Add a document to the dataset with its own configuration."""
-        # Avoid duplicates by doc_id
+        # Avoid duplicates by doc-id
         if hasattr(self, "_existing_doc_ids") and document_id in self._existing_doc_ids:
             return  # Skip duplicate
         # Create document metadata
         document = {
-            "doc_id": document_id,
+            "doc-id": document_id,
             "document_config": document_config,
             "text": text,  # Store the text content
         }
@@ -190,22 +195,26 @@ class BabyLMDatasetBuilder:
     def add_documents_from_iterable(
         self,
         documents,
-        document_config_params: dict[str, Any] = None,
+        document_config_params: Optional[dict[str, Any]] = None,
     ) -> None:
         """
-        Add multiple documents from an iterable of dicts with 'text', 'doc_id', and 'metadata'.
+        Add multiple documents from an iterable of dicts with 'text', 'doc-id', and 'metadata'.
 
-        Args:
-            documents: List of dicts with keys 'text', 'doc_id', and 'metadata' (optional)
-            default_document_config: Default DocumentConfig for documents
+            Args:
+                documents: List of dicts with keys 'text', 'doc-id', and 'metadata' (optional)
+                default_document_config: Default DocumentConfig for documents
         """
         for doc in documents:
             text = doc["text"]
-            document_id = doc["doc_id"]
+            document_id = doc.get("doc-id")
+            if document_id is None:
+                # Compute from text for robustness
+                document_id = hashlib.sha256(str(text).encode("utf-8")).hexdigest()
             metadata = doc.get("metadata", {})
 
             # Prepare misc, merging with existing misc if present
-            misc = metadata.get("misc", document_config_params.get("misc"))
+            base_params = document_config_params or {}
+            misc = metadata.get("misc", base_params.get("misc"))
             if misc is None:
                 misc = {}
             # Add source_url and source_identifier to misc if present
@@ -217,18 +226,39 @@ class BabyLMDatasetBuilder:
                 misc["source_identifier"] = metadata["source_identifier"]
 
             try:
+                category = metadata.get("category") or base_params.get("category")
+                data_source = metadata.get("data-source") or base_params.get(
+                    "data-source"
+                )
+                script = metadata.get("script") or base_params.get("script")
+                age_estimate = metadata.get("age-estimate") or base_params.get(
+                    "age-estimate"
+                )
+                license_val = metadata.get("license") or base_params.get("license")
+                if (
+                    category is None
+                    or data_source is None
+                    or script is None
+                    or age_estimate is None
+                    or license_val is None
+                ):
+                    raise ValueError(
+                        "Missing required document configuration fields: category, data-source, script, age-estimate, license"
+                    )
+                # Type narrow for static analysis
+                assert isinstance(category, str)
+                assert isinstance(data_source, str)
+                assert isinstance(script, str)
+                assert isinstance(age_estimate, str)
+                assert isinstance(license_val, str)
+                misc_str = json.dumps(misc) if isinstance(misc, dict) else str(misc)
                 doc_config = DocumentConfig(
-                    category=metadata.get("category")
-                    or document_config_params.get("category"),
-                    data_source=metadata.get("data-source")
-                    or document_config_params.get("data-source"),
-                    script=metadata.get("script")
-                    or document_config_params.get("script"),
-                    age_estimate=metadata.get("age-estimate")
-                    or document_config_params.get("age-estimate"),
-                    license=metadata.get("license")
-                    or document_config_params.get("license"),
-                    misc=misc,
+                    category=category,
+                    data_source=data_source,
+                    script=script,
+                    age_estimate=age_estimate,
+                    license=license_val,
+                    misc=misc_str,
                 )
 
             except ValueError as e:
@@ -249,19 +279,6 @@ class BabyLMDatasetBuilder:
             }
             self.add_document(text, document_id, doc_config, additional_metadata)
 
-    def add_missing_doc_id(self, df):
-        """
-        Add a 'doc_id' column to the DataFrame if it doesn't exist.
-        Generates SHA256 hash of the 'text' column for each row.
-        """
-        print(
-            "doc_id column missing in existing data. Generating doc_id for each record."
-        )
-        df["doc_id"] = df["text"].apply(
-            lambda x: hashlib.sha256(str(x).encode("utf-8")).hexdigest()
-        )
-        return df
-
     def create_dataset_table(self) -> pd.DataFrame:
         """Create the standardized BabyLM dataset table."""
         rows = []
@@ -272,12 +289,12 @@ class BabyLMDatasetBuilder:
         for doc in self.documents:
             # Read the text
             text = doc["text"]
-            document_id = doc["doc_id"]
+            document_id = doc["doc-id"]
             document_config = doc["document_config"]
 
             row = {
                 "text": text,
-                "doc_id": document_id,
+                "doc-id": document_id,
                 "category": document_config.category,
                 "data-source": document_config.data_source,
                 "script": document_config.script,
@@ -287,9 +304,15 @@ class BabyLMDatasetBuilder:
             }
 
             rows.append(row)
+
         df = pd.DataFrame(rows)
-        # Remove duplicates by doc_id (keep first occurrence)
-        df = df.drop_duplicates(subset=["doc_id"])
+        # Ensure identifier column if missing (compute from text)
+        if "doc-id" not in df.columns:
+            df["doc-id"] = df["text"].apply(
+                lambda x: hashlib.sha256(str(x).encode("utf-8")).hexdigest()
+            )
+        # Remove duplicates by doc-id (keep first occurrence)
+        df = df.drop_duplicates(subset=["doc-id"])
         # Ensure all values in 'text' column are strings
         df["text"] = df["text"].astype(str)
         # Filter rows where 'text' is not empty after stripping whitespace
@@ -299,6 +322,10 @@ class BabyLMDatasetBuilder:
 
     def save_dataset(self) -> None:
         # Save as CSV and parquet for flexibility
+        if self.dataset_table is None:
+            raise ValueError(
+                "dataset_table is None. Call create_dataset_table() before save_dataset()."
+            )
         csv_path = self.output_dir / f"{self.dataset_config.dataset_name}_dataset.csv"
         parquet_path = (
             self.output_dir / f"{self.dataset_config.dataset_name}_dataset.parquet"
@@ -337,6 +364,9 @@ class BabyLMDatasetBuilder:
             Dict with 'data' (DataFrame) and 'metadata' (Dict)
 
         """
+        if self.dataset_table is None:
+            # Attempt to build from current documents
+            self.create_dataset_table()
         return {"data": self.dataset_table, "metadata": self.metadata}
 
     def deduplicate_by_text(self) -> None:
