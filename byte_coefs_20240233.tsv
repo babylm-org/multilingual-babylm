@@ -1,1319 +1,1156 @@
-	lang_script	lang	script	writing_type	source	byte_coef
-0	aai_latn	aai	latn	alphabet	bible	1.175442847
-1	aak_latn	aak	latn	alphabet	bible	2.277184521
-2	aau_latn	aau	latn	alphabet	bible	1.551029691
-3	aaz_latn	aaz	latn	alphabet	bible	1.680613015
-4	abk_cyrl	abk	cyrl	alphabet		
-5	abp_latn	abp	latn	alphabet	bible	1.331510137
-6	abt_latn	abt	latn	alphabet	bible	1.877271377
-7	abx_latn	abx	latn	alphabet	bible	1.359783776
-8	aby_latn	aby	latn	alphabet	bible	1.338780828
-9	acd_latn	acd	latn	alphabet	bible	1.710619186
-10	ace_arab	ace	arab	abjad	flores	1.505402343801714
-11	ace_latn	ace	latn	alphabet	nllb	1.2419568876773823
-12	acf_latn	acf	latn	alphabet	bible	1.15712098
-13	acm_arab	acm	arab	abjad	flores	1.550152569
-14	acq_arab	acq	arab	abjad	flores	1.569394862003875
-15	acr_latn	acr	latn	alphabet	bible	1.54049736
-16	acu_latn	acu	latn	alphabet	bible	1.435962607
-17	ada_latn	ada	latn	alphabet		
-18	adj_latn	adj	latn	alphabet	bible	1.191613906
-19	aeb_arab	aeb	arab	abjad	flores	1.5277140901608963
-20	aer_latn	aer	latn	alphabet	bible	2.347966904
-21	aeu_latn	aeu	latn	alphabet	bible	1.872473772
-22	aey_latn	aey	latn	alphabet	bible	1.196973783
-23	afk_latn	afk	latn	alphabet		
-24	afr_latn	afr	latn	alphabet	nllb	1.037225980267587
-25	agd_latn	agd	latn	alphabet	bible	1.482487257
-26	agg_latn	agg	latn	alphabet	bible	1.909032936
-27	agm_latn	agm	latn	alphabet	bible	2.530698727
-28	agn_latn	agn	latn	alphabet	bible	1.409972343
-29	agr_latn	agr	latn	alphabet	bible	1.243886997
-30	agt_latn	agt	latn	alphabet	bible	1.412402002
-31	agu_latn	agu	latn	alphabet	bible	1.454138191
-32	aia_latn	aia	latn	alphabet	bible	1.384452927
-33	aii_syrc	aii	syrc	abjad	bible	1.896699504
-34	aja_latn	aja	latn	alphabet		
-35	ajp_arab	ajp	arab	abjad	flores	1.4789725895470154
-36	aka_latn	aka	latn	alphabet	nllb	1.5749427817894566
-37	ake_latn	ake	latn	alphabet	bible	1.375145711
-38	akh_latn	akh	latn	alphabet	bible	1.974444013
-39	ako_latn	ako	latn	alphabet		
-40	akp_latn	akp	latn	alphabet	bible	1.131448424
-41	aln_latn	aln	latn	alphabet		
-42	alp_latn	alp	latn	alphabet	bible	1.264327673
-43	alq_latn	alq	latn	alphabet	bible	1.476720532
-44	als_latn	als	latn	alphabet	nllb	1.1672471776622368
-45	aly_latn	aly	latn	alphabet	bible	1.581854129
-46	amc_latn	amc	latn	alphabet		
-47	ame_latn	ame	latn	alphabet	bible	2.212100295
-48	amf_latn	amf	latn	alphabet	bible	1.169561839
-49	amh_ethi	amh	ethi	abugida	nllb	1.720917142791503
-50	amk_latn	amk	latn	alphabet	bible	1.405705012
-51	amm_latn	amm	latn	alphabet	bible	1.541674476
-52	amn_latn	amn	latn	alphabet	bible	1.260110626
-53	amo_latn	amo	latn	alphabet	bible	0.935171768
-54	amp_latn	amp	latn	alphabet	bible	1.463342552
-55	amr_latn	amr	latn	alphabet	bible	1.715478503
-56	amu_latn	amu	latn	alphabet	bible	1.865289936
-57	anv_latn	anv	latn	alphabet	bible	1.554227332
-58	any_latn	any	latn	alphabet	bible	1.532182122
-59	aoj_latn	aoj	latn	alphabet	bible	1.574274874
-60	aom_latn	aom	latn	alphabet	bible	1.767342461
-61	aon_latn	aon	latn	alphabet	bible	1.789721378
-62	apb_latn	apb	latn	alphabet	bible	1.525677127
-63	apc_arab	apc	arab	abjad	flores	1.4734486130771929
-64	ape_latn	ape	latn	alphabet	bible	1.729238189
-65	apn_latn	apn	latn	alphabet	bible	2.568499006
-66	apr_latn	apr	latn	alphabet	bible	1.74664122
-67	apu_latn	apu	latn	alphabet	bible	1.445422962
-68	apw_latn	apw	latn	alphabet	bible	1.500740555
-69	apy_latn	apy	latn	alphabet	bible	1.501030834
-70	apz_latn	apz	latn	alphabet	bible	2.015894494
-71	arb_arab	arb	arab	abjad	nllb	1.4650179781606354
-72	arb_latn	arb	latn	alphabet	flores	1.1558741901084642
-73	are_latn	are	latn	alphabet	bible	1.471838358
-74	arl_latn	arl	latn	alphabet	bible	1.80293479
-75	arn_latn	arn	latn	alphabet	bible	1.340611643
-76	arq_arab	arq	arab	abjad	bible	1.410136911
-77	ars_arab	ars	arab	abjad	flores	1.5877034804350854
-78	aru_latn	aru	latn	alphabet		
-79	ary_arab	ary	arab	abjad	flores	1.5419689250862352
-80	arz_arab	arz	arab	abjad	flores	1.551170046032467
-81	asm_beng	asm	beng	abugida	nllb	2.526329302997425
-82	aso_latn	aso	latn	alphabet	bible	1.974631437
-83	ass_latn	ass	latn	alphabet		
-84	ast_latn	ast	latn	alphabet	nllb	1.748880208239496
-85	ata_latn	ata	latn	alphabet	bible	1.535052913
-86	atb_latn	atb	latn	alphabet	bible	1.513174556
-87	atd_latn	atd	latn	alphabet	bible	1.562892277
-88	atg_latn	atg	latn	alphabet	bible	1.293442436
-89	atj_latn	atj	latn	alphabet		
-90	att_latn	att	latn	alphabet	bible	1.63302096
-91	aub_latn	aub	latn	alphabet		
-92	auc_latn	auc	latn	alphabet	bible	2.260160911
-93	auu_latn	auu	latn	alphabet	bible	1.588980823
-94	auy_latn	auy	latn	alphabet	bible	1.472642911
-95	avt_latn	avt	latn	alphabet	bible	1.439587667
-96	avu_latn	avu	latn	alphabet	bible	2.842291605
-97	awa_deva	awa	deva	abugida	nllb	2.701478689950768
-98	awb_latn	awb	latn	alphabet	bible	1.357036411
-99	aym_latn	aym	latn	alphabet		
-100	ayr_latn	ayr	latn	alphabet	nllb	1.0976805227739936
-101	ayz_latn	ayz	latn	alphabet	bible	1.350101712
-102	azb_arab	azb	arab	abjad	nllb	1.490422093239903
-103	azb_latn	azb	latn	alphabet	bible	1.047806907
-104	azg_latn	azg	latn	alphabet	bible	2.008747229
-105	azj_latn	azj	latn	alphabet	nllb	1.0761159557868176
-106	azz_latn	azz	latn	alphabet	bible	1.940211652
-107	bak_cyrl	bak	cyrl	alphabet	nllb	2.271940340328229
-108	bam_latn	bam	latn	alphabet	nllb	1.2568785324793923
-109	ban_latn	ban	latn	alphabet	nllb	1.2695436355161105
-110	bao_latn	bao	latn	alphabet	bible	1.632378688
-111	bba_latn	bba	latn	alphabet	bible	1.133009531
-112	bbb_latn	bbb	latn	alphabet	bible	1.518513863
-113	bbr_latn	bbr	latn	alphabet	bible	1.332104409
-114	bcc_arab	bcc	arab	abjad	bible	1.694173847
-115	bcc_latn	bcc	latn	alphabet	bible	1.174524011
-116	bch_latn	bch	latn	alphabet	bible	1.269173276
-117	bci_latn	bci	latn	alphabet		
-118	bco_latn	bco	latn	alphabet	bible	2.112813421
-119	bcw_latn	bcw	latn	alphabet	bible	1.885385477
-120	bcy_latn	bcy	latn	alphabet		
-121	bdd_latn	bdd	latn	alphabet	bible	1.485481475
-122	bdh_latn	bdh	latn	alphabet	bible	1.982537542
-123	bds_latn	bds	latn	alphabet	bible	1.488873397
-124	bdv_orya	bdv	orya	abugida	bible	3.201673105
-125	bef_latn	bef	latn	alphabet	bible	1.643180727
-126	bel_cyrl	bel	cyrl	alphabet	nllb	2.007901402911329
-127	bem_latn	bem	latn	alphabet	nllb	1.1552374922271618
-128	ben_beng	ben	beng	abugida	nllb	2.430759774076161
-129	beo_latn	beo	latn	alphabet	bible	1.239311101
-130	bex_latn	bex	latn	alphabet	bible	1.461468309
-131	bfd_latn	bfd	latn	alphabet	bible	1.760574615
-132	bfz_deva	bfz	deva	abugida	bible	2.426879386
-133	bgc_deva	bgc	deva	abugida	bible	2.517583598
-134	bgg_latn	bgg	latn	alphabet	bible	1.252087952
-135	bgs_latn	bgs	latn	alphabet	bible	1.408326667
-136	bgt_latn	bgt	latn	alphabet	bible	1.43079701
-137	bhd_deva	bhd	deva	abugida	bible	2.712923133
-138	bhg_latn	bhg	latn	alphabet	bible	1.342899591
-139	bhl_latn	bhl	latn	alphabet	bible	1.885303193
-140	bho_deva	bho	deva	abugida	nllb	2.515275311
-141	bht_deva	bht	deva	abugida	bible	2.730591301
-142	bib_latn	bib	latn	alphabet	bible	1.161324313
-143	big_latn	big	latn	alphabet	bible	1.926280542
-144	bim_latn	bim	latn	alphabet	bible	1.081474709
-145	biv_latn	biv	latn	alphabet	bible	1.094870974
-146	bjk_latn	bjk	latn	alphabet	bible	1.342236749
-147	bjn_arab	bjn	arab	abjad	flores	1.6802824097564824
-148	bjn_latn	bjn	latn	alphabet	nllb	1.1663940329004197
-149	bjp_latn	bjp	latn	alphabet	bible	1.14522868
-150	bjr_latn	bjr	latn	alphabet	bible	1.71757217
-151	bjv_latn	bjv	latn	alphabet	bible	1.298454892
-152	bjz_latn	bjz	latn	alphabet	bible	1.52323604
-153	bkd_latn	bkd	latn	alphabet	bible	1.207220406
-154	bki_latn	bki	latn	alphabet	bible	1.953226212
-155	bkl_latn	bkl	latn	alphabet		
-156	bkq_latn	bkq	latn	alphabet	bible	1.635160339
-157	blg_cyrl	blg	cyrl	alphabet		
-158	blr_latn	blr	latn	alphabet	bible	1.457891248
-159	blt_latn	blt	latn	alphabet	bible	2.145489246
-160	blu_latn	blu	latn	alphabet		
-161	blw_latn	blw	latn	alphabet	bible	1.557463829
-162	blx_latn	blx	latn	alphabet	bible	1.210461475
-163	blz_latn	blz	latn	alphabet	bible	1.31117003
-164	bmh_latn	bmh	latn	alphabet	bible	1.319873831
-165	bmo_latn	bmo	latn	alphabet	bible	1.289069964
-166	bmr_latn	bmr	latn	alphabet	bible	1.255431876
-167	bmu_latn	bmu	latn	alphabet	bible	1.687019725
-168	bno_latn	bno	latn	alphabet	bible	1.401492537
-169	bnp_latn	bnp	latn	alphabet	bible	1.179531896
-170	boa_latn	boa	latn	alphabet	bible	1.604850175
-171	bod_tibt	bod	tibt	abugida	nllb	2.616914857091409
-172	boj_latn	boj	latn	alphabet	bible	1.497821764
-173	bon_latn	bon	latn	alphabet	bible	1.552981646
-174	bor_latn	bor	latn	alphabet	bible	1.777118237
-175	bos_cyrl	bos	cyrl	alphabet		
-176	bos_latn	bos	latn	alphabet	nllb	0.9699882939008851
-177	bov_latn	bov	latn	alphabet	bible	1.186919156
-178	box_latn	box	latn	alphabet	bible	1.607517542
-179	bpr_latn	bpr	latn	alphabet	bible	1.114708235
-180	bps_latn	bps	latn	alphabet	bible	1.105039885
-181	bqc_latn	bqc	latn	alphabet	bible	0.976139974
-182	bqj_latn	bqj	latn	alphabet	bible	1.07267491
-183	bqp_latn	bqp	latn	alphabet	bible	1.011183744
-184	bra_latn	bra	latn	alphabet		
-185	bre_latn	bre	latn	alphabet	bible	1.01282485
-186	brt_latn	brt	latn	alphabet		
-187	bru_latn	bru	latn	alphabet	bible	1.432764965
-188	bsc_latn	bsc	latn	alphabet	bible	1.233455235
-189	bsj_latn	bsj	latn	alphabet	bible	0.687645997
-190	bsn_latn	bsn	latn	alphabet	bible	1.908568947
-191	bsq_latn	bsq	latn	alphabet		
-192	bss_latn	bss	latn	alphabet	bible	1.589474526
-193	btb_latn	btb	latn	alphabet		
-194	bug_latn	bug	latn	alphabet	nllb	1.2278602502359812
-195	buk_latn	buk	latn	alphabet	bible	1.322353775
-196	bul_cyrl	bul	cyrl	alphabet	nllb	1.812315686359768
-197	bus_latn	bus	latn	alphabet	bible	1.024221161
-198	bvd_latn	bvd	latn	alphabet	bible	1.614701378
-199	bvr_latn	bvr	latn	alphabet	bible	2.064832804
-200	bwo_latn	bwo	latn	alphabet	bible	1.020941236
-201	bwu_latn	bwu	latn	alphabet	bible	1.33699344
-202	byr_latn	byr	latn	alphabet	bible	1.905983863
-203	byx_latn	byx	latn	alphabet	bible	1.750899408
-204	bzc_latn	bzc	latn	alphabet		
-205	bzd_latn	bzd	latn	alphabet	bible	1.353377066
-206	bzh_latn	bzh	latn	alphabet	bible	1.356307284
-207	bzi_thai	bzi	thai	abugida	bible	3.705172453
-208	caa_latn	caa	latn	alphabet	bible	1.82887934
-209	cab_latn	cab	latn	alphabet	bible	1.361783731
-210	cac_latn	cac	latn	alphabet	bible	1.429992457
-211	caf_latn	caf	latn	alphabet	bible	1.363054559
-212	cak_latn	cak	latn	alphabet	bible	1.82231949
-213	cam_latn	cam	latn	alphabet	bible	1.28308153
-214	cao_latn	cao	latn	alphabet	bible	1.418806427
-215	cap_latn	cap	latn	alphabet	bible	1.67787022
-216	car_latn	car	latn	alphabet	bible	1.212760851
-217	cat_latn	cat	latn	alphabet	nllb	1.0926220791566008
-218	cav_latn	cav	latn	alphabet	bible	1.81569107
-219	cax_latn	cax	latn	alphabet	bible	1.441953327
-220	cbc_latn	cbc	latn	alphabet	bible	2.195497246
-221	cbi_latn	cbi	latn	alphabet	bible	1.348053759
-222	cbk_latn	cbk	latn	alphabet	bible	1.455178167
-223	cbr_latn	cbr	latn	alphabet	bible	1.663223698
-224	cbs_latn	cbs	latn	alphabet	bible	1.378450778
-225	cbt_latn	cbt	latn	alphabet	bible	1.520714955
-226	cbu_latn	cbu	latn	alphabet	bible	1.629889603
-227	cbv_latn	cbv	latn	alphabet	bible	1.989972801
-228	cco_latn	cco	latn	alphabet	bible	2.631452995
-229	ccx_latn	ccx	latn	alphabet		
-230	ceb_latn	ceb	latn	alphabet	nllb	1.1133803331397114
-231	cek_latn	cek	latn	alphabet	bible	1.164782519
-232	ces_latn	ces	latn	alphabet	nllb	1.0358492137639643
-233	cgc_latn	cgc	latn	alphabet	bible	1.465406505
-234	cha_latn	cha	latn	alphabet	bible	1.005929007
-235	chd_latn	chd	latn	alphabet	bible	1.383250669
-236	chf_latn	chf	latn	alphabet	bible	1.352122237
-237	chj_latn	chj	latn	alphabet		
-238	chk_latn	chk	latn	alphabet	bible	1.162135723
-239	chn_hans	chn	hans	logography		
-240	chq_latn	chq	latn	alphabet	bible	1.535238052
-241	chz_latn	chz	latn	alphabet	bible	1.9199904
-242	cic_latn	cic	latn	alphabet		
-243	cjd_latn	cjd	latn	alphabet		
-244	cje_latn	cje	latn	alphabet	bible	1.61054833
-245	cjk_latn	cjk	latn	alphabet	nllb	1.1703500752606104
-246	cjo_latn	cjo	latn	alphabet	bible	1.661662591
-247	cjv_latn	cjv	latn	alphabet	bible	1.467756166
-248	ckb_arab	ckb	arab	abjad	nllb	1.651286029479276
-249	cko_latn	cko	latn	alphabet	bible	1.25332221
-250	cle_latn	cle	latn	alphabet	bible	2.256951841
-251	cln_latn	cln	latn	alphabet		
-252	clu_latn	clu	latn	alphabet	bible	1.34051336
-253	cme_latn	cme	latn	alphabet	bible	1.257696967
-254	cmn_hans	cmn	hans	logography	bible	0.825935407
-255	cmn_hant	cmn	hant	logography	bible	0.826207401
-256	cmo_khmr	cmo	khmr	abugida	bible	3.902383946
-257	cmo_latn	cmo	latn	alphabet	bible	1.615725355
-258	cni_latn	cni	latn	alphabet	bible	1.404269617
-259	cnl_latn	cnl	latn	alphabet	bible	2.15867523
-260	cnt_latn	cnt	latn	alphabet	bible	1.985593472
-261	coe_latn	coe	latn	alphabet	bible	1.824925145
-262	cof_latn	cof	latn	alphabet	bible	1.472373203
-263	coi_latn	coi	latn	alphabet		
-264	cok_latn	cok	latn	alphabet	bible	2.194162419
-265	con_latn	con	latn	alphabet	bible	1.25011314
-266	cop_copt	cop	copt	alphabet	bible	2.137464287
-267	cot_latn	cot	latn	alphabet	bible	1.756531279
-268	cou_latn	cou	latn	alphabet	bible	1.137478001
-269	cpa_latn	cpa	latn	alphabet	bible	1.764752806
-270	cpb_latn	cpb	latn	alphabet	bible	1.225128568
-271	cpc_latn	cpc	latn	alphabet	bible	1.229322758
-272	cpp_latn	cpp	latn	alphabet		
-273	cpu_latn	cpu	latn	alphabet	bible	1.278553633
-274	crh_latn	crh	latn	alphabet	nllb	1.3120890335268462
-275	crj_cans	crj	cans	abugida	bible	2.443073301
-276	crl_cans	crl	cans	abugida	bible	2.600738269
-277	crn_latn	crn	latn	alphabet	bible	2.661317456
-278	crs_latn	crs	latn	alphabet		
-279	crx_latn	crx	latn	alphabet	bible	1.361374597
-280	csa_latn	csa	latn	alphabet		
-281	cso_latn	cso	latn	alphabet	bible	2.296710932
-282	csy_latn	csy	latn	alphabet	bible	1.056389568
-283	cta_latn	cta	latn	alphabet	bible	2.345461818
-284	cth_latn	cth	latn	alphabet	bible	1.103364495
-285	ctp_latn	ctp	latn	alphabet	bible	2.204445613
-286	ctu_latn	ctu	latn	alphabet	bible	1.548170328
-287	cub_latn	cub	latn	alphabet	bible	1.779392471
-288	cuc_latn	cuc	latn	alphabet	bible	1.758112957
-289	cui_latn	cui	latn	alphabet	bible	2.207405545
-290	cuk_latn	cuk	latn	alphabet	bible	1.313505977
-291	cul_latn	cul	latn	alphabet	bible	2.035267765
-292	cut_latn	cut	latn	alphabet	bible	1.408136957
-293	cux_latn	cux	latn	alphabet	bible	1.969431556
-294	cwe_latn	cwe	latn	alphabet	bible	1.03854769
-295	cya_latn	cya	latn	alphabet	bible	1.283022102
-296	cym_latn	cym	latn	alphabet	nllb	1.026556847544437
-297	czc_latn	czc	latn	alphabet		
-298	daa_latn	daa	latn	alphabet	bible	1.153978195
-299	dad_latn	dad	latn	alphabet	bible	1.069127563
-300	daf_latn	daf	latn	alphabet	bible	2.131939841
-301	dag_latn	dag	latn	alphabet		
-302	dah_latn	dah	latn	alphabet	bible	1.541128203
-303	dan_latn	dan	latn	alphabet	nllb	1.021065782715664
-304	dao_latn	dao	latn	alphabet	bible	1.048757743
-305	ded_latn	ded	latn	alphabet	bible	1.164485383
-306	den_latn	den	latn	alphabet		
-307	des_latn	des	latn	alphabet	bible	1.60089598
-308	deu_latn	deu	latn	alphabet	nllb	1.053648017719111
-309	dga_latn	dga	latn	alphabet		
-310	dgc_latn	dgc	latn	alphabet	bible	1.274101163
-311	dgr_latn	dgr	latn	alphabet	bible	1.444737263
-312	dgz_latn	dgz	latn	alphabet	bible	1.227818793
-313	did_latn	did	latn	alphabet	bible	1.515572215
-314	dif_latn	dif	latn	alphabet	bible	1.238282554
-315	dig_latn	dig	latn	alphabet	bible	1.05197824
-316	dik_latn	dik	latn	alphabet	nllb	1.1238394262950504
-317	diq_latn	diq	latn	alphabet	nllb	0.9584231474098696
-318	djk_latn	djk	latn	alphabet	bible	1.403510777
-319	djr_latn	djr	latn	alphabet	bible	2.670320678
-320	dnj_latn	dnj	latn	alphabet	bible	1.859166648
-321	dns_latn	dns	latn	alphabet		
-322	dob_latn	dob	latn	alphabet	bible	1.466231629
-323	dov_latn	dov	latn	alphabet	bible	0.989047107
-324	dso_orya	dso	orya	abugida	bible	3.006134717
-325	dud_latn	dud	latn	alphabet	bible	1.498276611
-326	due_latn	due	latn	alphabet	bible	1.304834175
-327	dum_latn	dum	latn	alphabet		
-328	duo_latn	duo	latn	alphabet	bible	1.423887454
-329	dut_latn	dut	latn	alphabet		
-330	dwr_latn	dwr	latn	alphabet	bible	1.156193001
-331	dwr_ethi	dwr	ethi	abugida	bible	1.475749126
-332	dww_latn	dww	latn	alphabet	bible	1.379753606
-333	dyi_latn	dyi	latn	alphabet	bible	1.359226075
-334	dyo_latn	dyo	latn	alphabet		
-335	dyu_latn	dyu	latn	alphabet	nllb	1.1544585496865851
-336	dzo_tibt	dzo	tibt	abugida	nllb	3.261842241300754
-337	ebk_latn	ebk	latn	alphabet	bible	1.311464881
-338	edo_latn	edo	latn	alphabet		
-339	ekk_latn	ekk	latn	alphabet	bible	0.993591004
-340	eko_latn	eko	latn	alphabet	bible	1.063822541
-341	ell_grek	ell	grek	alphabet	nllb	1.967262374776928
-342	emi_latn	emi	latn	alphabet	bible	1.326659962
-343	eml_latn	eml	latn	alphabet		
-344	emp_latn	emp	latn	alphabet	bible	1.370585815
-345	ena_latn	ena	latn	alphabet	bible	2.267600741
-346	eng_latn	eng	latn	alphabet	nllb	1.0
-347	enq_latn	enq	latn	alphabet	bible	1.438529405
-348	epo_latn	epo	latn	alphabet	nllb	0.9954937917041212
-349	eri_latn	eri	latn	alphabet	bible	1.49150648
-350	ese_latn	ese	latn	alphabet	bible	2.03681973
-351	esg_latn	esg	latn	alphabet		
-352	esk_latn	esk	latn	alphabet	bible	1.207151837
-353	est_latn	est	latn	alphabet	nllb	0.9677856418807884
-354	eus_latn	eus	latn	alphabet	flores	1.059583722893931
-355	ewe_latn	ewe	latn	alphabet	nllb	1.0782577439512633
-356	faa_latn	faa	latn	alphabet	bible	1.675890837
-357	fae_latn	fae	latn	alphabet		
-358	fai_latn	fai	latn	alphabet	bible	1.458019245
-359	fal_latn	fal	latn	alphabet		
-360	fao_latn	fao	latn	alphabet	nllb	1.1556443586858938
-361	far_latn	far	latn	alphabet	bible	1.456149574
-362	ffm_latn	ffm	latn	alphabet	bible	0.962222578
-363	fij_latn	fij	latn	alphabet	nllb	1.210673555897163
-364	fin_latn	fin	latn	alphabet	nllb	1.0588643901040704
-365	fji_latn	fji	latn	alphabet		
-366	flr_latn	flr	latn	alphabet	bible	1.241960184
-367	foa_latn	foa	latn	alphabet		
-368	fon_latn	fon	latn	alphabet	nllb	1.5411912488252535
-369	for_latn	for	latn	alphabet	bible	1.27837078
-370	fra_latn	fra	latn	alphabet	nllb	1.1739790347939143
-371	frd_latn	frd	latn	alphabet	bible	1.3762634
-372	fri_latn	fri	latn	alphabet		
-373	frl_latn	frl	latn	alphabet		
-374	frn_latn	frn	latn	alphabet		
-375	fuf_latn	fuf	latn	alphabet	bible	1.042364746
-376	fuh_latn	fuh	latn	alphabet	bible	1.029571895
-377	fum_latn	fum	latn	alphabet		
-378	fur_latn	fur	latn	alphabet	nllb	1.0672691667245908
-379	fuv_arab	fuv	arab	abjad	bible	1.964099106
-380	fuv_latn	fuv	latn	alphabet	nllb	1.110831498113359
-381	gaa_latn	gaa	latn	alphabet		
-382	gag_latn	gag	latn	alphabet		
-383	gah_latn	gah	latn	alphabet	bible	1.496886928
-384	gai_latn	gai	latn	alphabet	bible	1.635224338
-385	gam_latn	gam	latn	alphabet	bible	1.184715778
-386	gaq_orya	gaq	orya	abugida	bible	3.335686041
-387	gaw_latn	gaw	latn	alphabet	bible	1.456791845
-388	gax_latn	gax	latn	alphabet		
-389	gaz_latn	gaz	latn	alphabet	nllb	1.332217666352576
-390	gde_latn	gde	latn	alphabet	bible	1.39632237
-391	gdg_latn	gdg	latn	alphabet	bible	1.223016617
-392	gdn_latn	gdn	latn	alphabet	bible	1.824417728
-393	gdr_latn	gdr	latn	alphabet	bible	1.651514251
-394	geb_latn	geb	latn	alphabet	bible	1.694386414
-395	gej_latn	gej	latn	alphabet		
-396	ger_latn	ger	latn	alphabet		
-397	gfk_latn	gfk	latn	alphabet	bible	1.371998354
-398	ghs_latn	ghs	latn	alphabet	bible	1.218669288
-399	gkp_latn	gkp	latn	alphabet		
-400	gla_latn	gla	latn	alphabet	nllb	0.9936126744047278
-401	gle_latn	gle	latn	alphabet	nllb	1.9758756564605164
-402	glg_latn	glg	latn	alphabet	nllb	1.059078607269843
-403	gln_latn	gln	latn	alphabet		
-404	gls_latn	gls	latn	alphabet		
-405	gmv_ethi	gmv	ethi	abugida	bible	1.373756028
-406	gmv_latn	gmv	latn	alphabet	bible	0.970871523
-407	gng_latn	gng	latn	alphabet	bible	1.168627003
-408	gnn_latn	gnn	latn	alphabet	bible	2.870096684
-409	gnw_latn	gnw	latn	alphabet	bible	1.287394574
-410	gof_ethi	gof	ethi	abugida	bible	1.352241092
-411	gof_latn	gof	latn	alphabet	bible	0.9799936
-412	gqr_latn	gqr	latn	alphabet	bible	1.350193138
-413	grc_grek	grc	grek	alphabet	bible	1.76699504
-414	gri_latn	gri	latn	alphabet	bible	1.441311056
-415	grk_grek	grk	grek	alphabet		
-416	grn_latn	grn	latn	alphabet	nllb	0.992314188
-417	gua_latn	gua	latn	alphabet		
-418	gub_latn	gub	latn	alphabet	bible	1.714577953
-419	guc_latn	guc	latn	alphabet	bible	1.823976595
-420	guh_latn	guh	latn	alphabet	bible	2.338341981
-421	gui_latn	gui	latn	alphabet	bible	1.269168705
-422	guj_gujr	guj	gujr	abugida	nllb	2.162862919235561
-423	gul_latn	gul	latn	alphabet	bible	1.189881374
-424	gum_latn	gum	latn	alphabet	bible	1.442243606
-425	gun_latn	gun	latn	alphabet	bible	1.109206647
-426	guo_latn	guo	latn	alphabet	bible	1.738117986
-427	gup_latn	gup	latn	alphabet	bible	1.700882266
-428	gux_latn	gux	latn	alphabet	bible	0.988564833
-429	gvc_latn	gvc	latn	alphabet	bible	1.608582661
-430	gvf_latn	gvf	latn	alphabet	bible	1.34900688
-431	gvn_latn	gvn	latn	alphabet	bible	1.464604238
-432	gvr_deva	gvr	deva	abugida	bible	2.755669585
-433	gvs_latn	gvs	latn	alphabet	bible	1.361207744
-434	gwi_latn	gwi	latn	alphabet	bible	1.49886174
-435	gwr_latn	gwr	latn	alphabet	bible	1.268286439
-436	gym_latn	gym	latn	alphabet	bible	1.896043519
-437	gyr_latn	gyr	latn	alphabet	bible	1.282994674
-438	hak_latn	hak	latn	alphabet		
-439	hat_latn	hat	latn	alphabet	nllb	0.9657950702301386
-440	hau_latn	hau	latn	alphabet	nllb	1.1765294417859935
-441	haw_latn	haw	latn	alphabet	bible	1.114669379
-442	hch_latn	hch	latn	alphabet	bible	1.280574158
-443	hea_latn	hea	latn	alphabet		
-444	heb_hebr	heb	hebr	abjad	nllb	1.3554771831483516
-445	heg_latn	heg	latn	alphabet	bible	1.494340701
-446	hil_latn	hil	latn	alphabet		
-447	hin_deva	hin	deva	abugida	nllb	2.370151127506105
-448	hix_latn	hix	latn	alphabet	bible	2.224719435
-449	hla_latn	hla	latn	alphabet	bible	1.409375786
-450	hlt_latn	hlt	latn	alphabet	bible	1.047852621
-451	hmo_latn	hmo	latn	alphabet	bible	1.311302599
-452	hms_latn	hms	latn	alphabet		
-453	hna_latn	hna	latn	alphabet		
-454	hne_deva	hne	deva	abugida	nllb	2.1654107015509894
-455	hng_latn	hng	latn	alphabet		
-456	hni_latn	hni	latn	alphabet		
-457	hns_latn	hns	latn	alphabet	bible	1.190112226
-458	hop_latn	hop	latn	alphabet	bible	1.222847478
-459	hot_latn	hot	latn	alphabet	bible	1.314911659
-460	hoy_deva	hoy	deva	abugida	bible	2.565376791
-461	hre_latn	hre	latn	alphabet	bible	1.083881511
-462	hrv_latn	hrv	latn	alphabet	nllb	0.989672823
-463	hto_latn	hto	latn	alphabet	bible	1.464649951
-464	hub_latn	hub	latn	alphabet	bible	1.353050216
-465	hui_latn	hui	latn	alphabet	bible	1.405387305
-466	hun_latn	hun	latn	alphabet	nllb	1.0199553495865443
-467	hus_latn	hus	latn	alphabet	bible	1.60400448
-468	huu_latn	huu	latn	alphabet	bible	1.37724852
-469	huv_latn	huv	latn	alphabet	bible	1.370510388
-470	hva_latn	hva	latn	alphabet		
-471	hwc_latn	hwc	latn	alphabet	bible	1.194105278
-472	hwi_latn	hwi	latn	alphabet		
-473	hye_armn	hye	armn	alphabet	nllb	1.7242264918820087
-474	ian_latn	ian	latn	alphabet	bible	1.434534068
-475	ibb_latn	ibb	latn	alphabet		
-476	ibl_latn	ibl	latn	alphabet	bible	1.572169779
-477	ibo_latn	ibo	latn	alphabet	nllb	1.3450209683801222
-478	ice_latn	ice	latn	alphabet		
-479	ifa_latn	ifa	latn	alphabet	bible	1.226774245
-480	ifb_latn	ifb	latn	alphabet	bible	1.268318438
-481	ifk_latn	ifk	latn	alphabet	bible	1.138136271
-482	ifu_latn	ifu	latn	alphabet	bible	1.374636008
-483	ify_latn	ify	latn	alphabet	bible	1.263445407
-484	ign_latn	ign	latn	alphabet	bible	1.892009326
-485	igr_latn	igr	latn	alphabet		
-486	ikk_latn	ikk	latn	alphabet	bible	1.353598775
-487	ikw_latn	ikw	latn	alphabet	bible	1.087803707
-488	ilo_latn	ilo	latn	alphabet	nllb	1.076508439815689
-489	imo_latn	imo	latn	alphabet	bible	1.703780485
-490	inb_latn	inb	latn	alphabet	bible	1.55175196
-491	ind_latn	ind	latn	alphabet	nllb	1.1787462375711268
-492	ino_latn	ino	latn	alphabet	bible	1.694317844
-493	inz_latn	inz	latn	alphabet		
-494	iou_latn	iou	latn	alphabet	bible	1.594123563
-495	ipi_latn	ipi	latn	alphabet	bible	1.949781719
-496	iqw_latn	iqw	latn	alphabet	bible	1.405988435
-497	isd_latn	isd	latn	alphabet	bible	1.391897328
-498	isl_latn	isl	latn	alphabet	nllb	1.154319144908522
-499	isn_latn	isn	latn	alphabet	bible	0.992285891
-500	ita_latn	ita	latn	alphabet	nllb	1.0668869315487413
-501	itn_latn	itn	latn	alphabet		
-502	ivb_latn	ivb	latn	alphabet	bible	1.375458847
-503	ivv_latn	ivv	latn	alphabet	bible	1.172320633
-504	iws_latn	iws	latn	alphabet	bible	2.104932459
-505	ixl_latn	ixl	latn	alphabet	bible	1.51161802
-506	izz_latn	izz	latn	alphabet	bible	1.380336449
-507	jaa_latn	jaa	latn	alphabet	bible	1.258270668
-508	jac_latn	jac	latn	alphabet	bible	1.563216841
-509	jae_latn	jae	latn	alphabet	bible	1.18410322
-510	jan_latn	jan	latn	alphabet		
-511	jav_latn	jav	latn	alphabet	nllb	1.146845794539677
-512	jib_latn	jib	latn	alphabet	bible	1.317599598
-513	jic_latn	jic	latn	alphabet	bible	1.719037279
-514	jid_latn	jid	latn	alphabet	bible	0.809464927
-515	jiv_latn	jiv	latn	alphabet	bible	1.195849238
-516	jni_latn	jni	latn	alphabet	bible	0.886729446
-517	jpn_jpan	jpn	jpan	logography	nllb	1.3219738990997911
-518	juy_orya	juy	orya	abugida	bible	3.679893031
-519	jvn_latn	jvn	latn	alphabet	bible	1.30806153
-520	kab_latn	kab	latn	alphabet	nllb	1.028599140742541
-521	kac_latn	kac	latn	alphabet	nllb	1.3454699726782613
-522	kam_latn	kam	latn	alphabet	nllb	1.2175998666848171
-523	kan_knda	kan	knda	abugida	nllb	2.641985281915802
-524	kaq_latn	kaq	latn	alphabet	bible	1.221220086
-525	kas_arab	kas	arab	abjad	nllb	1.776246005627557
-526	kas_deva	kas	deva	abugida	nllb	2.525878378660914
-527	kas_latn	kas	latn	alphabet		
-528	kat_geor	kat	geor	alphabet	nllb	4.338956453789541
-529	kaz_cyrl	kaz	cyrl	alphabet	nllb	1.7646383919938464
-530	kbc_latn	kbc	latn	alphabet	bible	1.770160682
-531	kbh_latn	kbh	latn	alphabet	bible	1.654403328
-532	kbm_latn	kbm	latn	alphabet	bible	1.56442367
-533	kbo_latn	kbo	latn	alphabet	bible	1.918587004
-534	kbp_latn	kbp	latn	alphabet	nllb	1.4412095928681132
-535	kbq_latn	kbq	latn	alphabet	bible	1.259916345
-536	kby_latn	kby	latn	alphabet	bible	0.956065004
-537	kdc_latn	kdc	latn	alphabet	bible	1.013142557
-538	kde_latn	kde	latn	alphabet	bible	1.227242806
-539	kdl_latn	kdl	latn	alphabet	bible	1.161322027
-540	kea_latn	kea	latn	alphabet	nllb	0.7816523239752712
-541	kek_latn	kek	latn	alphabet	bible	1.44524468
-542	ken_latn	ken	latn	alphabet	bible	1.479959315
-543	kew_latn	kew	latn	alphabet	bible	1.2431373
-544	key_telu	key	telu	abugida	bible	3.443635574
-545	kfc_telu	kfc	telu	abugida	bible	3.080898722
-546	kfw_latn	kfw	latn	alphabet	bible	1.182436973
-547	kgf_latn	kgf	latn	alphabet	bible	1.26549336
-548	kgk_latn	kgk	latn	alphabet	bible	1.761939156
-549	kgp_latn	kgp	latn	alphabet	bible	1.588135128
-550	khk_cyrl	khk	cyrl	alphabet	nllb	1.8018109667236364
-551	khm_khmr	khm	khmr	abugida	nllb	3.903484241432965
-552	khs_latn	khs	latn	alphabet	bible	1.736070033
-553	khz_latn	khz	latn	alphabet	bible	1.23763114
-554	kij_latn	kij	latn	alphabet	bible	1.093330438
-555	kik_latn	kik	latn	alphabet	nllb	1.2929475605563194
-556	kin_latn	kin	latn	alphabet	nllb	1.133982716740138
-557	kir_cyrl	kir	cyrl	alphabet	nllb	1.963770708117476
-558	kiz_latn	kiz	latn	alphabet	bible	1.103508491
-559	kje_latn	kje	latn	alphabet	bible	1.317336747
-560	kjl_deva	kjl	deva	abugida	bible	2.633468949
-561	kjs_latn	kjs	latn	alphabet	bible	1.308315239
-562	kkc_latn	kkc	latn	alphabet	bible	1.523697744
-563	kkj_latn	kkj	latn	alphabet	bible	1.46355969
-564	kkn_hang	kkn	hang	abugida		
-565	klv_latn	klv	latn	alphabet	bible	1.237142008
-566	kma_latn	kma	latn	alphabet	bible	1.328502206
-567	kmb_latn	kmb	latn	alphabet	nllb	1.1327985679404249
-568	kmh_latn	kmh	latn	alphabet	bible	1.582500971
-569	kmk_latn	kmk	latn	alphabet	bible	1.221213229
-570	kmo_latn	kmo	latn	alphabet	bible	1.257491257
-571	kmr_latn	kmr	latn	alphabet	nllb	1.0346195868692576
-572	kms_latn	kms	latn	alphabet	bible	1.351815958
-573	kmu_latn	kmu	latn	alphabet	bible	1.705691298
-574	knb_latn	knb	latn	alphabet	bible	1.158325524
-575	knc_arab	knc	arab	abjad	nllb	2.501979619826157
-576	knc_latn	knc	latn	alphabet	nllb	1.176891380836928
-577	kne_latn	kne	latn	alphabet	bible	1.200057142
-578	knf_latn	knf	latn	alphabet	bible	1.014438527
-579	kng_latn	kng	latn	alphabet		
-580	knj_latn	knj	latn	alphabet	bible	1.515263651
-581	knv_latn	knv	latn	alphabet	bible	1.725421133
-582	kog_latn	kog	latn	alphabet	bible	1.650307422
-583	kon_latn	kon	latn	alphabet	nllb	1.2309945868268095
-584	kor_hang	kor	hang	abugida	nllb	1.2933112044071506
-585	kos_latn	kos	latn	alphabet	bible	1.069696693
-586	kpf_latn	kpf	latn	alphabet	bible	1.188626546
-587	kpg_latn	kpg	latn	alphabet	bible	1.389904231
-588	kph_latn	kph	latn	alphabet		
-589	kpj_latn	kpj	latn	alphabet	bible	1.183362666
-590	kpr_latn	kpr	latn	alphabet	bible	1.549397728
-591	kpw_latn	kpw	latn	alphabet	bible	1.535066627
-592	kpx_latn	kpx	latn	alphabet	bible	1.227197093
-593	kqc_latn	kqc	latn	alphabet	bible	1.081860986
-594	kqe_latn	kqe	latn	alphabet	bible	1.39045279
-595	kqf_latn	kqf	latn	alphabet	bible	1.228301067
-596	kqn_latn	kqn	latn	alphabet		
-597	kqp_latn	kqp	latn	alphabet	bible	1.250396562
-598	kri_latn	kri	latn	alphabet		
-599	krj_latn	krj	latn	alphabet	bible	1.346648077
-600	ksc_latn	ksc	latn	alphabet	bible	1.162768851
-601	ksd_latn	ksd	latn	alphabet	bible	1.034940916
-602	ksr_latn	ksr	latn	alphabet	bible	1.603327924
-603	ktj_latn	ktj	latn	alphabet	bible	2.098018331
-604	kto_latn	kto	latn	alphabet	bible	1.477723938
-605	kud_latn	kud	latn	alphabet	bible	1.290601358
-606	kue_latn	kue	latn	alphabet	bible	1.268460149
-607	kup_latn	kup	latn	alphabet	bible	1.600861695
-608	kus_latn	kus	latn	alphabet	bible	1.001460538
-609	kvg_latn	kvg	latn	alphabet	bible	1.578069073
-610	kvn_latn	kvn	latn	alphabet	bible	1.543962424
-611	kwd_latn	kwd	latn	alphabet	bible	1.659342644
-612	kwf_latn	kwf	latn	alphabet	bible	1.822582341
-613	kwi_latn	kwi	latn	alphabet	bible	1.18358209
-614	kwj_latn	kwj	latn	alphabet	bible	1.474953715
-615	kxf_latn	kxf	latn	alphabet	bible	1.320589244
-616	kxv_orya	kxv	orya	abugida	bible	2.919848689
-617	kxw_latn	kxw	latn	alphabet	bible	1.614118534
-618	kyb_latn	kyb	latn	alphabet	bible	1.234408356
-619	kyc_latn	kyc	latn	alphabet	bible	1.39516811
-620	kyf_latn	kyf	latn	alphabet	bible	1.274738863
-621	kyg_latn	kyg	latn	alphabet	bible	1.774521725
-622	kyq_latn	kyq	latn	alphabet	bible	1.419402985
-623	kyu_latn	kyu	latn	alphabet	bible	1.830593586
-624	kyz_latn	kyz	latn	alphabet	bible	2.115871637
-625	kze_latn	kze	latn	alphabet	bible	1.451900528
-626	lac_latn	lac	latn	alphabet	bible	1.660058056
-627	lao_laoo	lao	laoo	abugida	nllb	2.706914388421753
-628	lat_latn	lat	latn	alphabet	bible	0.87538342
-629	lbb_latn	lbb	latn	alphabet	bible	1.188281411
-630	lbj_tibt	lbj	tibt	abugida	bible	3.277362803
-631	lbk_latn	lbk	latn	alphabet	bible	1.234710064
-632	lbm_deva	lbm	deva	abugida	bible	2.312029439
-633	lcm_latn	lcm	latn	alphabet	bible	1.191389911
-634	lcp_thai	lcp	thai	abugida	bible	2.85448104
-635	leu_latn	leu	latn	alphabet	bible	1.243962424
-636	lex_latn	lex	latn	alphabet	bible	1.542451601
-637	lgl_latn	lgl	latn	alphabet	bible	1.436570593
-638	lhi_latn	lhi	latn	alphabet	bible	1.700470846
-639	lia_latn	lia	latn	alphabet		
-640	lid_latn	lid	latn	alphabet	bible	1.356247857
-641	lif_deva	lif	deva	abugida	bible	4.170354963
-642	lij_latn	lij	latn	alphabet	nllb	1.1437590099547033
-643	lik_latn	lik	latn	alphabet	bible	1.366211058
-644	lim_latn	lim	latn	alphabet	nllb	0.997886276
-645	lin_latn	lin	latn	alphabet	nllb	1.139208007510617
-646	lip_latn	lip	latn	alphabet	bible	1.304909602
-647	lit_latn	lit	latn	alphabet	nllb	1.0300368409499985
-648	llg_latn	llg	latn	alphabet	bible	1.563267125
-649	llu_latn	llu	latn	alphabet	bible	1.460147197
-650	lmd_latn	lmd	latn	alphabet	bible	1.201983955
-651	lmo_latn	lmo	latn	alphabet	nllb	0.9431924587006828
-652	log_latn	log	latn	alphabet	bible	1.950789696
-653	loq_latn	loq	latn	alphabet	bible	1.157196407
-654	lpi_latn	lpi	latn	alphabet		
-655	lro_latn	lro	latn	alphabet	bible	1.293097301
-656	ltg_latn	ltg	latn	alphabet	nllb	1.0027700050507735
-657	ltn_latn	ltn	latn	alphabet		
-658	ltz_latn	ltz	latn	alphabet	nllb	1.225348992685224
-659	lua_latn	lua	latn	alphabet	nllb	1.185565667976414
-660	lub_latn	lub	latn	alphabet		
-661	luc_latn	luc	latn	alphabet	bible	1.794834404
-662	lue_latn	lue	latn	alphabet		
-663	lug_latn	lug	latn	alphabet	nllb	1.217417428
-664	luo_latn	luo	latn	alphabet	nllb	1.0357451540464786
-665	lus_latn	lus	latn	alphabet	nllb	1.1688425472886843
-666	lux_latn	lux	latn	alphabet		
-667	lvs_latn	lvs	latn	alphabet	nllb	1.206980036
-668	lwo_latn	lwo	latn	alphabet	bible	1.376101118
-669	lww_latn	lww	latn	alphabet	bible	1.857994103
-670	maa_latn	maa	latn	alphabet	bible	1.639267674
-671	mag_deva	mag	deva	abugida	nllb	2.5554038464242543
-672	mai_deva	mai	deva	abugida	nllb	2.3898097104159657
-673	maj_latn	maj	latn	alphabet	bible	1.444120134
-674	mal_mlym	mal	mlym	abugida	nllb	2.8848685273912205
-675	mam_latn	mam	latn	alphabet	bible	1.34382757
-676	mao_latn	mao	latn	alphabet		
-677	maq_latn	maq	latn	alphabet	bible	1.662928847
-678	mar_deva	mar	deva	abugida	nllb	2.4793565269429387
-679	mau_latn	mau	latn	alphabet	bible	1.711021462
-680	mav_latn	mav	latn	alphabet	bible	2.406555279
-681	maz_latn	maz	latn	alphabet	bible	1.542437887
-682	mbc_latn	mbc	latn	alphabet	bible	1.850913122
-683	mbd_latn	mbd	latn	alphabet	bible	1.515572215
-684	mbf_latn	mbf	latn	alphabet		
-685	mbh_latn	mbh	latn	alphabet	bible	1.397172636
-686	mbi_latn	mbi	latn	alphabet	bible	1.613352838
-687	mbj_latn	mbj	latn	alphabet	bible	1.628511348
-688	mbl_latn	mbl	latn	alphabet	bible	1.37669539
-689	mbs_latn	mbs	latn	alphabet	bible	1.382562684
-690	mbt_latn	mbt	latn	alphabet	bible	1.309133506
-691	mca_latn	mca	latn	alphabet	bible	1.524328587
-692	mcb_latn	mcb	latn	alphabet	bible	1.558099243
-693	mcd_latn	mcd	latn	alphabet	bible	1.479527325
-694	mcf_latn	mcf	latn	alphabet	bible	1.682958104
-695	mco_latn	mco	latn	alphabet	bible	1.552517657
-696	mcp_latn	mcp	latn	alphabet	bible	1.515894494
-697	mcq_latn	mcq	latn	alphabet	bible	1.294742977
-698	mcr_latn	mcr	latn	alphabet	bible	1.717921876
-699	mcu_latn	mcu	latn	alphabet	bible	1.400735983
-700	mdm_latn	mdm	latn	alphabet	bible	1.43485406
-701	mdy_ethi	mdy	ethi	abugida	bible	1.627784508
-702	med_latn	med	latn	alphabet	bible	1.520920665
-703	mee_latn	mee	latn	alphabet	bible	1.53067587
-704	mek_latn	mek	latn	alphabet	bible	1.476754817
-705	meq_latn	meq	latn	alphabet	bible	1.495593244
-706	met_latn	met	latn	alphabet	bible	1.154229618
-707	meu_latn	meu	latn	alphabet	bible	1.026417682
-708	mex_latn	mex	latn	alphabet		
-709	mfh_latn	mfh	latn	alphabet	bible	1.408498091
-710	mfi_latn	mfi	latn	alphabet	bible	1.43847912
-711	mfy_latn	mfy	latn	alphabet	bible	1.261584878
-712	mge_latn	mge	latn	alphabet	bible	1.42411602
-713	mgh_latn	mgh	latn	alphabet	bible	1.113355123
-714	mgq_latn	mgq	latn	alphabet	bible	1.419030422
-715	mhj_latn	mhj	latn	alphabet		
-716	mhl_latn	mhl	latn	alphabet	bible	1.490635643
-717	mhm_latn	mhm	latn	alphabet		
-718	mib_latn	mib	latn	alphabet	bible	1.496914356
-719	mic_latn	mic	latn	alphabet	bible	1.274023451
-720	mie_latn	mie	latn	alphabet	bible	1.580498731
-721	mif_latn	mif	latn	alphabet	bible	1.47519371
-722	mig_latn	mig	latn	alphabet	bible	1.552099381
-723	mih_latn	mih	latn	alphabet	bible	1.35724212
-724	mil_latn	mil	latn	alphabet	bible	2.364638523
-725	mim_latn	mim	latn	alphabet	bible	2.24919659
-726	min_arab	min	arab	abjad	flores	1.7377090156527837
-727	min_latn	min	latn	alphabet	nllb	0.949751483
-728	mio_latn	mio	latn	alphabet	bible	1.448460607
-729	miq_latn	miq	latn	alphabet		
-730	mir_latn	mir	latn	alphabet	bible	1.72913762
-731	mit_latn	mit	latn	alphabet	bible	1.771184659
-732	miy_latn	miy	latn	alphabet	bible	2.397030925
-733	miz_latn	miz	latn	alphabet	bible	1.52074924
-734	mjc_latn	mjc	latn	alphabet	bible	1.614287673
-735	mkd_cyrl	mkd	cyrl	alphabet	nllb	1.8349867544816043
-736	mkj_latn	mkj	latn	alphabet	bible	1.108228383
-737	mkl_latn	mkl	latn	alphabet	bible	1.248789742
-738	mkn_latn	mkn	latn	alphabet	bible	1.553937053
-739	mks_latn	mks	latn	alphabet	bible	2.102770222
-740	mle_latn	mle	latn	alphabet	bible	1.438600261
-741	mlh_latn	mlh	latn	alphabet	bible	1.490635643
-742	mli_latn	mli	latn	alphabet		
-743	mlo_latn	mlo	latn	alphabet		
-744	mlp_latn	mlp	latn	alphabet	bible	1.475157139
-745	mls_latn	mls	latn	alphabet		
-746	mlt_latn	mlt	latn	alphabet	nllb	1.0884666702096777
-747	mmn_latn	mmn	latn	alphabet	bible	1.50555873
-748	mmo_latn	mmo	latn	alphabet	bible	1.440051656
-749	mmx_latn	mmx	latn	alphabet	bible	1.353020502
-750	mna_latn	mna	latn	alphabet	bible	1.330186739
-751	mnf_latn	mnf	latn	alphabet		
-752	mni_beng	mni	beng	abugida	nllb	3.0106582910310027
-753	mni_latn	mni	latn	alphabet	bible	1.308123243
-754	mnv_latn	mnv	latn	alphabet	bible	1.474802862
-755	moa_latn	moa	latn	alphabet	bible	1.908959795
-756	mop_latn	mop	latn	alphabet	bible	1.607791822
-757	mos_latn	mos	latn	alphabet	nllb	1.1412929250293602
-758	mox_latn	mox	latn	alphabet	bible	1.417841878
-759	moz_latn	moz	latn	alphabet	bible	1.365559644
-760	mpm_latn	mpm	latn	alphabet	bible	1.618676145
-761	mpp_latn	mpp	latn	alphabet	bible	1.381250714
-762	mps_latn	mps	latn	alphabet	bible	1.804393042
-763	mpt_latn	mpt	latn	alphabet	bible	1.452739366
-764	mpu_latn	mpu	latn	alphabet		
-765	mpx_latn	mpx	latn	alphabet	bible	1.221620077
-766	mqb_latn	mqb	latn	alphabet	bible	1.511750589
-767	mqj_latn	mqj	latn	alphabet	bible	1.192034468
-768	mri_latn	mri	latn	alphabet	nllb	1.1825430833009296
-769	mrr_deva	mrr	deva	abugida	bible	3.176416539
-770	msb_latn	msb	latn	alphabet	bible	1.195124683
-771	msk_latn	msk	latn	alphabet	bible	1.541128203
-772	msm_latn	msm	latn	alphabet	bible	1.261285456
-773	msy_latn	msy	latn	alphabet	bible	1.401195401
-774	mta_latn	mta	latn	alphabet	bible	1.42411602
-775	mti_latn	mti	latn	alphabet	bible	1.007832964
-776	mto_latn	mto	latn	alphabet	bible	2.132655254
-777	muh_latn	muh	latn	alphabet	bible	1.868005303
-778	mur_latn	mur	latn	alphabet	bible	1.254878746
-779	mux_latn	mux	latn	alphabet	bible	2.081476995
-780	muy_latn	muy	latn	alphabet	bible	1.523876026
-781	mva_latn	mva	latn	alphabet	bible	1.36827044
-782	mvn_latn	mvn	latn	alphabet	bible	1.606045576
-783	mwe_latn	mwe	latn	alphabet	bible	1.168661288
-784	mwp_latn	mwp	latn	alphabet	bible	1.579024479
-785	mxb_latn	mxb	latn	alphabet	bible	1.915160796
-786	mxp_latn	mxp	latn	alphabet	bible	1.857399831
-787	mxq_latn	mxq	latn	alphabet	bible	1.527725081
-788	mxt_latn	mxt	latn	alphabet	bible	1.495872094
-789	mxv_latn	mxv	latn	alphabet	bible	1.43485406
-790	mya_mymr	mya	mymr	abugida	nllb	5.104191513
-791	myk_latn	myk	latn	alphabet	bible	1.251539393
-792	myu_latn	myu	latn	alphabet	bible	1.665625929
-793	myw_latn	myw	latn	alphabet	bible	1.088800256
-794	myy_latn	myy	latn	alphabet	bible	1.690402505
-795	mza_latn	mza	latn	alphabet	bible	1.638031131
-796	mzm_latn	mzm	latn	alphabet		
-797	nab_latn	nab	latn	alphabet	bible	3.325153711
-798	naf_latn	naf	latn	alphabet	bible	1.506811273
-799	nag_latn	nag	latn	alphabet	bible	1.154650179
-800	nak_latn	nak	latn	alphabet	bible	1.737100866
-801	nas_latn	nas	latn	alphabet	bible	1.518372151
-802	naw_latn	naw	latn	alphabet	bible	1.418061301
-803	nba_latn	nba	latn	alphabet		
-804	nca_latn	nca	latn	alphabet	bible	1.307878677
-805	nch_latn	nch	latn	alphabet	bible	1.47267491
-806	ncj_latn	ncj	latn	alphabet	bible	1.316655619
-807	ncl_latn	ncl	latn	alphabet	bible	1.670046399
-808	ncq_laoo	ncq	laoo	abugida	bible	3.191403625
-809	ncu_latn	ncu	latn	alphabet	bible	1.93524948
-810	nde_latn	nde	latn	alphabet	bible	0.969100135
-811	ndg_latn	ndg	latn	alphabet	bible	0.952204521
-812	ndh_latn	ndh	latn	alphabet	bible	1.511112889
-813	ndj_latn	ndj	latn	alphabet	bible	1.041612763
-814	ndz_latn	ndz	latn	alphabet	bible	1.886475738
-815	nel_latn	nel	latn	alphabet		
-816	new_deva	new	deva	abugida	bible	2.561603163
-817	nfa_latn	nfa	latn	alphabet	bible	1.636191173
-818	ngp_latn	ngp	latn	alphabet	bible	1.038757971
-819	ngu_latn	ngu	latn	alphabet	bible	1.435018628
-820	nhe_latn	nhe	latn	alphabet	bible	1.492247034
-821	nhg_latn	nhg	latn	alphabet	bible	1.295716669
-822	nhi_latn	nhi	latn	alphabet	bible	1.281600421
-823	nhn_latn	nhn	latn	alphabet		
-824	nho_latn	nho	latn	alphabet	bible	1.749050307
-825	nhr_latn	nhr	latn	alphabet	bible	1.421199515
-826	nhu_latn	nhu	latn	alphabet	bible	1.327165093
-827	nhw_latn	nhw	latn	alphabet	bible	1.51142831
-828	nhx_latn	nhx	latn	alphabet	bible	1.315942493
-829	nhy_latn	nhy	latn	alphabet	bible	1.290196796
-830	nif_latn	nif	latn	alphabet	bible	1.562092295
-831	nii_latn	nii	latn	alphabet	bible	1.5137414
-832	nin_latn	nin	latn	alphabet	bible	1.157093552
-833	niy_latn	niy	latn	alphabet	bible	2.052604512
-834	nko_latn	nko	latn	alphabet	bible	1.370210967
-835	nld_latn	nld	latn	alphabet	nllb	1.0516057206199363
-836	nlg_latn	nlg	latn	alphabet	bible	1.258656945
-837	nlx_deva	nlx	deva	abugida	bible	2.460334621
-838	nno_latn	nno	latn	alphabet	flores	1.0332891132535391
-839	nnq_latn	nnq	latn	alphabet	bible	1.029210761
-840	nnw_latn	nnw	latn	alphabet	bible	1.461034034
-841	noa_latn	noa	latn	alphabet	bible	1.956453567
-842	nob_latn	nob	latn	alphabet	nllb	0.9976190383133504
-843	nod_lana	nod	lana	abugida	bible	3.395773811
-844	nop_latn	nop	latn	alphabet	bible	1.272825764
-845	nor_latn	nor	latn	alphabet	bible	1.125315993
-846	not_latn	not	latn	alphabet	bible	1.424879431
-847	nou_latn	nou	latn	alphabet	bible	1.339985372
-848	npi_deva	npi	deva	abugida	nllb	2.4201829253909577
-849	npl_latn	npl	latn	alphabet	bible	1.132584398
-850	nrn_latn	nrn	latn	alphabet		
-851	nrr_latn	nrr	latn	alphabet		
-852	nsn_latn	nsn	latn	alphabet	bible	1.441080204
-853	nso_latn	nso	latn	alphabet	nllb	1.1156963527576322
-854	nsu_latn	nsu	latn	alphabet	bible	1.241468766
-855	ntj_latn	ntj	latn	alphabet	bible	1.621114946
-856	ntp_latn	ntp	latn	alphabet	bible	1.595264108
-857	ntr_latn	ntr	latn	alphabet	bible	1.40200224
-858	ntu_latn	ntu	latn	alphabet	bible	1.270101255
-859	nuj_latn	nuj	latn	alphabet	bible	1.162670568
-860	nuq_latn	nuq	latn	alphabet	bible	1.720602958
-861	nus_latn	nus	latn	alphabet	nllb	1.293421155950474
-862	nuy_latn	nuy	latn	alphabet	bible	2.252938219
-863	nvm_latn	nvm	latn	alphabet	bible	1.487945418
-864	nwb_latn	nwb	latn	alphabet	bible	2.008703801
-865	nwi_latn	nwi	latn	alphabet	bible	1.611400882
-866	nya_latn	nya	latn	alphabet	nllb	1.2142949199673805
-867	nyf_latn	nyf	latn	alphabet	bible	1.14467555
-868	nyj_latn	nyj	latn	alphabet		
-869	nyu_latn	nyu	latn	alphabet	bible	1.097526914
-870	nyy_latn	nyy	latn	alphabet	bible	1.342357889
-871	nyz_latn	nyz	latn	alphabet		
-872	nze_latn	nze	latn	alphabet		
-873	obo_latn	obo	latn	alphabet	bible	1.444161276
-874	oci_latn	oci	latn	alphabet	nllb	1.0147334623179476
-875	okv_latn	okv	latn	alphabet	bible	1.14950744
-876	omw_latn	omw	latn	alphabet	bible	1.728273639
-877	ong_latn	ong	latn	alphabet	bible	1.453068501
-878	ons_latn	ons	latn	alphabet	bible	1.458597518
-879	ood_latn	ood	latn	alphabet	bible	1.307405545
-880	opm_latn	opm	latn	alphabet	bible	1.694434413
-881	ory_orya	ory	orya	abugida	nllb	2.5109866558784053
-882	ose_cyrl	ose	cyrl	alphabet		
-883	ote_latn	ote	latn	alphabet	bible	1.508806656
-884	otm_latn	otm	latn	alphabet	bible	1.425315993
-885	otn_latn	otn	latn	alphabet	bible	1.737450573
-886	otq_latn	otq	latn	alphabet	bible	1.252835364
-887	ots_latn	ots	latn	alphabet	bible	1.886960298
-888	pab_latn	pab	latn	alphabet	bible	1.381609563
-889	pac_latn	pac	latn	alphabet	bible	1.462080867
-890	pad_latn	pad	latn	alphabet	bible	1.953850198
-891	pag_latn	pag	latn	alphabet	nllb	1.0439084429426009
-892	pah_latn	pah	latn	alphabet	bible	2.014008823
-893	pan_guru	pan	guru	abugida	nllb	2.2209676983301554
-894	pao_latn	pao	latn	alphabet	bible	1.189970515
-895	pap_latn	pap	latn	alphabet	nllb	1.0016752711800698
-896	pbb_latn	pbb	latn	alphabet	bible	1.244808119
-897	pbt_arab	pbt	arab	abjad	nllb	1.7360209564226918
-898	pcm_latn	pcm	latn	alphabet	bible	0.954503897
-899	pdc_latn	pdc	latn	alphabet	bible	1.129005051
-900	pdg_latn	pdg	latn	alphabet		
-901	peg_orya	peg	orya	abugida	bible	3.181065576
-902	pes_arab	pes	arab	abjad	nllb	1.5973262699543158
-903	pet_cyrl	pet	cyrl	alphabet		
-904	pib_latn	pib	latn	alphabet	bible	1.023428036
-905	pio_latn	pio	latn	alphabet	bible	2.303455921
-906	pir_latn	pir	latn	alphabet	bible	1.723878311
-907	pis_latn	pis	latn	alphabet		
-908	piu_latn	piu	latn	alphabet	bible	2.160224909
-909	pjt_latn	pjt	latn	alphabet	bible	2.045020685
-910	pls_latn	pls	latn	alphabet	bible	1.433475806
-911	plt_latn	plt	latn	alphabet	nllb	1.151182211384018
-912	plu_latn	plu	latn	alphabet	bible	1.632463258
-913	plw_latn	plw	latn	alphabet	bible	1.377136523
-914	pma_latn	pma	latn	alphabet	bible	1.364083107
-915	pmp_latn	pmp	latn	alphabet		
-916	pnf_latn	pnf	latn	alphabet		
-917	poe_latn	poe	latn	alphabet	bible	1.802283376
-918	poh_latn	poh	latn	alphabet	bible	2.753523348
-919	poi_latn	poi	latn	alphabet	bible	1.519940116
-920	pol_latn	pol	latn	alphabet	nllb	1.077373476997443
-921	pon_latn	pon	latn	alphabet	bible	0.897776051
-922	por_latn	por	latn	alphabet	nllb	1.097878433973556
-923	poy_latn	poy	latn	alphabet	bible	1.102473086
-924	ppl_latn	ppl	latn	alphabet		
-925	ppo_latn	ppo	latn	alphabet	bible	1.725766268
-926	pps_latn	pps	latn	alphabet	bible	1.390027657
-927	pql_latn	pql	latn	alphabet		
-928	prf_latn	prf	latn	alphabet	bible	1.211688876
-929	pri_latn	pri	latn	alphabet	bible	1.468994994
-930	pro_latn	pro	latn	alphabet		
-931	prq_latn	prq	latn	alphabet	bible	1.291303056
-932	prs_arab	prs	arab	abjad	nllb	1.6640453798569717
-933	ptp_latn	ptp	latn	alphabet	bible	1.371340084
-934	ptu_latn	ptu	latn	alphabet	bible	1.333292953
-935	pwg_latn	pwg	latn	alphabet	bible	1.260170053
-936	qan_latn	qan	latn	alphabet		
-937	qar_latn	qar	latn	alphabet		
-938	qed_latn	qed	latn	alphabet		
-939	qeg_latn	qeg	latn	alphabet		
-940	qei_latn	qei	latn	alphabet		
-941	qej_latn	qej	latn	alphabet		
-942	qju_latn	qju	latn	alphabet		
-943	qnt_latn	qnt	latn	alphabet		
-944	qub_latn	qub	latn	alphabet	bible	1.203967909
-945	quc_latn	quc	latn	alphabet	bible	1.452707367
-946	quf_latn	quf	latn	alphabet	bible	1.450170282
-947	quh_latn	quh	latn	alphabet	bible	1.293227583
-948	qul_latn	qul	latn	alphabet	bible	1.07633197
-949	qup_latn	qup	latn	alphabet	bible	1.652028525
-950	quy_latn	quy	latn	alphabet	nllb	1.163741956695455
-951	quz_latn	quz	latn	alphabet		
-952	qva_latn	qva	latn	alphabet	bible	1.230374163
-953	qvc_latn	qvc	latn	alphabet	bible	1.536952298
-954	qve_latn	qve	latn	alphabet	bible	1.644282416
-955	qvh_latn	qvh	latn	alphabet	bible	1.291607049
-956	qvm_latn	qvm	latn	alphabet	bible	1.33948024
-957	qvn_latn	qvn	latn	alphabet	bible	1.320436104
-958	qvs_latn	qvs	latn	alphabet	bible	1.552931362
-959	qvw_latn	qvw	latn	alphabet	bible	1.191746474
-960	qvz_latn	qvz	latn	alphabet	bible	1.349603438
-961	qwh_latn	qwh	latn	alphabet	bible	1.217021325
-962	qxh_latn	qxh	latn	alphabet	bible	1.224260017
-963	qxl_latn	qxl	latn	alphabet	bible	1.176395968
-964	qxn_latn	qxn	latn	alphabet	bible	1.403700487
-965	qxo_latn	qxo	latn	alphabet	bible	1.377445087
-966	rai_latn	rai	latn	alphabet	bible	1.265961921
-967	reg_latn	reg	latn	alphabet	bible	1.033939796
-968	rhe_latn	rhe	latn	alphabet		
-969	rkb_latn	rkb	latn	alphabet	bible	1.640490503
-970	rmc_latn	rmc	latn	alphabet	bible	1.024618866
-971	rol_latn	rol	latn	alphabet	bible	1.305220452
-972	ron_latn	ron	latn	alphabet	nllb	1.1151209277608225
-973	roo_latn	roo	latn	alphabet	bible	1.570524102
-974	rop_latn	rop	latn	alphabet	bible	1.529233618
-975	row_latn	row	latn	alphabet	bible	1.508799799
-976	rro_latn	rro	latn	alphabet	bible	1.134284931
-977	rrt_latn	rrt	latn	alphabet		
-978	rub_latn	rub	latn	alphabet	bible	1.433935224
-979	ruf_latn	ruf	latn	alphabet	bible	1.027830221
-980	rug_latn	rug	latn	alphabet	bible	1.350650271
-981	rum_latn	rum	latn	alphabet		
-982	run_latn	run	latn	alphabet	nllb	1.1192325143941892
-983	rus_cyrl	rus	cyrl	alphabet	nllb	1.822744410906083
-984	ruw_cyrl	ruw	cyrl	alphabet		
-985	rwo_latn	rwo	latn	alphabet	bible	1.784190076
-986	sab_latn	sab	latn	alphabet	bible	2.193894997
-987	sag_latn	sag	latn	alphabet	nllb	1.1624646765701858
-988	saj_latn	saj	latn	alphabet		
-989	san_deva	san	deva	abugida	nllb	2.5427804517447807
-990	san_knda	san	knda	abugida	bible	2.385403762
-991	sat_beng	sat	beng	abugida	nllb	2.113236281
-992	sat_olck	sat	olck	alphabet	flores	2.803663544644224
-993	san_gujr	san	gujr	abugida	bible	2.385403762
-994	san_latn	san	latn	alphabet	bible	0.966275057
-995	san_khmr	san	khmr	abugida	bible	2.399970286
-996	san_mlym	san	mlym	abugida	bible	2.342693881
-997	san_orya	san	orya	abugida	bible	2.385403762
-998	san_guru	san	guru	abugida	bible	2.431816416
-999	san_sinh	san	sinh	abugida	bible	2.488267697
-1000	san_taml	san	taml	abugida	bible	2.690877923
-1001	san_telu	san	telu	abugida	bible	2.385399191
-1002	san_thai	san	thai	abugida	bible	2.401862815
-1003	san_tibt	san	tibt	abugida	bible	2.166691047
-1004	san_arab	san	arab	abjad	bible	2.055285593
-1005	san_mymr	san	mymr	abugida	bible	2.315748211
-1006	sbe_latn	sbe	latn	alphabet	bible	1.322801765
-1007	sbk_latn	sbk	latn	alphabet	bible	0.934963772
-1008	sbl_latn	sbl	latn	alphabet	bible	1.453123357
-1009	sbs_latn	sbs	latn	alphabet	bible	0.988039131
-1010	sby_latn	sby	latn	alphabet	bible	1.10542159
-1011	sch_latn	sch	latn	alphabet	bible	1.121754931
-1012	scn_latn	scn	latn	alphabet	nllb	1.036272744869889
-1013	sco_latn	sco	latn	alphabet		
-1014	ses_latn	ses	latn	alphabet	bible	0.986251743
-1015	set_latn	set	latn	alphabet	bible	1.360707184
-1016	sey_latn	sey	latn	alphabet	bible	1.506614706
-1017	sgb_latn	sgb	latn	alphabet	bible	1.350115426
-1018	sgz_latn	sgz	latn	alphabet	bible	1.568727572
-1019	shd_latn	shd	latn	alphabet		
-1020	shn_mymr	shn	mymr	abugida	nllb	2.819448605831083
-1021	shp_latn	shp	latn	alphabet	bible	1.292768165
-1022	sig_latn	sig	latn	alphabet	bible	1.442716738
-1023	sil_latn	sil	latn	alphabet	bible	1.229734178
-1024	sim_latn	sim	latn	alphabet	bible	1.407771251
-1025	sin_sinh	sin	sinh	abugida	nllb	2.4463185182279874
-1026	sja_latn	sja	latn	alphabet	bible	1.378279354
-1027	slk_latn	slk	latn	alphabet	nllb	1.0415060908874327
-1028	sll_latn	sll	latn	alphabet	bible	1.311019177
-1029	slm_latn	slm	latn	alphabet	bible	1.361589449
-1030	slo_latn	slo	latn	alphabet		
-1031	slv_latn	slv	latn	alphabet	nllb	0.9721500484359568
-1032	smk_latn	smk	latn	alphabet	bible	1.350721126
-1033	sml_latn	sml	latn	alphabet	bible	1.31911042
-1034	smo_latn	smo	latn	alphabet	nllb	1.1780015178253482
-1035	smy_latn	smy	latn	alphabet		
-1036	sna_latn	sna	latn	alphabet	nllb	1.1191777636582168
-1037	snc_latn	snc	latn	alphabet	bible	1.466195058
-1038	snd_arab	snd	arab	abjad	nllb	1.587969761053741
-1039	snf_latn	snf	latn	alphabet	bible	1.146709789
-1040	snn_latn	snn	latn	alphabet	bible	1.730726155
-1041	snp_latn	snp	latn	alphabet	bible	1.396219515
-1042	snw_latn	snw	latn	alphabet	bible	1.307675253
-1043	sny_latn	sny	latn	alphabet	bible	1.943729286
-1044	som_latn	som	latn	alphabet	nllb	1.4223028601273195
-1045	soq_latn	soq	latn	alphabet	bible	1.392297319
-1046	sot_latn	sot	latn	alphabet	nllb	1.1660117470947278
-1047	soy_latn	soy	latn	alphabet	bible	1.418285296
-1048	spa_latn	spa	latn	alphabet	nllb	1.0838319661748157
-1049	spl_latn	spl	latn	alphabet	bible	1.771712647
-1050	spn_latn	spn	latn	alphabet		
-1051	spp_latn	spp	latn	alphabet	bible	1.345939521
-1052	sps_latn	sps	latn	alphabet	bible	1.364569953
-1053	spy_latn	spy	latn	alphabet	bible	1.323002903
-1054	srd_latn	srd	latn	alphabet	nllb	1.1093727723568478
-1055	sri_latn	sri	latn	alphabet	bible	1.632220978
-1056	srm_latn	srm	latn	alphabet	bible	1.704153048
-1057	srn_latn	srn	latn	alphabet	bible	1.060725469
-1058	srp_cyrl	srp	cyrl	alphabet	nllb	1.4248786445423485
-1059	srp_latn	srp	latn	alphabet	bible	0.826257686
-1060	srq_latn	srq	latn	alphabet	bible	1.352012525
-1061	srt_latn	srt	latn	alphabet		
-1062	ssd_latn	ssd	latn	alphabet	bible	1.239925945
-1063	ssg_latn	ssg	latn	alphabet	bible	1.132259834
-1064	sso_latn	sso	latn	alphabet		
-1065	ssw_latn	ssw	latn	alphabet	nllb	1.1414266194753566
-1066	ssx_latn	ssx	latn	alphabet	bible	1.861566593
-1067	stb_latn	stb	latn	alphabet	bible	1.33411122
-1068	stp_latn	stp	latn	alphabet	bible	2.351422825
-1069	sua_latn	sua	latn	alphabet	bible	1.859952915
-1070	suc_latn	suc	latn	alphabet	bible	1.517725309
-1071	sud_latn	sud	latn	alphabet		
-1072	sue_latn	sue	latn	alphabet	bible	1.27381317
-1073	sun_latn	sun	latn	alphabet	nllb	1.0969808523166162
-1074	suo_latn	suo	latn	alphabet		
-1075	sus_arab	sus	arab	abjad	bible	1.878553633
-1076	sus_latn	sus	latn	alphabet	bible	1.063260268
-1077	suz_deva	suz	deva	abugida	bible	2.98006217
-1078	swa_latn	swa	latn	alphabet		
-1079	swd_latn	swd	latn	alphabet		
-1080	swe_latn	swe	latn	alphabet	nllb	1.0209812922647696
-1081	swh_latn	swh	latn	alphabet	nllb	1.0694849063174054
-1082	swp_latn	swp	latn	alphabet	bible	1.039103106
-1083	sxb_latn	sxb	latn	alphabet	bible	1.214319673
-1084	syb_latn	syb	latn	alphabet	bible	1.512955132
-1085	syl_latn	syl	latn	alphabet	bible	1.078587918
-1086	syl_beng	syl	beng	abugida	bible	2.464908231
-1087	szl_latn	szl	latn	alphabet	nllb	1.066563023990376
-1088	tac_latn	tac	latn	alphabet	bible	1.759354072
-1089	taj_deva	taj	deva	abugida	bible	3.218477292
-1090	tam_taml	tam	taml	abugida	nllb	2.7290996547936537
-1091	taq_latn	taq	latn	alphabet	nllb	1.2092490946988266
-1092	taq_tfng	taq	tfng	abjad	flores	2.277865870103261
-1093	tat_cyrl	tat	cyrl	alphabet	nllb	1.8545411911687737
-1094	tav_latn	tav	latn	alphabet	bible	1.736780874
-1095	taw_latn	taw	latn	alphabet	bible	1.49012594
-1096	tbc_latn	tbc	latn	alphabet	bible	1.352446801
-1097	tbf_latn	tbf	latn	alphabet	bible	1.309862632
-1098	tbg_latn	tbg	latn	alphabet	bible	1.633722658
-1099	tbk_latn	tbk	latn	alphabet	bible	2.134666636
-1100	tbo_latn	tbo	latn	alphabet	bible	1.20212338
-1101	tbz_latn	tbz	latn	alphabet	bible	1.330093026
-1102	tca_latn	tca	latn	alphabet	bible	1.998569176
-1103	tcs_latn	tcs	latn	alphabet	bible	1.324182304
-1104	tcz_latn	tcz	latn	alphabet	bible	1.12913762
-1105	tdt_latn	tdt	latn	alphabet	bible	1.216321913
-1106	tdx_latn	tdx	latn	alphabet	bible	1.000930264
-1107	ted_latn	ted	latn	alphabet	bible	1.936748874
-1108	tee_latn	tee	latn	alphabet	bible	1.650853695
-1109	tej_latn	tej	latn	alphabet		
-1110	tel_telu	tel	telu	abugida	nllb	2.6198194978991007
-1111	ter_latn	ter	latn	alphabet	bible	1.509435213
-1112	tet_latn	tet	latn	alphabet	bible	1.400532559
-1113	tfr_latn	tfr	latn	alphabet	bible	1.466211058
-1114	tgk_cyrl	tgk	cyrl	alphabet	nllb	1.7460521855753377
-1115	tgl_latn	tgl	latn	alphabet	nllb	1.1175934317514988
-1116	tgo_latn	tgo	latn	alphabet	bible	1.307213549
-1117	tgp_latn	tgp	latn	alphabet	bible	1.2281205
-1118	tha_thai	tha	thai	abugida	flores	2.741647234961396
-1119	tht_latn	tht	latn	alphabet		
-1120	tid_latn	tid	latn	alphabet		
-1121	tif_latn	tif	latn	alphabet	bible	2.284260931
-1122	tim_latn	tim	latn	alphabet	bible	1.512091152
-1123	tir_ethi	tir	ethi	abugida	nllb	1.762985532310621
-1124	tiv_latn	tiv	latn	alphabet		
-1125	tiy_latn	tiy	latn	alphabet	bible	1.375733126
-1126	tku_latn	tku	latn	alphabet	bible	1.406166716
-1127	tlf_latn	tlf	latn	alphabet	bible	2.250913122
-1128	tlj_latn	tlj	latn	alphabet	bible	1.337494
-1129	tmd_latn	tmd	latn	alphabet	bible	1.700697127
-1130	tna_latn	tna	latn	alphabet	bible	1.426591392
-1131	tnk_latn	tnk	latn	alphabet	bible	1.602742794
-1132	tnn_latn	tnn	latn	alphabet	bible	1.609176933
-1133	tnp_latn	tnp	latn	alphabet	bible	1.747941761
-1134	tob_latn	tob	latn	alphabet		
-1135	toc_latn	toc	latn	alphabet	bible	2.39523668
-1136	tof_latn	tof	latn	alphabet	bible	1.468078444
-1137	toi_latn	toi	latn	alphabet		
-1138	toj_latn	toj	latn	alphabet	bible	1.440515645
-1139	ton_latn	ton	latn	alphabet	bible	1.270386963
-1140	too_latn	too	latn	alphabet	bible	1.552499371
-1141	top_latn	top	latn	alphabet	bible	1.643555576
-1142	tos_latn	tos	latn	alphabet	bible	2.274268017
-1143	tpi_latn	tpi	latn	alphabet	nllb	1.1768779769785047
-1144	tpp_latn	tpp	latn	alphabet	bible	1.263763114
-1145	tpt_latn	tpt	latn	alphabet	bible	1.488084844
-1146	tpu_khmr	tpu	khmr	abugida	bible	2.976336541
-1147	tpz_latn	tpz	latn	alphabet	bible	1.73930653
-1148	trc_latn	trc	latn	alphabet	bible	2.568764143
-1149	trk_latn	trk	latn	alphabet		
-1150	trq_latn	trq	latn	alphabet	bible	1.966921899
-1151	tsg_latn	tsg	latn	alphabet	bible	1.622134351
-1152	tsh_latn	tsh	latn	alphabet		
-1153	tsn_latn	tsn	latn	alphabet	nllb	1.1739402962077967
-1154	tso_latn	tso	latn	alphabet	nllb	1.207440889
-1155	tsw_latn	tsw	latn	alphabet	bible	1.220977806
-1156	ttc_latn	ttc	latn	alphabet	bible	1.388016274
-1157	tte_latn	tte	latn	alphabet	bible	1.333107815
-1158	ttm_latn	ttm	latn	alphabet		
-1159	ttq_tfng	ttq	tfng	abjad	bible	1.65913922
-1160	ttq_latn	ttq	latn	alphabet	bible	1.181582135
-1161	tuc_latn	tuc	latn	alphabet	bible	1.524772005
-1162	tue_latn	tue	latn	alphabet	bible	1.411650019
-1163	tuf_latn	tuf	latn	alphabet	bible	1.591888185
-1164	tuk_latn	tuk	latn	alphabet	nllb	1.785355050333167
-1165	tum_latn	tum	latn	alphabet	nllb	1.2071952701917046
-1166	tuo_latn	tuo	latn	alphabet	bible	1.701291399
-1167	tur_latn	tur	latn	alphabet	nllb	1.0444895734382789
-1168	tvk_latn	tvk	latn	alphabet	bible	1.42093895
-1169	tvt_latn	tvt	latn	alphabet	bible	1.18660602
-1170	twi_latn	twi	latn	alphabet	nllb	1.032409918083291
-1171	txq_latn	txq	latn	alphabet	bible	1.605273022
-1172	txu_latn	txu	latn	alphabet	bible	2.019293273
-1173	tzc_latn	tzc	latn	alphabet		
-1174	tzj_latn	tzj	latn	alphabet	bible	1.464759663
-1175	tzm_latn	tzm	latn	alphabet		
-1176	tzm_tfng	tzm	tfng	abjad	nllb	1.925212613497005
-1177	tzo_latn	tzo	latn	alphabet	bible	1.487549999
-1178	ubr_latn	ubr	latn	alphabet	bible	1.242831021
-1179	ubu_latn	ubu	latn	alphabet	bible	2.007174693
-1180	udu_latn	udu	latn	alphabet	bible	1.557182693
-1181	uig_cyrl	uig	cyrl	alphabet	bible	1.959198647
-1182	uig_latn	uig	latn	alphabet	bible	1.191355626
-1183	uig_arab	uig	arab	abjad	nllb	2.308625158110461
-1184	ukr_cyrl	ukr	cyrl	alphabet	nllb	1.751370356831398
-1185	uli_latn	uli	latn	alphabet	bible	1.234668922
-1186	ulk_latn	ulk	latn	alphabet	bible	0.950261708
-1187	umb_latn	umb	latn	alphabet	nllb	1.1672611036710585
-1188	unx_orya	unx	orya	abugida	bible	3.197666339
-1189	upv_latn	upv	latn	alphabet	bible	1.345678956
-1190	ura_latn	ura	latn	alphabet	bible	1.59449384
-1191	urb_latn	urb	latn	alphabet	bible	1.853351923
-1192	urd_deva	urd	deva	abugida	bible	2.522705767
-1193	urd_latn	urd	latn	alphabet	bible	1.287511143
-1194	urd_arab	urd	arab	abjad	nllb	1.7079506174050625
-1195	urt_latn	urt	latn	alphabet	bible	1.580318164
-1196	ury_latn	ury	latn	alphabet	bible	1.684132934
-1197	usa_latn	usa	latn	alphabet	bible	1.668403008
-1198	usp_latn	usp	latn	alphabet	bible	1.422481772
-1199	uvh_latn	uvh	latn	alphabet	bible	2.07885534
-1200	uvl_latn	uvl	latn	alphabet	bible	1.343982995
-1201	uzb_latn	uzb	latn	alphabet		
-1202	uzn_latn	uzn	latn	alphabet	nllb	1.645764497
-1203	var_latn	var	latn	alphabet	bible	1.636154602
-1204	vec_latn	vec	latn	alphabet	nllb	0.9963413972250036
-1205	vid_latn	vid	latn	alphabet	bible	1.050227423
-1206	vie_latn	vie	latn	alphabet	nllb	1.3493312660627863
-1207	viv_latn	viv	latn	alphabet	bible	1.52287262
-1208	vmw_latn	vmw	latn	alphabet		
-1209	vmy_latn	vmy	latn	alphabet	bible	1.268885283
-1210	waj_latn	waj	latn	alphabet	bible	1.694068707
-1211	wal_latn	wal	latn	alphabet	bible	1.092203607
-1212	wap_latn	wap	latn	alphabet	bible	1.630819867
-1213	war_latn	war	latn	alphabet	nllb	1.0931497173660414
-1214	wbi_latn	wbi	latn	alphabet	bible	1.121846358
-1215	wbp_latn	wbp	latn	alphabet	bible	2.336275742
-1216	wee_latn	wee	latn	alphabet		
-1217	wer_latn	wer	latn	alphabet	bible	1.274569724
-1218	wib_latn	wib	latn	alphabet	bible	1.635962607
-1219	wim_latn	wim	latn	alphabet	bible	2.115023657
-1220	wiu_latn	wiu	latn	alphabet	bible	1.399355443
-1221	wiv_latn	wiv	latn	alphabet	bible	1.282249549
-1222	wls_latn	wls	latn	alphabet		
-1223	wmw_latn	wmw	latn	alphabet	bible	1.007851249
-1224	wnc_latn	wnc	latn	alphabet	bible	1.491668762
-1225	wnu_latn	wnu	latn	alphabet	bible	1.265831638
-1226	wob_latn	wob	latn	alphabet	bible	1.393463007
-1227	wol_latn	wol	latn	alphabet	nllb	1.0786472108470395
-1228	wos_latn	wos	latn	alphabet	bible	1.609531211
-1229	wrs_latn	wrs	latn	alphabet	bible	1.508162099
-1230	wry_latn	wry	latn	alphabet		
-1231	wsk_latn	wsk	latn	alphabet	bible	1.295195538
-1232	wuv_latn	wuv	latn	alphabet	bible	1.076656534
-1233	xav_latn	xav	latn	alphabet	bible	2.368366437
-1234	xed_latn	xed	latn	alphabet	bible	1.283204955
-1235	xho_latn	xho	latn	alphabet	nllb	1.198781751749243
-1236	xla_latn	xla	latn	alphabet	bible	1.626680533
-1237	xnj_latn	xnj	latn	alphabet	bible	1.075634843
-1238	xnn_latn	xnn	latn	alphabet	bible	1.21520651
-1239	xon_latn	xon	latn	alphabet	bible	1.071506937
-1240	xos_latn	xos	latn	alphabet		
-1241	xrb_latn	xrb	latn	alphabet	bible	1.256803273
-1242	xsb_latn	xsb	latn	alphabet	bible	1.356455852
-1243	xsi_latn	xsi	latn	alphabet	bible	1.750293708
-1244	xsm_latn	xsm	latn	alphabet	bible	1.471020091
-1245	xsr_deva	xsr	deva	abugida	bible	3.180832438
-1246	xtc_latn	xtc	latn	alphabet	bible	1.253107358
-1247	xtd_latn	xtd	latn	alphabet	bible	1.474492012
-1248	xtm_latn	xtm	latn	alphabet	bible	1.546254943
-1249	xtn_latn	xtn	latn	alphabet	bible	1.418406436
-1250	xuo_latn	xuo	latn	alphabet	bible	1.626650819
-1251	yaa_latn	yaa	latn	alphabet	bible	1.480057599
-1252	yad_latn	yad	latn	alphabet	bible	1.530422162
-1253	yal_latn	yal	latn	alphabet	bible	1.082249549
-1254	yam_latn	yam	latn	alphabet	bible	1.467157322
-1255	yao_latn	yao	latn	alphabet	bible	1.192905305
-1256	yap_latn	yap	latn	alphabet	bible	1.396850358
-1257	yaq_latn	yaq	latn	alphabet	bible	1.598665173
-1258	yby_latn	yby	latn	alphabet	bible	1.510036342
-1259	ycn_latn	ycn	latn	alphabet	bible	1.84232589
-1260	ydd_hebr	ydd	hebr	abjad	nllb	1.806848484814509
-1261	yka_latn	yka	latn	alphabet	bible	1.33714658
-1262	yle_latn	yle	latn	alphabet	bible	1.704939316
-1263	yml_latn	yml	latn	alphabet	bible	1.556743846
-1264	yom_latn	yom	latn	alphabet	bible	1.069463555
-1265	yon_latn	yon	latn	alphabet	bible	1.392247034
-1266	yor_latn	yor	latn	alphabet	nllb	1.3749481774962748
-1267	yps_latn	yps	latn	alphabet		
-1268	yrb_latn	yrb	latn	alphabet	bible	1.098667459
-1269	yre_latn	yre	latn	alphabet	bible	1.3843775
-1270	yss_latn	yss	latn	alphabet	bible	1.269653265
-1271	yua_latn	yua	latn	alphabet		
-1272	yue_hant	yue	hant	logography	flores	0.862461402
-1273	yuj_latn	yuj	latn	alphabet	bible	1.647962332
-1274	yut_latn	yut	latn	alphabet	bible	1.34417499
-1275	yuw_latn	yuw	latn	alphabet	bible	1.605417019
-1276	yva_latn	yva	latn	alphabet	bible	1.506278714
-1277	zaa_latn	zaa	latn	alphabet	bible	1.433530662
-1278	zab_latn	zab	latn	alphabet	bible	1.12030125
-1279	zac_latn	zac	latn	alphabet	bible	1.495325821
-1280	zad_latn	zad	latn	alphabet	bible	1.219053279
-1281	zae_latn	zae	latn	alphabet	bible	1.434531782
-1282	zai_latn	zai	latn	alphabet	bible	1.054833032
-1283	zaj_latn	zaj	latn	alphabet	bible	1.036017462
-1284	zam_latn	zam	latn	alphabet	bible	2.041125917
-1285	zao_latn	zao	latn	alphabet	bible	1.16763274
-1286	zap_latn	zap	latn	alphabet	bible	1.075680556
-1287	zar_latn	zar	latn	alphabet	bible	1.59449384
-1288	zas_latn	zas	latn	alphabet	bible	1.140188796
-1289	zat_latn	zat	latn	alphabet	bible	1.390322507
-1290	zav_latn	zav	latn	alphabet	bible	1.640193367
-1291	zaw_latn	zaw	latn	alphabet	bible	1.133377523
-1292	zca_latn	zca	latn	alphabet	bible	1.183223241
-1293	zga_latn	zga	latn	alphabet	bible	1.037459715
-1294	zho_hans	zho	hans	logography	nllb	0.9359663917979646
-1295	zho_hant	zho	hant	logography	nllb	0.989382544
-1296	zia_latn	zia	latn	alphabet	bible	1.387748851
-1297	ziw_latn	ziw	latn	alphabet	bible	0.992407031
-1298	zlm_latn	zlm	latn	alphabet	bible	1.140833352
-1299	zos_latn	zos	latn	alphabet	bible	1.378286211
-1300	zpc_latn	zpc	latn	alphabet	bible	1.612095724
-1301	zpg_latn	zpg	latn	alphabet	bible	1.202658225
-1302	zpi_latn	zpi	latn	alphabet	bible	1.075680556
-1303	zpl_latn	zpl	latn	alphabet	bible	1.378267925
-1304	zpm_latn	zpm	latn	alphabet	bible	1.315341364
-1305	zpo_latn	zpo	latn	alphabet	bible	1.120449818
-1306	zpq_latn	zpq	latn	alphabet	bible	1.420152682
-1307	zpt_latn	zpt	latn	alphabet	bible	1.348632031
-1308	zpu_latn	zpu	latn	alphabet	bible	1.441784188
-1309	zpv_latn	zpv	latn	alphabet	bible	1.717796165
-1310	zpz_latn	zpz	latn	alphabet	bible	1.401092546
-1311	zsm_latn	zsm	latn	alphabet	nllb	1.143822408242538
-1312	zsr_latn	zsr	latn	alphabet	bible	1.568343581
-1313	ztq_latn	ztq	latn	alphabet	bible	1.081481566
-1314	zty_latn	zty	latn	alphabet	bible	1.413787113
-1315	zul_latn	zul	latn	alphabet	nllb	1.163840155382308
-1316	zuu_latn	zuu	latn	alphabet		
-1317	zyp_latn	zyp	latn	alphabet	bible	1.254010194
+	Unnamed: 0	lang_script	lang	script	writing_type	source	byte_coef
+0	0	aai_latn	aai	latn	alphabet	bible	1.175442847
+1	1	aak_latn	aak	latn	alphabet	bible	2.277184521
+2	2	aau_latn	aau	latn	alphabet	bible	1.551029691
+3	3	aaz_latn	aaz	latn	alphabet	bible	1.680613015
+5	5	abp_latn	abp	latn	alphabet	bible	1.331510137
+6	6	abt_latn	abt	latn	alphabet	bible	1.877271377
+7	7	abx_latn	abx	latn	alphabet	bible	1.359783776
+8	8	aby_latn	aby	latn	alphabet	bible	1.338780828
+9	9	acd_latn	acd	latn	alphabet	bible	1.710619186
+10	10	ace_arab	ace	arab	abjad	flores	1.505402343801714
+11	11	ace_latn	ace	latn	alphabet	nllb	1.2419568876773823
+12	12	acf_latn	acf	latn	alphabet	bible	1.15712098
+13	13	acm_arab	acm	arab	abjad	flores	1.550152569
+14	14	acq_arab	acq	arab	abjad	flores	1.569394862003875
+15	15	acr_latn	acr	latn	alphabet	bible	1.54049736
+16	16	acu_latn	acu	latn	alphabet	bible	1.435962607
+18	18	adj_latn	adj	latn	alphabet	bible	1.191613906
+19	19	aeb_arab	aeb	arab	abjad	flores	1.5277140901608963
+20	20	aer_latn	aer	latn	alphabet	bible	2.347966904
+21	21	aeu_latn	aeu	latn	alphabet	bible	1.872473772
+22	22	aey_latn	aey	latn	alphabet	bible	1.196973783
+24	24	afr_latn	afr	latn	alphabet	nllb	1.037225980267587
+25	25	agd_latn	agd	latn	alphabet	bible	1.482487257
+26	26	agg_latn	agg	latn	alphabet	bible	1.909032936
+27	27	agm_latn	agm	latn	alphabet	bible	2.530698727
+28	28	agn_latn	agn	latn	alphabet	bible	1.409972343
+29	29	agr_latn	agr	latn	alphabet	bible	1.243886997
+30	30	agt_latn	agt	latn	alphabet	bible	1.412402002
+31	31	agu_latn	agu	latn	alphabet	bible	1.454138191
+32	32	aia_latn	aia	latn	alphabet	bible	1.384452927
+33	33	aii_syrc	aii	syrc	abjad	bible	1.896699504
+35	35	ajp_arab	ajp	arab	abjad	flores	1.4789725895470154
+36	36	aka_latn	aka	latn	alphabet	nllb	1.5749427817894566
+37	37	ake_latn	ake	latn	alphabet	bible	1.375145711
+38	38	akh_latn	akh	latn	alphabet	bible	1.974444013
+40	40	akp_latn	akp	latn	alphabet	bible	1.131448424
+42	42	alp_latn	alp	latn	alphabet	bible	1.264327673
+43	43	alq_latn	alq	latn	alphabet	bible	1.476720532
+44	44	als_latn	als	latn	alphabet	nllb	1.1672471776622368
+45	45	aly_latn	aly	latn	alphabet	bible	1.581854129
+47	47	ame_latn	ame	latn	alphabet	bible	2.212100295
+48	48	amf_latn	amf	latn	alphabet	bible	1.169561839
+49	49	amh_ethi	amh	ethi	abugida	nllb	1.720917142791503
+50	50	amk_latn	amk	latn	alphabet	bible	1.405705012
+51	51	amm_latn	amm	latn	alphabet	bible	1.541674476
+52	52	amn_latn	amn	latn	alphabet	bible	1.260110626
+53	53	amo_latn	amo	latn	alphabet	bible	0.935171768
+54	54	amp_latn	amp	latn	alphabet	bible	1.463342552
+55	55	amr_latn	amr	latn	alphabet	bible	1.715478503
+56	56	amu_latn	amu	latn	alphabet	bible	1.865289936
+57	57	anv_latn	anv	latn	alphabet	bible	1.554227332
+58	58	any_latn	any	latn	alphabet	bible	1.532182122
+59	59	aoj_latn	aoj	latn	alphabet	bible	1.574274874
+60	60	aom_latn	aom	latn	alphabet	bible	1.767342461
+61	61	aon_latn	aon	latn	alphabet	bible	1.789721378
+62	62	apb_latn	apb	latn	alphabet	bible	1.525677127
+63	63	apc_arab	apc	arab	abjad	flores	1.4734486130771929
+64	64	ape_latn	ape	latn	alphabet	bible	1.729238189
+65	65	apn_latn	apn	latn	alphabet	bible	2.568499006
+66	66	apr_latn	apr	latn	alphabet	bible	1.74664122
+67	67	apu_latn	apu	latn	alphabet	bible	1.445422962
+68	68	apw_latn	apw	latn	alphabet	bible	1.500740555
+69	69	apy_latn	apy	latn	alphabet	bible	1.501030834
+70	70	apz_latn	apz	latn	alphabet	bible	2.015894494
+71	71	arb_arab	arb	arab	abjad	nllb	1.4650179781606354
+72	72	arb_latn	arb	latn	alphabet	flores	1.1558741901084642
+73	73	are_latn	are	latn	alphabet	bible	1.471838358
+74	74	arl_latn	arl	latn	alphabet	bible	1.80293479
+75	75	arn_latn	arn	latn	alphabet	bible	1.340611643
+76	76	arq_arab	arq	arab	abjad	bible	1.410136911
+77	77	ars_arab	ars	arab	abjad	flores	1.5877034804350854
+79	79	ary_arab	ary	arab	abjad	flores	1.5419689250862352
+80	80	arz_arab	arz	arab	abjad	flores	1.551170046032467
+81	81	asm_beng	asm	beng	abugida	nllb	2.526329302997425
+82	82	aso_latn	aso	latn	alphabet	bible	1.974631437
+84	84	ast_latn	ast	latn	alphabet	nllb	1.748880208239496
+85	85	ata_latn	ata	latn	alphabet	bible	1.535052913
+86	86	atb_latn	atb	latn	alphabet	bible	1.513174556
+87	87	atd_latn	atd	latn	alphabet	bible	1.562892277
+88	88	atg_latn	atg	latn	alphabet	bible	1.293442436
+90	90	att_latn	att	latn	alphabet	bible	1.63302096
+92	92	auc_latn	auc	latn	alphabet	bible	2.260160911
+93	93	auu_latn	auu	latn	alphabet	bible	1.588980823
+94	94	auy_latn	auy	latn	alphabet	bible	1.472642911
+95	95	avt_latn	avt	latn	alphabet	bible	1.439587667
+96	96	avu_latn	avu	latn	alphabet	bible	2.842291605
+97	97	awa_deva	awa	deva	abugida	nllb	2.701478689950768
+98	98	awb_latn	awb	latn	alphabet	bible	1.357036411
+100	100	ayr_latn	ayr	latn	alphabet	nllb	1.0976805227739936
+101	101	ayz_latn	ayz	latn	alphabet	bible	1.350101712
+102	102	azb_arab	azb	arab	abjad	nllb	1.490422093239903
+103	103	azb_latn	azb	latn	alphabet	bible	1.047806907
+104	104	azg_latn	azg	latn	alphabet	bible	2.008747229
+105	105	azj_latn	azj	latn	alphabet	nllb	1.0761159557868176
+106	106	azz_latn	azz	latn	alphabet	bible	1.940211652
+107	107	bak_cyrl	bak	cyrl	alphabet	nllb	2.271940340328229
+108	108	bam_latn	bam	latn	alphabet	nllb	1.2568785324793923
+109	109	ban_latn	ban	latn	alphabet	nllb	1.2695436355161105
+110	110	bao_latn	bao	latn	alphabet	bible	1.632378688
+111	111	bba_latn	bba	latn	alphabet	bible	1.133009531
+112	112	bbb_latn	bbb	latn	alphabet	bible	1.518513863
+113	113	bbr_latn	bbr	latn	alphabet	bible	1.332104409
+114	114	bcc_arab	bcc	arab	abjad	bible	1.694173847
+115	115	bcc_latn	bcc	latn	alphabet	bible	1.174524011
+116	116	bch_latn	bch	latn	alphabet	bible	1.269173276
+118	118	bco_latn	bco	latn	alphabet	bible	2.112813421
+119	119	bcw_latn	bcw	latn	alphabet	bible	1.885385477
+121	121	bdd_latn	bdd	latn	alphabet	bible	1.485481475
+122	122	bdh_latn	bdh	latn	alphabet	bible	1.982537542
+123	123	bds_latn	bds	latn	alphabet	bible	1.488873397
+124	124	bdv_orya	bdv	orya	abugida	bible	3.201673105
+125	125	bef_latn	bef	latn	alphabet	bible	1.643180727
+126	126	bel_cyrl	bel	cyrl	alphabet	nllb	2.007901402911329
+127	127	bem_latn	bem	latn	alphabet	nllb	1.1552374922271618
+128	128	ben_beng	ben	beng	abugida	nllb	2.430759774076161
+129	129	beo_latn	beo	latn	alphabet	bible	1.239311101
+130	130	bex_latn	bex	latn	alphabet	bible	1.461468309
+131	131	bfd_latn	bfd	latn	alphabet	bible	1.760574615
+132	132	bfz_deva	bfz	deva	abugida	bible	2.426879386
+133	133	bgc_deva	bgc	deva	abugida	bible	2.517583598
+134	134	bgg_latn	bgg	latn	alphabet	bible	1.252087952
+135	135	bgs_latn	bgs	latn	alphabet	bible	1.408326667
+136	136	bgt_latn	bgt	latn	alphabet	bible	1.43079701
+137	137	bhd_deva	bhd	deva	abugida	bible	2.712923133
+138	138	bhg_latn	bhg	latn	alphabet	bible	1.342899591
+139	139	bhl_latn	bhl	latn	alphabet	bible	1.885303193
+140	140	bho_deva	bho	deva	abugida	nllb	2.515275311
+141	141	bht_deva	bht	deva	abugida	bible	2.730591301
+142	142	bib_latn	bib	latn	alphabet	bible	1.161324313
+143	143	big_latn	big	latn	alphabet	bible	1.926280542
+144	144	bim_latn	bim	latn	alphabet	bible	1.081474709
+145	145	biv_latn	biv	latn	alphabet	bible	1.094870974
+146	146	bjk_latn	bjk	latn	alphabet	bible	1.342236749
+147	147	bjn_arab	bjn	arab	abjad	flores	1.6802824097564824
+148	148	bjn_latn	bjn	latn	alphabet	nllb	1.1663940329004197
+149	149	bjp_latn	bjp	latn	alphabet	bible	1.14522868
+150	150	bjr_latn	bjr	latn	alphabet	bible	1.71757217
+151	151	bjv_latn	bjv	latn	alphabet	bible	1.298454892
+152	152	bjz_latn	bjz	latn	alphabet	bible	1.52323604
+153	153	bkd_latn	bkd	latn	alphabet	bible	1.207220406
+154	154	bki_latn	bki	latn	alphabet	bible	1.953226212
+156	156	bkq_latn	bkq	latn	alphabet	bible	1.635160339
+158	158	blr_latn	blr	latn	alphabet	bible	1.457891248
+159	159	blt_latn	blt	latn	alphabet	bible	2.145489246
+161	161	blw_latn	blw	latn	alphabet	bible	1.557463829
+162	162	blx_latn	blx	latn	alphabet	bible	1.210461475
+163	163	blz_latn	blz	latn	alphabet	bible	1.31117003
+164	164	bmh_latn	bmh	latn	alphabet	bible	1.319873831
+165	165	bmo_latn	bmo	latn	alphabet	bible	1.289069964
+166	166	bmr_latn	bmr	latn	alphabet	bible	1.255431876
+167	167	bmu_latn	bmu	latn	alphabet	bible	1.687019725
+168	168	bno_latn	bno	latn	alphabet	bible	1.401492537
+169	169	bnp_latn	bnp	latn	alphabet	bible	1.179531896
+170	170	boa_latn	boa	latn	alphabet	bible	1.604850175
+171	171	bod_tibt	bod	tibt	abugida	nllb	2.616914857091409
+172	172	boj_latn	boj	latn	alphabet	bible	1.497821764
+173	173	bon_latn	bon	latn	alphabet	bible	1.552981646
+174	174	bor_latn	bor	latn	alphabet	bible	1.777118237
+176	176	bos_latn	bos	latn	alphabet	nllb	0.9699882939008851
+177	177	bov_latn	bov	latn	alphabet	bible	1.186919156
+178	178	box_latn	box	latn	alphabet	bible	1.607517542
+179	179	bpr_latn	bpr	latn	alphabet	bible	1.114708235
+180	180	bps_latn	bps	latn	alphabet	bible	1.105039885
+181	181	bqc_latn	bqc	latn	alphabet	bible	0.976139974
+182	182	bqj_latn	bqj	latn	alphabet	bible	1.07267491
+183	183	bqp_latn	bqp	latn	alphabet	bible	1.011183744
+185	185	bre_latn	bre	latn	alphabet	bible	1.01282485
+187	187	bru_latn	bru	latn	alphabet	bible	1.432764965
+188	188	bsc_latn	bsc	latn	alphabet	bible	1.233455235
+189	189	bsj_latn	bsj	latn	alphabet	bible	0.687645997
+190	190	bsn_latn	bsn	latn	alphabet	bible	1.908568947
+192	192	bss_latn	bss	latn	alphabet	bible	1.589474526
+194	194	bug_latn	bug	latn	alphabet	nllb	1.2278602502359812
+195	195	buk_latn	buk	latn	alphabet	bible	1.322353775
+196	196	bul_cyrl	bul	cyrl	alphabet	nllb	1.812315686359768
+197	197	bus_latn	bus	latn	alphabet	bible	1.024221161
+198	198	bvd_latn	bvd	latn	alphabet	bible	1.614701378
+199	199	bvr_latn	bvr	latn	alphabet	bible	2.064832804
+200	200	bwo_latn	bwo	latn	alphabet	bible	1.020941236
+201	201	bwu_latn	bwu	latn	alphabet	bible	1.33699344
+202	202	byr_latn	byr	latn	alphabet	bible	1.905983863
+203	203	byx_latn	byx	latn	alphabet	bible	1.750899408
+205	205	bzd_latn	bzd	latn	alphabet	bible	1.353377066
+206	206	bzh_latn	bzh	latn	alphabet	bible	1.356307284
+207	207	bzi_thai	bzi	thai	abugida	bible	3.705172453
+208	208	caa_latn	caa	latn	alphabet	bible	1.82887934
+209	209	cab_latn	cab	latn	alphabet	bible	1.361783731
+210	210	cac_latn	cac	latn	alphabet	bible	1.429992457
+211	211	caf_latn	caf	latn	alphabet	bible	1.363054559
+212	212	cak_latn	cak	latn	alphabet	bible	1.82231949
+213	213	cam_latn	cam	latn	alphabet	bible	1.28308153
+214	214	cao_latn	cao	latn	alphabet	bible	1.418806427
+215	215	cap_latn	cap	latn	alphabet	bible	1.67787022
+216	216	car_latn	car	latn	alphabet	bible	1.212760851
+217	217	cat_latn	cat	latn	alphabet	nllb	1.0926220791566008
+218	218	cav_latn	cav	latn	alphabet	bible	1.81569107
+219	219	cax_latn	cax	latn	alphabet	bible	1.441953327
+220	220	cbc_latn	cbc	latn	alphabet	bible	2.195497246
+221	221	cbi_latn	cbi	latn	alphabet	bible	1.348053759
+222	222	cbk_latn	cbk	latn	alphabet	bible	1.455178167
+223	223	cbr_latn	cbr	latn	alphabet	bible	1.663223698
+224	224	cbs_latn	cbs	latn	alphabet	bible	1.378450778
+225	225	cbt_latn	cbt	latn	alphabet	bible	1.520714955
+226	226	cbu_latn	cbu	latn	alphabet	bible	1.629889603
+227	227	cbv_latn	cbv	latn	alphabet	bible	1.989972801
+228	228	cco_latn	cco	latn	alphabet	bible	2.631452995
+230	230	ceb_latn	ceb	latn	alphabet	nllb	1.1133803331397114
+231	231	cek_latn	cek	latn	alphabet	bible	1.164782519
+232	232	ces_latn	ces	latn	alphabet	nllb	1.0358492137639643
+233	233	cgc_latn	cgc	latn	alphabet	bible	1.465406505
+234	234	cha_latn	cha	latn	alphabet	bible	1.005929007
+235	235	chd_latn	chd	latn	alphabet	bible	1.383250669
+236	236	chf_latn	chf	latn	alphabet	bible	1.352122237
+238	238	chk_latn	chk	latn	alphabet	bible	1.162135723
+240	240	chq_latn	chq	latn	alphabet	bible	1.535238052
+241	241	chz_latn	chz	latn	alphabet	bible	1.9199904
+244	244	cje_latn	cje	latn	alphabet	bible	1.61054833
+245	245	cjk_latn	cjk	latn	alphabet	nllb	1.1703500752606104
+246	246	cjo_latn	cjo	latn	alphabet	bible	1.661662591
+247	247	cjv_latn	cjv	latn	alphabet	bible	1.467756166
+248	248	ckb_arab	ckb	arab	abjad	nllb	1.651286029479276
+249	249	cko_latn	cko	latn	alphabet	bible	1.25332221
+250	250	cle_latn	cle	latn	alphabet	bible	2.256951841
+252	252	clu_latn	clu	latn	alphabet	bible	1.34051336
+253	253	cme_latn	cme	latn	alphabet	bible	1.257696967
+254	254	cmn_hans	cmn	hans	logography	bible	0.825935407
+255	255	cmn_hant	cmn	hant	logography	bible	0.826207401
+256	256	cmo_khmr	cmo	khmr	abugida	bible	3.902383946
+257	257	cmo_latn	cmo	latn	alphabet	bible	1.615725355
+258	258	cni_latn	cni	latn	alphabet	bible	1.404269617
+259	259	cnl_latn	cnl	latn	alphabet	bible	2.15867523
+260	260	cnt_latn	cnt	latn	alphabet	bible	1.985593472
+261	261	coe_latn	coe	latn	alphabet	bible	1.824925145
+262	262	cof_latn	cof	latn	alphabet	bible	1.472373203
+264	264	cok_latn	cok	latn	alphabet	bible	2.194162419
+265	265	con_latn	con	latn	alphabet	bible	1.25011314
+266	266	cop_copt	cop	copt	alphabet	bible	2.137464287
+267	267	cot_latn	cot	latn	alphabet	bible	1.756531279
+268	268	cou_latn	cou	latn	alphabet	bible	1.137478001
+269	269	cpa_latn	cpa	latn	alphabet	bible	1.764752806
+270	270	cpb_latn	cpb	latn	alphabet	bible	1.225128568
+271	271	cpc_latn	cpc	latn	alphabet	bible	1.229322758
+273	273	cpu_latn	cpu	latn	alphabet	bible	1.278553633
+274	274	crh_latn	crh	latn	alphabet	nllb	1.3120890335268462
+275	275	crj_cans	crj	cans	abugida	bible	2.443073301
+276	276	crl_cans	crl	cans	abugida	bible	2.600738269
+277	277	crn_latn	crn	latn	alphabet	bible	2.661317456
+279	279	crx_latn	crx	latn	alphabet	bible	1.361374597
+281	281	cso_latn	cso	latn	alphabet	bible	2.296710932
+282	282	csy_latn	csy	latn	alphabet	bible	1.056389568
+283	283	cta_latn	cta	latn	alphabet	bible	2.345461818
+284	284	cth_latn	cth	latn	alphabet	bible	1.103364495
+285	285	ctp_latn	ctp	latn	alphabet	bible	2.204445613
+286	286	ctu_latn	ctu	latn	alphabet	bible	1.548170328
+287	287	cub_latn	cub	latn	alphabet	bible	1.779392471
+288	288	cuc_latn	cuc	latn	alphabet	bible	1.758112957
+289	289	cui_latn	cui	latn	alphabet	bible	2.207405545
+290	290	cuk_latn	cuk	latn	alphabet	bible	1.313505977
+291	291	cul_latn	cul	latn	alphabet	bible	2.035267765
+292	292	cut_latn	cut	latn	alphabet	bible	1.408136957
+293	293	cux_latn	cux	latn	alphabet	bible	1.969431556
+294	294	cwe_latn	cwe	latn	alphabet	bible	1.03854769
+295	295	cya_latn	cya	latn	alphabet	bible	1.283022102
+296	296	cym_latn	cym	latn	alphabet	nllb	1.026556847544437
+298	298	daa_latn	daa	latn	alphabet	bible	1.153978195
+299	299	dad_latn	dad	latn	alphabet	bible	1.069127563
+300	300	daf_latn	daf	latn	alphabet	bible	2.131939841
+302	302	dah_latn	dah	latn	alphabet	bible	1.541128203
+303	303	dan_latn	dan	latn	alphabet	nllb	1.021065782715664
+304	304	dao_latn	dao	latn	alphabet	bible	1.048757743
+305	305	ded_latn	ded	latn	alphabet	bible	1.164485383
+307	307	des_latn	des	latn	alphabet	bible	1.60089598
+308	308	deu_latn	deu	latn	alphabet	nllb	1.053648017719111
+310	310	dgc_latn	dgc	latn	alphabet	bible	1.274101163
+311	311	dgr_latn	dgr	latn	alphabet	bible	1.444737263
+312	312	dgz_latn	dgz	latn	alphabet	bible	1.227818793
+313	313	did_latn	did	latn	alphabet	bible	1.515572215
+314	314	dif_latn	dif	latn	alphabet	bible	1.238282554
+315	315	dig_latn	dig	latn	alphabet	bible	1.05197824
+316	316	dik_latn	dik	latn	alphabet	nllb	1.1238394262950504
+317	317	diq_latn	diq	latn	alphabet	nllb	0.9584231474098696
+318	318	djk_latn	djk	latn	alphabet	bible	1.403510777
+319	319	djr_latn	djr	latn	alphabet	bible	2.670320678
+320	320	dnj_latn	dnj	latn	alphabet	bible	1.859166648
+322	322	dob_latn	dob	latn	alphabet	bible	1.466231629
+323	323	dov_latn	dov	latn	alphabet	bible	0.989047107
+324	324	dso_orya	dso	orya	abugida	bible	3.006134717
+325	325	dud_latn	dud	latn	alphabet	bible	1.498276611
+326	326	due_latn	due	latn	alphabet	bible	1.304834175
+328	328	duo_latn	duo	latn	alphabet	bible	1.423887454
+330	330	dwr_latn	dwr	latn	alphabet	bible	1.156193001
+331	331	dwr_ethi	dwr	ethi	abugida	bible	1.475749126
+332	332	dww_latn	dww	latn	alphabet	bible	1.379753606
+333	333	dyi_latn	dyi	latn	alphabet	bible	1.359226075
+335	335	dyu_latn	dyu	latn	alphabet	nllb	1.1544585496865851
+336	336	dzo_tibt	dzo	tibt	abugida	nllb	3.261842241300754
+337	337	ebk_latn	ebk	latn	alphabet	bible	1.311464881
+339	339	ekk_latn	ekk	latn	alphabet	bible	0.993591004
+340	340	eko_latn	eko	latn	alphabet	bible	1.063822541
+341	341	ell_grek	ell	grek	alphabet	nllb	1.967262374776928
+342	342	emi_latn	emi	latn	alphabet	bible	1.326659962
+344	344	emp_latn	emp	latn	alphabet	bible	1.370585815
+345	345	ena_latn	ena	latn	alphabet	bible	2.267600741
+346	346	eng_latn	eng	latn	alphabet	nllb	1.0
+347	347	enq_latn	enq	latn	alphabet	bible	1.438529405
+348	348	epo_latn	epo	latn	alphabet	nllb	0.9954937917041212
+349	349	eri_latn	eri	latn	alphabet	bible	1.49150648
+350	350	ese_latn	ese	latn	alphabet	bible	2.03681973
+352	352	esk_latn	esk	latn	alphabet	bible	1.207151837
+353	353	est_latn	est	latn	alphabet	nllb	0.9677856418807884
+354	354	eus_latn	eus	latn	alphabet	flores	1.059583722893931
+355	355	ewe_latn	ewe	latn	alphabet	nllb	1.0782577439512633
+356	356	faa_latn	faa	latn	alphabet	bible	1.675890837
+358	358	fai_latn	fai	latn	alphabet	bible	1.458019245
+360	360	fao_latn	fao	latn	alphabet	nllb	1.1556443586858938
+361	361	far_latn	far	latn	alphabet	bible	1.456149574
+362	362	ffm_latn	ffm	latn	alphabet	bible	0.962222578
+363	363	fij_latn	fij	latn	alphabet	nllb	1.210673555897163
+364	364	fin_latn	fin	latn	alphabet	nllb	1.0588643901040704
+366	366	flr_latn	flr	latn	alphabet	bible	1.241960184
+368	368	fon_latn	fon	latn	alphabet	nllb	1.5411912488252535
+369	369	for_latn	for	latn	alphabet	bible	1.27837078
+370	370	fra_latn	fra	latn	alphabet	nllb	1.1739790347939143
+371	371	frd_latn	frd	latn	alphabet	bible	1.3762634
+375	375	fuf_latn	fuf	latn	alphabet	bible	1.042364746
+376	376	fuh_latn	fuh	latn	alphabet	bible	1.029571895
+378	378	fur_latn	fur	latn	alphabet	nllb	1.0672691667245908
+379	379	fuv_arab	fuv	arab	abjad	bible	1.964099106
+380	380	fuv_latn	fuv	latn	alphabet	nllb	1.110831498113359
+383	383	gah_latn	gah	latn	alphabet	bible	1.496886928
+384	384	gai_latn	gai	latn	alphabet	bible	1.635224338
+385	385	gam_latn	gam	latn	alphabet	bible	1.184715778
+386	386	gaq_orya	gaq	orya	abugida	bible	3.335686041
+387	387	gaw_latn	gaw	latn	alphabet	bible	1.456791845
+389	389	gaz_latn	gaz	latn	alphabet	nllb	1.332217666352576
+390	390	gde_latn	gde	latn	alphabet	bible	1.39632237
+391	391	gdg_latn	gdg	latn	alphabet	bible	1.223016617
+392	392	gdn_latn	gdn	latn	alphabet	bible	1.824417728
+393	393	gdr_latn	gdr	latn	alphabet	bible	1.651514251
+394	394	geb_latn	geb	latn	alphabet	bible	1.694386414
+397	397	gfk_latn	gfk	latn	alphabet	bible	1.371998354
+398	398	ghs_latn	ghs	latn	alphabet	bible	1.218669288
+400	400	gla_latn	gla	latn	alphabet	nllb	0.9936126744047278
+401	401	gle_latn	gle	latn	alphabet	nllb	1.9758756564605164
+402	402	glg_latn	glg	latn	alphabet	nllb	1.059078607269843
+405	405	gmv_ethi	gmv	ethi	abugida	bible	1.373756028
+406	406	gmv_latn	gmv	latn	alphabet	bible	0.970871523
+407	407	gng_latn	gng	latn	alphabet	bible	1.168627003
+408	408	gnn_latn	gnn	latn	alphabet	bible	2.870096684
+409	409	gnw_latn	gnw	latn	alphabet	bible	1.287394574
+410	410	gof_ethi	gof	ethi	abugida	bible	1.352241092
+411	411	gof_latn	gof	latn	alphabet	bible	0.9799936
+412	412	gqr_latn	gqr	latn	alphabet	bible	1.350193138
+413	413	grc_grek	grc	grek	alphabet	bible	1.76699504
+414	414	gri_latn	gri	latn	alphabet	bible	1.441311056
+416	416	grn_latn	grn	latn	alphabet	nllb	0.992314188
+418	418	gub_latn	gub	latn	alphabet	bible	1.714577953
+419	419	guc_latn	guc	latn	alphabet	bible	1.823976595
+420	420	guh_latn	guh	latn	alphabet	bible	2.338341981
+421	421	gui_latn	gui	latn	alphabet	bible	1.269168705
+422	422	guj_gujr	guj	gujr	abugida	nllb	2.162862919235561
+423	423	gul_latn	gul	latn	alphabet	bible	1.189881374
+424	424	gum_latn	gum	latn	alphabet	bible	1.442243606
+425	425	gun_latn	gun	latn	alphabet	bible	1.109206647
+426	426	guo_latn	guo	latn	alphabet	bible	1.738117986
+427	427	gup_latn	gup	latn	alphabet	bible	1.700882266
+428	428	gux_latn	gux	latn	alphabet	bible	0.988564833
+429	429	gvc_latn	gvc	latn	alphabet	bible	1.608582661
+430	430	gvf_latn	gvf	latn	alphabet	bible	1.34900688
+431	431	gvn_latn	gvn	latn	alphabet	bible	1.464604238
+432	432	gvr_deva	gvr	deva	abugida	bible	2.755669585
+433	433	gvs_latn	gvs	latn	alphabet	bible	1.361207744
+434	434	gwi_latn	gwi	latn	alphabet	bible	1.49886174
+435	435	gwr_latn	gwr	latn	alphabet	bible	1.268286439
+436	436	gym_latn	gym	latn	alphabet	bible	1.896043519
+437	437	gyr_latn	gyr	latn	alphabet	bible	1.282994674
+439	439	hat_latn	hat	latn	alphabet	nllb	0.9657950702301386
+440	440	hau_latn	hau	latn	alphabet	nllb	1.1765294417859935
+441	441	haw_latn	haw	latn	alphabet	bible	1.114669379
+442	442	hch_latn	hch	latn	alphabet	bible	1.280574158
+444	444	heb_hebr	heb	hebr	abjad	nllb	1.3554771831483516
+445	445	heg_latn	heg	latn	alphabet	bible	1.494340701
+447	447	hin_deva	hin	deva	abugida	nllb	2.370151127506105
+448	448	hix_latn	hix	latn	alphabet	bible	2.224719435
+449	449	hla_latn	hla	latn	alphabet	bible	1.409375786
+450	450	hlt_latn	hlt	latn	alphabet	bible	1.047852621
+451	451	hmo_latn	hmo	latn	alphabet	bible	1.311302599
+454	454	hne_deva	hne	deva	abugida	nllb	2.1654107015509894
+457	457	hns_latn	hns	latn	alphabet	bible	1.190112226
+458	458	hop_latn	hop	latn	alphabet	bible	1.222847478
+459	459	hot_latn	hot	latn	alphabet	bible	1.314911659
+460	460	hoy_deva	hoy	deva	abugida	bible	2.565376791
+461	461	hre_latn	hre	latn	alphabet	bible	1.083881511
+462	462	hrv_latn	hrv	latn	alphabet	nllb	0.989672823
+463	463	hto_latn	hto	latn	alphabet	bible	1.464649951
+464	464	hub_latn	hub	latn	alphabet	bible	1.353050216
+465	465	hui_latn	hui	latn	alphabet	bible	1.405387305
+466	466	hun_latn	hun	latn	alphabet	nllb	1.0199553495865443
+467	467	hus_latn	hus	latn	alphabet	bible	1.60400448
+468	468	huu_latn	huu	latn	alphabet	bible	1.37724852
+469	469	huv_latn	huv	latn	alphabet	bible	1.370510388
+471	471	hwc_latn	hwc	latn	alphabet	bible	1.194105278
+473	473	hye_armn	hye	armn	alphabet	nllb	1.7242264918820087
+474	474	ian_latn	ian	latn	alphabet	bible	1.434534068
+476	476	ibl_latn	ibl	latn	alphabet	bible	1.572169779
+477	477	ibo_latn	ibo	latn	alphabet	nllb	1.3450209683801222
+479	479	ifa_latn	ifa	latn	alphabet	bible	1.226774245
+480	480	ifb_latn	ifb	latn	alphabet	bible	1.268318438
+481	481	ifk_latn	ifk	latn	alphabet	bible	1.138136271
+482	482	ifu_latn	ifu	latn	alphabet	bible	1.374636008
+483	483	ify_latn	ify	latn	alphabet	bible	1.263445407
+484	484	ign_latn	ign	latn	alphabet	bible	1.892009326
+486	486	ikk_latn	ikk	latn	alphabet	bible	1.353598775
+487	487	ikw_latn	ikw	latn	alphabet	bible	1.087803707
+488	488	ilo_latn	ilo	latn	alphabet	nllb	1.076508439815689
+489	489	imo_latn	imo	latn	alphabet	bible	1.703780485
+490	490	inb_latn	inb	latn	alphabet	bible	1.55175196
+491	491	ind_latn	ind	latn	alphabet	nllb	1.1787462375711268
+492	492	ino_latn	ino	latn	alphabet	bible	1.694317844
+494	494	iou_latn	iou	latn	alphabet	bible	1.594123563
+495	495	ipi_latn	ipi	latn	alphabet	bible	1.949781719
+496	496	iqw_latn	iqw	latn	alphabet	bible	1.405988435
+497	497	isd_latn	isd	latn	alphabet	bible	1.391897328
+498	498	isl_latn	isl	latn	alphabet	nllb	1.154319144908522
+499	499	isn_latn	isn	latn	alphabet	bible	0.992285891
+500	500	ita_latn	ita	latn	alphabet	nllb	1.0668869315487413
+502	502	ivb_latn	ivb	latn	alphabet	bible	1.375458847
+503	503	ivv_latn	ivv	latn	alphabet	bible	1.172320633
+504	504	iws_latn	iws	latn	alphabet	bible	2.104932459
+505	505	ixl_latn	ixl	latn	alphabet	bible	1.51161802
+506	506	izz_latn	izz	latn	alphabet	bible	1.380336449
+507	507	jaa_latn	jaa	latn	alphabet	bible	1.258270668
+508	508	jac_latn	jac	latn	alphabet	bible	1.563216841
+509	509	jae_latn	jae	latn	alphabet	bible	1.18410322
+511	511	jav_latn	jav	latn	alphabet	nllb	1.146845794539677
+512	512	jib_latn	jib	latn	alphabet	bible	1.317599598
+513	513	jic_latn	jic	latn	alphabet	bible	1.719037279
+514	514	jid_latn	jid	latn	alphabet	bible	0.809464927
+515	515	jiv_latn	jiv	latn	alphabet	bible	1.195849238
+516	516	jni_latn	jni	latn	alphabet	bible	0.886729446
+517	517	jpn_jpan	jpn	jpan	logography	nllb	1.3219738990997911
+518	518	juy_orya	juy	orya	abugida	bible	3.679893031
+519	519	jvn_latn	jvn	latn	alphabet	bible	1.30806153
+520	520	kab_latn	kab	latn	alphabet	nllb	1.028599140742541
+521	521	kac_latn	kac	latn	alphabet	nllb	1.3454699726782613
+522	522	kam_latn	kam	latn	alphabet	nllb	1.2175998666848171
+523	523	kan_knda	kan	knda	abugida	nllb	2.641985281915802
+524	524	kaq_latn	kaq	latn	alphabet	bible	1.221220086
+525	525	kas_arab	kas	arab	abjad	nllb	1.776246005627557
+526	526	kas_deva	kas	deva	abugida	nllb	2.525878378660914
+528	528	kat_geor	kat	geor	alphabet	nllb	4.338956453789541
+529	529	kaz_cyrl	kaz	cyrl	alphabet	nllb	1.7646383919938464
+530	530	kbc_latn	kbc	latn	alphabet	bible	1.770160682
+531	531	kbh_latn	kbh	latn	alphabet	bible	1.654403328
+532	532	kbm_latn	kbm	latn	alphabet	bible	1.56442367
+533	533	kbo_latn	kbo	latn	alphabet	bible	1.918587004
+534	534	kbp_latn	kbp	latn	alphabet	nllb	1.4412095928681132
+535	535	kbq_latn	kbq	latn	alphabet	bible	1.259916345
+536	536	kby_latn	kby	latn	alphabet	bible	0.956065004
+537	537	kdc_latn	kdc	latn	alphabet	bible	1.013142557
+538	538	kde_latn	kde	latn	alphabet	bible	1.227242806
+539	539	kdl_latn	kdl	latn	alphabet	bible	1.161322027
+540	540	kea_latn	kea	latn	alphabet	nllb	0.7816523239752712
+541	541	kek_latn	kek	latn	alphabet	bible	1.44524468
+542	542	ken_latn	ken	latn	alphabet	bible	1.479959315
+543	543	kew_latn	kew	latn	alphabet	bible	1.2431373
+544	544	key_telu	key	telu	abugida	bible	3.443635574
+545	545	kfc_telu	kfc	telu	abugida	bible	3.080898722
+546	546	kfw_latn	kfw	latn	alphabet	bible	1.182436973
+547	547	kgf_latn	kgf	latn	alphabet	bible	1.26549336
+548	548	kgk_latn	kgk	latn	alphabet	bible	1.761939156
+549	549	kgp_latn	kgp	latn	alphabet	bible	1.588135128
+550	550	khk_cyrl	khk	cyrl	alphabet	nllb	1.8018109667236364
+551	551	khm_khmr	khm	khmr	abugida	nllb	3.903484241432965
+552	552	khs_latn	khs	latn	alphabet	bible	1.736070033
+553	553	khz_latn	khz	latn	alphabet	bible	1.23763114
+554	554	kij_latn	kij	latn	alphabet	bible	1.093330438
+555	555	kik_latn	kik	latn	alphabet	nllb	1.2929475605563194
+556	556	kin_latn	kin	latn	alphabet	nllb	1.133982716740138
+557	557	kir_cyrl	kir	cyrl	alphabet	nllb	1.963770708117476
+558	558	kiz_latn	kiz	latn	alphabet	bible	1.103508491
+559	559	kje_latn	kje	latn	alphabet	bible	1.317336747
+560	560	kjl_deva	kjl	deva	abugida	bible	2.633468949
+561	561	kjs_latn	kjs	latn	alphabet	bible	1.308315239
+562	562	kkc_latn	kkc	latn	alphabet	bible	1.523697744
+563	563	kkj_latn	kkj	latn	alphabet	bible	1.46355969
+565	565	klv_latn	klv	latn	alphabet	bible	1.237142008
+566	566	kma_latn	kma	latn	alphabet	bible	1.328502206
+567	567	kmb_latn	kmb	latn	alphabet	nllb	1.1327985679404249
+568	568	kmh_latn	kmh	latn	alphabet	bible	1.582500971
+569	569	kmk_latn	kmk	latn	alphabet	bible	1.221213229
+570	570	kmo_latn	kmo	latn	alphabet	bible	1.257491257
+571	571	kmr_latn	kmr	latn	alphabet	nllb	1.0346195868692576
+572	572	kms_latn	kms	latn	alphabet	bible	1.351815958
+573	573	kmu_latn	kmu	latn	alphabet	bible	1.705691298
+574	574	knb_latn	knb	latn	alphabet	bible	1.158325524
+575	575	knc_arab	knc	arab	abjad	nllb	2.501979619826157
+576	576	knc_latn	knc	latn	alphabet	nllb	1.176891380836928
+577	577	kne_latn	kne	latn	alphabet	bible	1.200057142
+578	578	knf_latn	knf	latn	alphabet	bible	1.014438527
+580	580	knj_latn	knj	latn	alphabet	bible	1.515263651
+581	581	knv_latn	knv	latn	alphabet	bible	1.725421133
+582	582	kog_latn	kog	latn	alphabet	bible	1.650307422
+583	583	kon_latn	kon	latn	alphabet	nllb	1.2309945868268095
+584	584	kor_hang	kor	hang	abugida	nllb	1.2933112044071506
+585	585	kos_latn	kos	latn	alphabet	bible	1.069696693
+586	586	kpf_latn	kpf	latn	alphabet	bible	1.188626546
+587	587	kpg_latn	kpg	latn	alphabet	bible	1.389904231
+589	589	kpj_latn	kpj	latn	alphabet	bible	1.183362666
+590	590	kpr_latn	kpr	latn	alphabet	bible	1.549397728
+591	591	kpw_latn	kpw	latn	alphabet	bible	1.535066627
+592	592	kpx_latn	kpx	latn	alphabet	bible	1.227197093
+593	593	kqc_latn	kqc	latn	alphabet	bible	1.081860986
+594	594	kqe_latn	kqe	latn	alphabet	bible	1.39045279
+595	595	kqf_latn	kqf	latn	alphabet	bible	1.228301067
+597	597	kqp_latn	kqp	latn	alphabet	bible	1.250396562
+599	599	krj_latn	krj	latn	alphabet	bible	1.346648077
+600	600	ksc_latn	ksc	latn	alphabet	bible	1.162768851
+601	601	ksd_latn	ksd	latn	alphabet	bible	1.034940916
+602	602	ksr_latn	ksr	latn	alphabet	bible	1.603327924
+603	603	ktj_latn	ktj	latn	alphabet	bible	2.098018331
+604	604	kto_latn	kto	latn	alphabet	bible	1.477723938
+605	605	kud_latn	kud	latn	alphabet	bible	1.290601358
+606	606	kue_latn	kue	latn	alphabet	bible	1.268460149
+607	607	kup_latn	kup	latn	alphabet	bible	1.600861695
+608	608	kus_latn	kus	latn	alphabet	bible	1.001460538
+609	609	kvg_latn	kvg	latn	alphabet	bible	1.578069073
+610	610	kvn_latn	kvn	latn	alphabet	bible	1.543962424
+611	611	kwd_latn	kwd	latn	alphabet	bible	1.659342644
+612	612	kwf_latn	kwf	latn	alphabet	bible	1.822582341
+613	613	kwi_latn	kwi	latn	alphabet	bible	1.18358209
+614	614	kwj_latn	kwj	latn	alphabet	bible	1.474953715
+615	615	kxf_latn	kxf	latn	alphabet	bible	1.320589244
+616	616	kxv_orya	kxv	orya	abugida	bible	2.919848689
+617	617	kxw_latn	kxw	latn	alphabet	bible	1.614118534
+618	618	kyb_latn	kyb	latn	alphabet	bible	1.234408356
+619	619	kyc_latn	kyc	latn	alphabet	bible	1.39516811
+620	620	kyf_latn	kyf	latn	alphabet	bible	1.274738863
+621	621	kyg_latn	kyg	latn	alphabet	bible	1.774521725
+622	622	kyq_latn	kyq	latn	alphabet	bible	1.419402985
+623	623	kyu_latn	kyu	latn	alphabet	bible	1.830593586
+624	624	kyz_latn	kyz	latn	alphabet	bible	2.115871637
+625	625	kze_latn	kze	latn	alphabet	bible	1.451900528
+626	626	lac_latn	lac	latn	alphabet	bible	1.660058056
+627	627	lao_laoo	lao	laoo	abugida	nllb	2.706914388421753
+628	628	lat_latn	lat	latn	alphabet	bible	0.87538342
+629	629	lbb_latn	lbb	latn	alphabet	bible	1.188281411
+630	630	lbj_tibt	lbj	tibt	abugida	bible	3.277362803
+631	631	lbk_latn	lbk	latn	alphabet	bible	1.234710064
+632	632	lbm_deva	lbm	deva	abugida	bible	2.312029439
+633	633	lcm_latn	lcm	latn	alphabet	bible	1.191389911
+634	634	lcp_thai	lcp	thai	abugida	bible	2.85448104
+635	635	leu_latn	leu	latn	alphabet	bible	1.243962424
+636	636	lex_latn	lex	latn	alphabet	bible	1.542451601
+637	637	lgl_latn	lgl	latn	alphabet	bible	1.436570593
+638	638	lhi_latn	lhi	latn	alphabet	bible	1.700470846
+640	640	lid_latn	lid	latn	alphabet	bible	1.356247857
+641	641	lif_deva	lif	deva	abugida	bible	4.170354963
+642	642	lij_latn	lij	latn	alphabet	nllb	1.1437590099547033
+643	643	lik_latn	lik	latn	alphabet	bible	1.366211058
+644	644	lim_latn	lim	latn	alphabet	nllb	0.997886276
+645	645	lin_latn	lin	latn	alphabet	nllb	1.139208007510617
+646	646	lip_latn	lip	latn	alphabet	bible	1.304909602
+647	647	lit_latn	lit	latn	alphabet	nllb	1.0300368409499985
+648	648	llg_latn	llg	latn	alphabet	bible	1.563267125
+649	649	llu_latn	llu	latn	alphabet	bible	1.460147197
+650	650	lmd_latn	lmd	latn	alphabet	bible	1.201983955
+651	651	lmo_latn	lmo	latn	alphabet	nllb	0.9431924587006828
+652	652	log_latn	log	latn	alphabet	bible	1.950789696
+653	653	loq_latn	loq	latn	alphabet	bible	1.157196407
+655	655	lro_latn	lro	latn	alphabet	bible	1.293097301
+656	656	ltg_latn	ltg	latn	alphabet	nllb	1.0027700050507735
+658	658	ltz_latn	ltz	latn	alphabet	nllb	1.225348992685224
+659	659	lua_latn	lua	latn	alphabet	nllb	1.185565667976414
+661	661	luc_latn	luc	latn	alphabet	bible	1.794834404
+663	663	lug_latn	lug	latn	alphabet	nllb	1.217417428
+664	664	luo_latn	luo	latn	alphabet	nllb	1.0357451540464786
+665	665	lus_latn	lus	latn	alphabet	nllb	1.1688425472886843
+667	667	lvs_latn	lvs	latn	alphabet	nllb	1.206980036
+668	668	lwo_latn	lwo	latn	alphabet	bible	1.376101118
+669	669	lww_latn	lww	latn	alphabet	bible	1.857994103
+670	670	maa_latn	maa	latn	alphabet	bible	1.639267674
+671	671	mag_deva	mag	deva	abugida	nllb	2.5554038464242543
+672	672	mai_deva	mai	deva	abugida	nllb	2.3898097104159657
+673	673	maj_latn	maj	latn	alphabet	bible	1.444120134
+674	674	mal_mlym	mal	mlym	abugida	nllb	2.8848685273912205
+675	675	mam_latn	mam	latn	alphabet	bible	1.34382757
+677	677	maq_latn	maq	latn	alphabet	bible	1.662928847
+678	678	mar_deva	mar	deva	abugida	nllb	2.4793565269429387
+679	679	mau_latn	mau	latn	alphabet	bible	1.711021462
+680	680	mav_latn	mav	latn	alphabet	bible	2.406555279
+681	681	maz_latn	maz	latn	alphabet	bible	1.542437887
+682	682	mbc_latn	mbc	latn	alphabet	bible	1.850913122
+683	683	mbd_latn	mbd	latn	alphabet	bible	1.515572215
+685	685	mbh_latn	mbh	latn	alphabet	bible	1.397172636
+686	686	mbi_latn	mbi	latn	alphabet	bible	1.613352838
+687	687	mbj_latn	mbj	latn	alphabet	bible	1.628511348
+688	688	mbl_latn	mbl	latn	alphabet	bible	1.37669539
+689	689	mbs_latn	mbs	latn	alphabet	bible	1.382562684
+690	690	mbt_latn	mbt	latn	alphabet	bible	1.309133506
+691	691	mca_latn	mca	latn	alphabet	bible	1.524328587
+692	692	mcb_latn	mcb	latn	alphabet	bible	1.558099243
+693	693	mcd_latn	mcd	latn	alphabet	bible	1.479527325
+694	694	mcf_latn	mcf	latn	alphabet	bible	1.682958104
+695	695	mco_latn	mco	latn	alphabet	bible	1.552517657
+696	696	mcp_latn	mcp	latn	alphabet	bible	1.515894494
+697	697	mcq_latn	mcq	latn	alphabet	bible	1.294742977
+698	698	mcr_latn	mcr	latn	alphabet	bible	1.717921876
+699	699	mcu_latn	mcu	latn	alphabet	bible	1.400735983
+700	700	mdm_latn	mdm	latn	alphabet	bible	1.43485406
+701	701	mdy_ethi	mdy	ethi	abugida	bible	1.627784508
+702	702	med_latn	med	latn	alphabet	bible	1.520920665
+703	703	mee_latn	mee	latn	alphabet	bible	1.53067587
+704	704	mek_latn	mek	latn	alphabet	bible	1.476754817
+705	705	meq_latn	meq	latn	alphabet	bible	1.495593244
+706	706	met_latn	met	latn	alphabet	bible	1.154229618
+707	707	meu_latn	meu	latn	alphabet	bible	1.026417682
+709	709	mfh_latn	mfh	latn	alphabet	bible	1.408498091
+710	710	mfi_latn	mfi	latn	alphabet	bible	1.43847912
+711	711	mfy_latn	mfy	latn	alphabet	bible	1.261584878
+712	712	mge_latn	mge	latn	alphabet	bible	1.42411602
+713	713	mgh_latn	mgh	latn	alphabet	bible	1.113355123
+714	714	mgq_latn	mgq	latn	alphabet	bible	1.419030422
+716	716	mhl_latn	mhl	latn	alphabet	bible	1.490635643
+718	718	mib_latn	mib	latn	alphabet	bible	1.496914356
+719	719	mic_latn	mic	latn	alphabet	bible	1.274023451
+720	720	mie_latn	mie	latn	alphabet	bible	1.580498731
+721	721	mif_latn	mif	latn	alphabet	bible	1.47519371
+722	722	mig_latn	mig	latn	alphabet	bible	1.552099381
+723	723	mih_latn	mih	latn	alphabet	bible	1.35724212
+724	724	mil_latn	mil	latn	alphabet	bible	2.364638523
+725	725	mim_latn	mim	latn	alphabet	bible	2.24919659
+726	726	min_arab	min	arab	abjad	flores	1.7377090156527837
+727	727	min_latn	min	latn	alphabet	nllb	0.949751483
+728	728	mio_latn	mio	latn	alphabet	bible	1.448460607
+730	730	mir_latn	mir	latn	alphabet	bible	1.72913762
+731	731	mit_latn	mit	latn	alphabet	bible	1.771184659
+732	732	miy_latn	miy	latn	alphabet	bible	2.397030925
+733	733	miz_latn	miz	latn	alphabet	bible	1.52074924
+734	734	mjc_latn	mjc	latn	alphabet	bible	1.614287673
+735	735	mkd_cyrl	mkd	cyrl	alphabet	nllb	1.8349867544816043
+736	736	mkj_latn	mkj	latn	alphabet	bible	1.108228383
+737	737	mkl_latn	mkl	latn	alphabet	bible	1.248789742
+738	738	mkn_latn	mkn	latn	alphabet	bible	1.553937053
+739	739	mks_latn	mks	latn	alphabet	bible	2.102770222
+740	740	mle_latn	mle	latn	alphabet	bible	1.438600261
+741	741	mlh_latn	mlh	latn	alphabet	bible	1.490635643
+744	744	mlp_latn	mlp	latn	alphabet	bible	1.475157139
+746	746	mlt_latn	mlt	latn	alphabet	nllb	1.0884666702096777
+747	747	mmn_latn	mmn	latn	alphabet	bible	1.50555873
+748	748	mmo_latn	mmo	latn	alphabet	bible	1.440051656
+749	749	mmx_latn	mmx	latn	alphabet	bible	1.353020502
+750	750	mna_latn	mna	latn	alphabet	bible	1.330186739
+752	752	mni_beng	mni	beng	abugida	nllb	3.0106582910310027
+753	753	mni_latn	mni	latn	alphabet	bible	1.308123243
+754	754	mnv_latn	mnv	latn	alphabet	bible	1.474802862
+755	755	moa_latn	moa	latn	alphabet	bible	1.908959795
+756	756	mop_latn	mop	latn	alphabet	bible	1.607791822
+757	757	mos_latn	mos	latn	alphabet	nllb	1.1412929250293602
+758	758	mox_latn	mox	latn	alphabet	bible	1.417841878
+759	759	moz_latn	moz	latn	alphabet	bible	1.365559644
+760	760	mpm_latn	mpm	latn	alphabet	bible	1.618676145
+761	761	mpp_latn	mpp	latn	alphabet	bible	1.381250714
+762	762	mps_latn	mps	latn	alphabet	bible	1.804393042
+763	763	mpt_latn	mpt	latn	alphabet	bible	1.452739366
+765	765	mpx_latn	mpx	latn	alphabet	bible	1.221620077
+766	766	mqb_latn	mqb	latn	alphabet	bible	1.511750589
+767	767	mqj_latn	mqj	latn	alphabet	bible	1.192034468
+768	768	mri_latn	mri	latn	alphabet	nllb	1.1825430833009296
+769	769	mrr_deva	mrr	deva	abugida	bible	3.176416539
+770	770	msb_latn	msb	latn	alphabet	bible	1.195124683
+771	771	msk_latn	msk	latn	alphabet	bible	1.541128203
+772	772	msm_latn	msm	latn	alphabet	bible	1.261285456
+773	773	msy_latn	msy	latn	alphabet	bible	1.401195401
+774	774	mta_latn	mta	latn	alphabet	bible	1.42411602
+775	775	mti_latn	mti	latn	alphabet	bible	1.007832964
+776	776	mto_latn	mto	latn	alphabet	bible	2.132655254
+777	777	muh_latn	muh	latn	alphabet	bible	1.868005303
+778	778	mur_latn	mur	latn	alphabet	bible	1.254878746
+779	779	mux_latn	mux	latn	alphabet	bible	2.081476995
+780	780	muy_latn	muy	latn	alphabet	bible	1.523876026
+781	781	mva_latn	mva	latn	alphabet	bible	1.36827044
+782	782	mvn_latn	mvn	latn	alphabet	bible	1.606045576
+783	783	mwe_latn	mwe	latn	alphabet	bible	1.168661288
+784	784	mwp_latn	mwp	latn	alphabet	bible	1.579024479
+785	785	mxb_latn	mxb	latn	alphabet	bible	1.915160796
+786	786	mxp_latn	mxp	latn	alphabet	bible	1.857399831
+787	787	mxq_latn	mxq	latn	alphabet	bible	1.527725081
+788	788	mxt_latn	mxt	latn	alphabet	bible	1.495872094
+789	789	mxv_latn	mxv	latn	alphabet	bible	1.43485406
+790	790	mya_mymr	mya	mymr	abugida	nllb	5.104191513
+791	791	myk_latn	myk	latn	alphabet	bible	1.251539393
+792	792	myu_latn	myu	latn	alphabet	bible	1.665625929
+793	793	myw_latn	myw	latn	alphabet	bible	1.088800256
+794	794	myy_latn	myy	latn	alphabet	bible	1.690402505
+795	795	mza_latn	mza	latn	alphabet	bible	1.638031131
+797	797	nab_latn	nab	latn	alphabet	bible	3.325153711
+798	798	naf_latn	naf	latn	alphabet	bible	1.506811273
+799	799	nag_latn	nag	latn	alphabet	bible	1.154650179
+800	800	nak_latn	nak	latn	alphabet	bible	1.737100866
+801	801	nas_latn	nas	latn	alphabet	bible	1.518372151
+802	802	naw_latn	naw	latn	alphabet	bible	1.418061301
+804	804	nca_latn	nca	latn	alphabet	bible	1.307878677
+805	805	nch_latn	nch	latn	alphabet	bible	1.47267491
+806	806	ncj_latn	ncj	latn	alphabet	bible	1.316655619
+807	807	ncl_latn	ncl	latn	alphabet	bible	1.670046399
+808	808	ncq_laoo	ncq	laoo	abugida	bible	3.191403625
+809	809	ncu_latn	ncu	latn	alphabet	bible	1.93524948
+810	810	nde_latn	nde	latn	alphabet	bible	0.969100135
+811	811	ndg_latn	ndg	latn	alphabet	bible	0.952204521
+812	812	ndh_latn	ndh	latn	alphabet	bible	1.511112889
+813	813	ndj_latn	ndj	latn	alphabet	bible	1.041612763
+814	814	ndz_latn	ndz	latn	alphabet	bible	1.886475738
+816	816	new_deva	new	deva	abugida	bible	2.561603163
+817	817	nfa_latn	nfa	latn	alphabet	bible	1.636191173
+818	818	ngp_latn	ngp	latn	alphabet	bible	1.038757971
+819	819	ngu_latn	ngu	latn	alphabet	bible	1.435018628
+820	820	nhe_latn	nhe	latn	alphabet	bible	1.492247034
+821	821	nhg_latn	nhg	latn	alphabet	bible	1.295716669
+822	822	nhi_latn	nhi	latn	alphabet	bible	1.281600421
+824	824	nho_latn	nho	latn	alphabet	bible	1.749050307
+825	825	nhr_latn	nhr	latn	alphabet	bible	1.421199515
+826	826	nhu_latn	nhu	latn	alphabet	bible	1.327165093
+827	827	nhw_latn	nhw	latn	alphabet	bible	1.51142831
+828	828	nhx_latn	nhx	latn	alphabet	bible	1.315942493
+829	829	nhy_latn	nhy	latn	alphabet	bible	1.290196796
+830	830	nif_latn	nif	latn	alphabet	bible	1.562092295
+831	831	nii_latn	nii	latn	alphabet	bible	1.5137414
+832	832	nin_latn	nin	latn	alphabet	bible	1.157093552
+833	833	niy_latn	niy	latn	alphabet	bible	2.052604512
+834	834	nko_latn	nko	latn	alphabet	bible	1.370210967
+835	835	nld_latn	nld	latn	alphabet	nllb	1.0516057206199363
+836	836	nlg_latn	nlg	latn	alphabet	bible	1.258656945
+837	837	nlx_deva	nlx	deva	abugida	bible	2.460334621
+838	838	nno_latn	nno	latn	alphabet	flores	1.0332891132535391
+839	839	nnq_latn	nnq	latn	alphabet	bible	1.029210761
+840	840	nnw_latn	nnw	latn	alphabet	bible	1.461034034
+841	841	noa_latn	noa	latn	alphabet	bible	1.956453567
+842	842	nob_latn	nob	latn	alphabet	nllb	0.9976190383133504
+843	843	nod_lana	nod	lana	abugida	bible	3.395773811
+844	844	nop_latn	nop	latn	alphabet	bible	1.272825764
+845	845	nor_latn	nor	latn	alphabet	bible	1.125315993
+846	846	not_latn	not	latn	alphabet	bible	1.424879431
+847	847	nou_latn	nou	latn	alphabet	bible	1.339985372
+848	848	npi_deva	npi	deva	abugida	nllb	2.4201829253909577
+849	849	npl_latn	npl	latn	alphabet	bible	1.132584398
+852	852	nsn_latn	nsn	latn	alphabet	bible	1.441080204
+853	853	nso_latn	nso	latn	alphabet	nllb	1.1156963527576322
+854	854	nsu_latn	nsu	latn	alphabet	bible	1.241468766
+855	855	ntj_latn	ntj	latn	alphabet	bible	1.621114946
+856	856	ntp_latn	ntp	latn	alphabet	bible	1.595264108
+857	857	ntr_latn	ntr	latn	alphabet	bible	1.40200224
+858	858	ntu_latn	ntu	latn	alphabet	bible	1.270101255
+859	859	nuj_latn	nuj	latn	alphabet	bible	1.162670568
+860	860	nuq_latn	nuq	latn	alphabet	bible	1.720602958
+861	861	nus_latn	nus	latn	alphabet	nllb	1.293421155950474
+862	862	nuy_latn	nuy	latn	alphabet	bible	2.252938219
+863	863	nvm_latn	nvm	latn	alphabet	bible	1.487945418
+864	864	nwb_latn	nwb	latn	alphabet	bible	2.008703801
+865	865	nwi_latn	nwi	latn	alphabet	bible	1.611400882
+866	866	nya_latn	nya	latn	alphabet	nllb	1.2142949199673805
+867	867	nyf_latn	nyf	latn	alphabet	bible	1.14467555
+869	869	nyu_latn	nyu	latn	alphabet	bible	1.097526914
+870	870	nyy_latn	nyy	latn	alphabet	bible	1.342357889
+873	873	obo_latn	obo	latn	alphabet	bible	1.444161276
+874	874	oci_latn	oci	latn	alphabet	nllb	1.0147334623179476
+875	875	okv_latn	okv	latn	alphabet	bible	1.14950744
+876	876	omw_latn	omw	latn	alphabet	bible	1.728273639
+877	877	ong_latn	ong	latn	alphabet	bible	1.453068501
+878	878	ons_latn	ons	latn	alphabet	bible	1.458597518
+879	879	ood_latn	ood	latn	alphabet	bible	1.307405545
+880	880	opm_latn	opm	latn	alphabet	bible	1.694434413
+881	881	ory_orya	ory	orya	abugida	nllb	2.5109866558784053
+883	883	ote_latn	ote	latn	alphabet	bible	1.508806656
+884	884	otm_latn	otm	latn	alphabet	bible	1.425315993
+885	885	otn_latn	otn	latn	alphabet	bible	1.737450573
+886	886	otq_latn	otq	latn	alphabet	bible	1.252835364
+887	887	ots_latn	ots	latn	alphabet	bible	1.886960298
+888	888	pab_latn	pab	latn	alphabet	bible	1.381609563
+889	889	pac_latn	pac	latn	alphabet	bible	1.462080867
+890	890	pad_latn	pad	latn	alphabet	bible	1.953850198
+891	891	pag_latn	pag	latn	alphabet	nllb	1.0439084429426009
+892	892	pah_latn	pah	latn	alphabet	bible	2.014008823
+893	893	pan_guru	pan	guru	abugida	nllb	2.2209676983301554
+894	894	pao_latn	pao	latn	alphabet	bible	1.189970515
+895	895	pap_latn	pap	latn	alphabet	nllb	1.0016752711800698
+896	896	pbb_latn	pbb	latn	alphabet	bible	1.244808119
+897	897	pbt_arab	pbt	arab	abjad	nllb	1.7360209564226918
+898	898	pcm_latn	pcm	latn	alphabet	bible	0.954503897
+899	899	pdc_latn	pdc	latn	alphabet	bible	1.129005051
+901	901	peg_orya	peg	orya	abugida	bible	3.181065576
+902	902	pes_arab	pes	arab	abjad	nllb	1.5973262699543158
+904	904	pib_latn	pib	latn	alphabet	bible	1.023428036
+905	905	pio_latn	pio	latn	alphabet	bible	2.303455921
+906	906	pir_latn	pir	latn	alphabet	bible	1.723878311
+908	908	piu_latn	piu	latn	alphabet	bible	2.160224909
+909	909	pjt_latn	pjt	latn	alphabet	bible	2.045020685
+910	910	pls_latn	pls	latn	alphabet	bible	1.433475806
+911	911	plt_latn	plt	latn	alphabet	nllb	1.151182211384018
+912	912	plu_latn	plu	latn	alphabet	bible	1.632463258
+913	913	plw_latn	plw	latn	alphabet	bible	1.377136523
+914	914	pma_latn	pma	latn	alphabet	bible	1.364083107
+917	917	poe_latn	poe	latn	alphabet	bible	1.802283376
+918	918	poh_latn	poh	latn	alphabet	bible	2.753523348
+919	919	poi_latn	poi	latn	alphabet	bible	1.519940116
+920	920	pol_latn	pol	latn	alphabet	nllb	1.077373476997443
+921	921	pon_latn	pon	latn	alphabet	bible	0.897776051
+922	922	por_latn	por	latn	alphabet	nllb	1.097878433973556
+923	923	poy_latn	poy	latn	alphabet	bible	1.102473086
+925	925	ppo_latn	ppo	latn	alphabet	bible	1.725766268
+926	926	pps_latn	pps	latn	alphabet	bible	1.390027657
+928	928	prf_latn	prf	latn	alphabet	bible	1.211688876
+929	929	pri_latn	pri	latn	alphabet	bible	1.468994994
+931	931	prq_latn	prq	latn	alphabet	bible	1.291303056
+932	932	prs_arab	prs	arab	abjad	nllb	1.6640453798569717
+933	933	ptp_latn	ptp	latn	alphabet	bible	1.371340084
+934	934	ptu_latn	ptu	latn	alphabet	bible	1.333292953
+935	935	pwg_latn	pwg	latn	alphabet	bible	1.260170053
+944	944	qub_latn	qub	latn	alphabet	bible	1.203967909
+945	945	quc_latn	quc	latn	alphabet	bible	1.452707367
+946	946	quf_latn	quf	latn	alphabet	bible	1.450170282
+947	947	quh_latn	quh	latn	alphabet	bible	1.293227583
+948	948	qul_latn	qul	latn	alphabet	bible	1.07633197
+949	949	qup_latn	qup	latn	alphabet	bible	1.652028525
+950	950	quy_latn	quy	latn	alphabet	nllb	1.163741956695455
+952	952	qva_latn	qva	latn	alphabet	bible	1.230374163
+953	953	qvc_latn	qvc	latn	alphabet	bible	1.536952298
+954	954	qve_latn	qve	latn	alphabet	bible	1.644282416
+955	955	qvh_latn	qvh	latn	alphabet	bible	1.291607049
+956	956	qvm_latn	qvm	latn	alphabet	bible	1.33948024
+957	957	qvn_latn	qvn	latn	alphabet	bible	1.320436104
+958	958	qvs_latn	qvs	latn	alphabet	bible	1.552931362
+959	959	qvw_latn	qvw	latn	alphabet	bible	1.191746474
+960	960	qvz_latn	qvz	latn	alphabet	bible	1.349603438
+961	961	qwh_latn	qwh	latn	alphabet	bible	1.217021325
+962	962	qxh_latn	qxh	latn	alphabet	bible	1.224260017
+963	963	qxl_latn	qxl	latn	alphabet	bible	1.176395968
+964	964	qxn_latn	qxn	latn	alphabet	bible	1.403700487
+965	965	qxo_latn	qxo	latn	alphabet	bible	1.377445087
+966	966	rai_latn	rai	latn	alphabet	bible	1.265961921
+967	967	reg_latn	reg	latn	alphabet	bible	1.033939796
+969	969	rkb_latn	rkb	latn	alphabet	bible	1.640490503
+970	970	rmc_latn	rmc	latn	alphabet	bible	1.024618866
+971	971	rol_latn	rol	latn	alphabet	bible	1.305220452
+972	972	ron_latn	ron	latn	alphabet	nllb	1.1151209277608225
+973	973	roo_latn	roo	latn	alphabet	bible	1.570524102
+974	974	rop_latn	rop	latn	alphabet	bible	1.529233618
+975	975	row_latn	row	latn	alphabet	bible	1.508799799
+976	976	rro_latn	rro	latn	alphabet	bible	1.134284931
+978	978	rub_latn	rub	latn	alphabet	bible	1.433935224
+979	979	ruf_latn	ruf	latn	alphabet	bible	1.027830221
+980	980	rug_latn	rug	latn	alphabet	bible	1.350650271
+982	982	run_latn	run	latn	alphabet	nllb	1.1192325143941892
+983	983	rus_cyrl	rus	cyrl	alphabet	nllb	1.822744410906083
+985	985	rwo_latn	rwo	latn	alphabet	bible	1.784190076
+986	986	sab_latn	sab	latn	alphabet	bible	2.193894997
+987	987	sag_latn	sag	latn	alphabet	nllb	1.1624646765701858
+989	989	san_deva	san	deva	abugida	nllb	2.5427804517447807
+990	990	san_knda	san	knda	abugida	bible	2.385403762
+991	991	sat_beng	sat	beng	abugida	nllb	2.113236281
+992	992	sat_olck	sat	olck	alphabet	flores	2.803663544644224
+993	993	san_gujr	san	gujr	abugida	bible	2.385403762
+994	994	san_latn	san	latn	alphabet	bible	0.966275057
+995	995	san_khmr	san	khmr	abugida	bible	2.399970286
+996	996	san_mlym	san	mlym	abugida	bible	2.342693881
+997	997	san_orya	san	orya	abugida	bible	2.385403762
+998	998	san_guru	san	guru	abugida	bible	2.431816416
+999	999	san_sinh	san	sinh	abugida	bible	2.488267697
+1000	1000	san_taml	san	taml	abugida	bible	2.690877923
+1001	1001	san_telu	san	telu	abugida	bible	2.385399191
+1002	1002	san_thai	san	thai	abugida	bible	2.401862815
+1003	1003	san_tibt	san	tibt	abugida	bible	2.166691047
+1004	1004	san_arab	san	arab	abjad	bible	2.055285593
+1005	1005	san_mymr	san	mymr	abugida	bible	2.315748211
+1006	1006	sbe_latn	sbe	latn	alphabet	bible	1.322801765
+1007	1007	sbk_latn	sbk	latn	alphabet	bible	0.934963772
+1008	1008	sbl_latn	sbl	latn	alphabet	bible	1.453123357
+1009	1009	sbs_latn	sbs	latn	alphabet	bible	0.988039131
+1010	1010	sby_latn	sby	latn	alphabet	bible	1.10542159
+1011	1011	sch_latn	sch	latn	alphabet	bible	1.121754931
+1012	1012	scn_latn	scn	latn	alphabet	nllb	1.036272744869889
+1014	1014	ses_latn	ses	latn	alphabet	bible	0.986251743
+1015	1015	set_latn	set	latn	alphabet	bible	1.360707184
+1016	1016	sey_latn	sey	latn	alphabet	bible	1.506614706
+1017	1017	sgb_latn	sgb	latn	alphabet	bible	1.350115426
+1018	1018	sgz_latn	sgz	latn	alphabet	bible	1.568727572
+1020	1020	shn_mymr	shn	mymr	abugida	nllb	2.819448605831083
+1021	1021	shp_latn	shp	latn	alphabet	bible	1.292768165
+1022	1022	sig_latn	sig	latn	alphabet	bible	1.442716738
+1023	1023	sil_latn	sil	latn	alphabet	bible	1.229734178
+1024	1024	sim_latn	sim	latn	alphabet	bible	1.407771251
+1025	1025	sin_sinh	sin	sinh	abugida	nllb	2.4463185182279874
+1026	1026	sja_latn	sja	latn	alphabet	bible	1.378279354
+1027	1027	slk_latn	slk	latn	alphabet	nllb	1.0415060908874327
+1028	1028	sll_latn	sll	latn	alphabet	bible	1.311019177
+1029	1029	slm_latn	slm	latn	alphabet	bible	1.361589449
+1031	1031	slv_latn	slv	latn	alphabet	nllb	0.9721500484359568
+1032	1032	smk_latn	smk	latn	alphabet	bible	1.350721126
+1033	1033	sml_latn	sml	latn	alphabet	bible	1.31911042
+1034	1034	smo_latn	smo	latn	alphabet	nllb	1.1780015178253482
+1036	1036	sna_latn	sna	latn	alphabet	nllb	1.1191777636582168
+1037	1037	snc_latn	snc	latn	alphabet	bible	1.466195058
+1038	1038	snd_arab	snd	arab	abjad	nllb	1.587969761053741
+1039	1039	snf_latn	snf	latn	alphabet	bible	1.146709789
+1040	1040	snn_latn	snn	latn	alphabet	bible	1.730726155
+1041	1041	snp_latn	snp	latn	alphabet	bible	1.396219515
+1042	1042	snw_latn	snw	latn	alphabet	bible	1.307675253
+1043	1043	sny_latn	sny	latn	alphabet	bible	1.943729286
+1044	1044	som_latn	som	latn	alphabet	nllb	1.4223028601273195
+1045	1045	soq_latn	soq	latn	alphabet	bible	1.392297319
+1046	1046	sot_latn	sot	latn	alphabet	nllb	1.1660117470947278
+1047	1047	soy_latn	soy	latn	alphabet	bible	1.418285296
+1048	1048	spa_latn	spa	latn	alphabet	nllb	1.0838319661748157
+1049	1049	spl_latn	spl	latn	alphabet	bible	1.771712647
+1051	1051	spp_latn	spp	latn	alphabet	bible	1.345939521
+1052	1052	sps_latn	sps	latn	alphabet	bible	1.364569953
+1053	1053	spy_latn	spy	latn	alphabet	bible	1.323002903
+1054	1054	srd_latn	srd	latn	alphabet	nllb	1.1093727723568478
+1055	1055	sri_latn	sri	latn	alphabet	bible	1.632220978
+1056	1056	srm_latn	srm	latn	alphabet	bible	1.704153048
+1057	1057	srn_latn	srn	latn	alphabet	bible	1.060725469
+1058	1058	srp_cyrl	srp	cyrl	alphabet	nllb	1.4248786445423485
+1059	1059	srp_latn	srp	latn	alphabet	bible	0.826257686
+1060	1060	srq_latn	srq	latn	alphabet	bible	1.352012525
+1062	1062	ssd_latn	ssd	latn	alphabet	bible	1.239925945
+1063	1063	ssg_latn	ssg	latn	alphabet	bible	1.132259834
+1065	1065	ssw_latn	ssw	latn	alphabet	nllb	1.1414266194753566
+1066	1066	ssx_latn	ssx	latn	alphabet	bible	1.861566593
+1067	1067	stb_latn	stb	latn	alphabet	bible	1.33411122
+1068	1068	stp_latn	stp	latn	alphabet	bible	2.351422825
+1069	1069	sua_latn	sua	latn	alphabet	bible	1.859952915
+1070	1070	suc_latn	suc	latn	alphabet	bible	1.517725309
+1072	1072	sue_latn	sue	latn	alphabet	bible	1.27381317
+1073	1073	sun_latn	sun	latn	alphabet	nllb	1.0969808523166162
+1075	1075	sus_arab	sus	arab	abjad	bible	1.878553633
+1076	1076	sus_latn	sus	latn	alphabet	bible	1.063260268
+1077	1077	suz_deva	suz	deva	abugida	bible	2.98006217
+1080	1080	swe_latn	swe	latn	alphabet	nllb	1.0209812922647696
+1081	1081	swh_latn	swh	latn	alphabet	nllb	1.0694849063174054
+1082	1082	swp_latn	swp	latn	alphabet	bible	1.039103106
+1083	1083	sxb_latn	sxb	latn	alphabet	bible	1.214319673
+1084	1084	syb_latn	syb	latn	alphabet	bible	1.512955132
+1085	1085	syl_latn	syl	latn	alphabet	bible	1.078587918
+1086	1086	syl_beng	syl	beng	abugida	bible	2.464908231
+1087	1087	szl_latn	szl	latn	alphabet	nllb	1.066563023990376
+1088	1088	tac_latn	tac	latn	alphabet	bible	1.759354072
+1089	1089	taj_deva	taj	deva	abugida	bible	3.218477292
+1090	1090	tam_taml	tam	taml	abugida	nllb	2.7290996547936537
+1091	1091	taq_latn	taq	latn	alphabet	nllb	1.2092490946988266
+1092	1092	taq_tfng	taq	tfng	abjad	flores	2.277865870103261
+1093	1093	tat_cyrl	tat	cyrl	alphabet	nllb	1.8545411911687737
+1094	1094	tav_latn	tav	latn	alphabet	bible	1.736780874
+1095	1095	taw_latn	taw	latn	alphabet	bible	1.49012594
+1096	1096	tbc_latn	tbc	latn	alphabet	bible	1.352446801
+1097	1097	tbf_latn	tbf	latn	alphabet	bible	1.309862632
+1098	1098	tbg_latn	tbg	latn	alphabet	bible	1.633722658
+1099	1099	tbk_latn	tbk	latn	alphabet	bible	2.134666636
+1100	1100	tbo_latn	tbo	latn	alphabet	bible	1.20212338
+1101	1101	tbz_latn	tbz	latn	alphabet	bible	1.330093026
+1102	1102	tca_latn	tca	latn	alphabet	bible	1.998569176
+1103	1103	tcs_latn	tcs	latn	alphabet	bible	1.324182304
+1104	1104	tcz_latn	tcz	latn	alphabet	bible	1.12913762
+1105	1105	tdt_latn	tdt	latn	alphabet	bible	1.216321913
+1106	1106	tdx_latn	tdx	latn	alphabet	bible	1.000930264
+1107	1107	ted_latn	ted	latn	alphabet	bible	1.936748874
+1108	1108	tee_latn	tee	latn	alphabet	bible	1.650853695
+1110	1110	tel_telu	tel	telu	abugida	nllb	2.6198194978991007
+1111	1111	ter_latn	ter	latn	alphabet	bible	1.509435213
+1112	1112	tet_latn	tet	latn	alphabet	bible	1.400532559
+1113	1113	tfr_latn	tfr	latn	alphabet	bible	1.466211058
+1114	1114	tgk_cyrl	tgk	cyrl	alphabet	nllb	1.7460521855753377
+1115	1115	tgl_latn	tgl	latn	alphabet	nllb	1.1175934317514988
+1116	1116	tgo_latn	tgo	latn	alphabet	bible	1.307213549
+1117	1117	tgp_latn	tgp	latn	alphabet	bible	1.2281205
+1118	1118	tha_thai	tha	thai	abugida	flores	2.741647234961396
+1121	1121	tif_latn	tif	latn	alphabet	bible	2.284260931
+1122	1122	tim_latn	tim	latn	alphabet	bible	1.512091152
+1123	1123	tir_ethi	tir	ethi	abugida	nllb	1.762985532310621
+1125	1125	tiy_latn	tiy	latn	alphabet	bible	1.375733126
+1126	1126	tku_latn	tku	latn	alphabet	bible	1.406166716
+1127	1127	tlf_latn	tlf	latn	alphabet	bible	2.250913122
+1128	1128	tlj_latn	tlj	latn	alphabet	bible	1.337494
+1129	1129	tmd_latn	tmd	latn	alphabet	bible	1.700697127
+1130	1130	tna_latn	tna	latn	alphabet	bible	1.426591392
+1131	1131	tnk_latn	tnk	latn	alphabet	bible	1.602742794
+1132	1132	tnn_latn	tnn	latn	alphabet	bible	1.609176933
+1133	1133	tnp_latn	tnp	latn	alphabet	bible	1.747941761
+1135	1135	toc_latn	toc	latn	alphabet	bible	2.39523668
+1136	1136	tof_latn	tof	latn	alphabet	bible	1.468078444
+1138	1138	toj_latn	toj	latn	alphabet	bible	1.440515645
+1139	1139	ton_latn	ton	latn	alphabet	bible	1.270386963
+1140	1140	too_latn	too	latn	alphabet	bible	1.552499371
+1141	1141	top_latn	top	latn	alphabet	bible	1.643555576
+1142	1142	tos_latn	tos	latn	alphabet	bible	2.274268017
+1143	1143	tpi_latn	tpi	latn	alphabet	nllb	1.1768779769785047
+1144	1144	tpp_latn	tpp	latn	alphabet	bible	1.263763114
+1145	1145	tpt_latn	tpt	latn	alphabet	bible	1.488084844
+1146	1146	tpu_khmr	tpu	khmr	abugida	bible	2.976336541
+1147	1147	tpz_latn	tpz	latn	alphabet	bible	1.73930653
+1148	1148	trc_latn	trc	latn	alphabet	bible	2.568764143
+1150	1150	trq_latn	trq	latn	alphabet	bible	1.966921899
+1151	1151	tsg_latn	tsg	latn	alphabet	bible	1.622134351
+1153	1153	tsn_latn	tsn	latn	alphabet	nllb	1.1739402962077967
+1154	1154	tso_latn	tso	latn	alphabet	nllb	1.207440889
+1155	1155	tsw_latn	tsw	latn	alphabet	bible	1.220977806
+1156	1156	ttc_latn	ttc	latn	alphabet	bible	1.388016274
+1157	1157	tte_latn	tte	latn	alphabet	bible	1.333107815
+1159	1159	ttq_tfng	ttq	tfng	abjad	bible	1.65913922
+1160	1160	ttq_latn	ttq	latn	alphabet	bible	1.181582135
+1161	1161	tuc_latn	tuc	latn	alphabet	bible	1.524772005
+1162	1162	tue_latn	tue	latn	alphabet	bible	1.411650019
+1163	1163	tuf_latn	tuf	latn	alphabet	bible	1.591888185
+1164	1164	tuk_latn	tuk	latn	alphabet	nllb	1.785355050333167
+1165	1165	tum_latn	tum	latn	alphabet	nllb	1.2071952701917046
+1166	1166	tuo_latn	tuo	latn	alphabet	bible	1.701291399
+1167	1167	tur_latn	tur	latn	alphabet	nllb	1.0444895734382789
+1168	1168	tvk_latn	tvk	latn	alphabet	bible	1.42093895
+1169	1169	tvt_latn	tvt	latn	alphabet	bible	1.18660602
+1170	1170	twi_latn	twi	latn	alphabet	nllb	1.032409918083291
+1171	1171	txq_latn	txq	latn	alphabet	bible	1.605273022
+1172	1172	txu_latn	txu	latn	alphabet	bible	2.019293273
+1174	1174	tzj_latn	tzj	latn	alphabet	bible	1.464759663
+1176	1176	tzm_tfng	tzm	tfng	abjad	nllb	1.925212613497005
+1177	1177	tzo_latn	tzo	latn	alphabet	bible	1.487549999
+1178	1178	ubr_latn	ubr	latn	alphabet	bible	1.242831021
+1179	1179	ubu_latn	ubu	latn	alphabet	bible	2.007174693
+1180	1180	udu_latn	udu	latn	alphabet	bible	1.557182693
+1181	1181	uig_cyrl	uig	cyrl	alphabet	bible	1.959198647
+1182	1182	uig_latn	uig	latn	alphabet	bible	1.191355626
+1183	1183	uig_arab	uig	arab	abjad	nllb	2.308625158110461
+1184	1184	ukr_cyrl	ukr	cyrl	alphabet	nllb	1.751370356831398
+1185	1185	uli_latn	uli	latn	alphabet	bible	1.234668922
+1186	1186	ulk_latn	ulk	latn	alphabet	bible	0.950261708
+1187	1187	umb_latn	umb	latn	alphabet	nllb	1.1672611036710585
+1188	1188	unx_orya	unx	orya	abugida	bible	3.197666339
+1189	1189	upv_latn	upv	latn	alphabet	bible	1.345678956
+1190	1190	ura_latn	ura	latn	alphabet	bible	1.59449384
+1191	1191	urb_latn	urb	latn	alphabet	bible	1.853351923
+1192	1192	urd_deva	urd	deva	abugida	bible	2.522705767
+1193	1193	urd_latn	urd	latn	alphabet	bible	1.287511143
+1194	1194	urd_arab	urd	arab	abjad	nllb	1.7079506174050625
+1195	1195	urt_latn	urt	latn	alphabet	bible	1.580318164
+1196	1196	ury_latn	ury	latn	alphabet	bible	1.684132934
+1197	1197	usa_latn	usa	latn	alphabet	bible	1.668403008
+1198	1198	usp_latn	usp	latn	alphabet	bible	1.422481772
+1199	1199	uvh_latn	uvh	latn	alphabet	bible	2.07885534
+1200	1200	uvl_latn	uvl	latn	alphabet	bible	1.343982995
+1202	1202	uzn_latn	uzn	latn	alphabet	nllb	1.645764497
+1203	1203	var_latn	var	latn	alphabet	bible	1.636154602
+1204	1204	vec_latn	vec	latn	alphabet	nllb	0.9963413972250036
+1205	1205	vid_latn	vid	latn	alphabet	bible	1.050227423
+1206	1206	vie_latn	vie	latn	alphabet	nllb	1.3493312660627863
+1207	1207	viv_latn	viv	latn	alphabet	bible	1.52287262
+1209	1209	vmy_latn	vmy	latn	alphabet	bible	1.268885283
+1210	1210	waj_latn	waj	latn	alphabet	bible	1.694068707
+1211	1211	wal_latn	wal	latn	alphabet	bible	1.092203607
+1212	1212	wap_latn	wap	latn	alphabet	bible	1.630819867
+1213	1213	war_latn	war	latn	alphabet	nllb	1.0931497173660414
+1214	1214	wbi_latn	wbi	latn	alphabet	bible	1.121846358
+1215	1215	wbp_latn	wbp	latn	alphabet	bible	2.336275742
+1217	1217	wer_latn	wer	latn	alphabet	bible	1.274569724
+1218	1218	wib_latn	wib	latn	alphabet	bible	1.635962607
+1219	1219	wim_latn	wim	latn	alphabet	bible	2.115023657
+1220	1220	wiu_latn	wiu	latn	alphabet	bible	1.399355443
+1221	1221	wiv_latn	wiv	latn	alphabet	bible	1.282249549
+1223	1223	wmw_latn	wmw	latn	alphabet	bible	1.007851249
+1224	1224	wnc_latn	wnc	latn	alphabet	bible	1.491668762
+1225	1225	wnu_latn	wnu	latn	alphabet	bible	1.265831638
+1226	1226	wob_latn	wob	latn	alphabet	bible	1.393463007
+1227	1227	wol_latn	wol	latn	alphabet	nllb	1.0786472108470395
+1228	1228	wos_latn	wos	latn	alphabet	bible	1.609531211
+1229	1229	wrs_latn	wrs	latn	alphabet	bible	1.508162099
+1231	1231	wsk_latn	wsk	latn	alphabet	bible	1.295195538
+1232	1232	wuv_latn	wuv	latn	alphabet	bible	1.076656534
+1233	1233	xav_latn	xav	latn	alphabet	bible	2.368366437
+1234	1234	xed_latn	xed	latn	alphabet	bible	1.283204955
+1235	1235	xho_latn	xho	latn	alphabet	nllb	1.198781751749243
+1236	1236	xla_latn	xla	latn	alphabet	bible	1.626680533
+1237	1237	xnj_latn	xnj	latn	alphabet	bible	1.075634843
+1238	1238	xnn_latn	xnn	latn	alphabet	bible	1.21520651
+1239	1239	xon_latn	xon	latn	alphabet	bible	1.071506937
+1241	1241	xrb_latn	xrb	latn	alphabet	bible	1.256803273
+1242	1242	xsb_latn	xsb	latn	alphabet	bible	1.356455852
+1243	1243	xsi_latn	xsi	latn	alphabet	bible	1.750293708
+1244	1244	xsm_latn	xsm	latn	alphabet	bible	1.471020091
+1245	1245	xsr_deva	xsr	deva	abugida	bible	3.180832438
+1246	1246	xtc_latn	xtc	latn	alphabet	bible	1.253107358
+1247	1247	xtd_latn	xtd	latn	alphabet	bible	1.474492012
+1248	1248	xtm_latn	xtm	latn	alphabet	bible	1.546254943
+1249	1249	xtn_latn	xtn	latn	alphabet	bible	1.418406436
+1250	1250	xuo_latn	xuo	latn	alphabet	bible	1.626650819
+1251	1251	yaa_latn	yaa	latn	alphabet	bible	1.480057599
+1252	1252	yad_latn	yad	latn	alphabet	bible	1.530422162
+1253	1253	yal_latn	yal	latn	alphabet	bible	1.082249549
+1254	1254	yam_latn	yam	latn	alphabet	bible	1.467157322
+1255	1255	yao_latn	yao	latn	alphabet	bible	1.192905305
+1256	1256	yap_latn	yap	latn	alphabet	bible	1.396850358
+1257	1257	yaq_latn	yaq	latn	alphabet	bible	1.598665173
+1258	1258	yby_latn	yby	latn	alphabet	bible	1.510036342
+1259	1259	ycn_latn	ycn	latn	alphabet	bible	1.84232589
+1260	1260	ydd_hebr	ydd	hebr	abjad	nllb	1.806848484814509
+1261	1261	yka_latn	yka	latn	alphabet	bible	1.33714658
+1262	1262	yle_latn	yle	latn	alphabet	bible	1.704939316
+1263	1263	yml_latn	yml	latn	alphabet	bible	1.556743846
+1264	1264	yom_latn	yom	latn	alphabet	bible	1.069463555
+1265	1265	yon_latn	yon	latn	alphabet	bible	1.392247034
+1266	1266	yor_latn	yor	latn	alphabet	nllb	1.3749481774962748
+1268	1268	yrb_latn	yrb	latn	alphabet	bible	1.098667459
+1269	1269	yre_latn	yre	latn	alphabet	bible	1.3843775
+1270	1270	yss_latn	yss	latn	alphabet	bible	1.269653265
+1272	1272	yue_hant	yue	hant	logography	flores	0.862461402
+1273	1273	yuj_latn	yuj	latn	alphabet	bible	1.647962332
+1274	1274	yut_latn	yut	latn	alphabet	bible	1.34417499
+1275	1275	yuw_latn	yuw	latn	alphabet	bible	1.605417019
+1276	1276	yva_latn	yva	latn	alphabet	bible	1.506278714
+1277	1277	zaa_latn	zaa	latn	alphabet	bible	1.433530662
+1278	1278	zab_latn	zab	latn	alphabet	bible	1.12030125
+1279	1279	zac_latn	zac	latn	alphabet	bible	1.495325821
+1280	1280	zad_latn	zad	latn	alphabet	bible	1.219053279
+1281	1281	zae_latn	zae	latn	alphabet	bible	1.434531782
+1282	1282	zai_latn	zai	latn	alphabet	bible	1.054833032
+1283	1283	zaj_latn	zaj	latn	alphabet	bible	1.036017462
+1284	1284	zam_latn	zam	latn	alphabet	bible	2.041125917
+1285	1285	zao_latn	zao	latn	alphabet	bible	1.16763274
+1286	1286	zap_latn	zap	latn	alphabet	bible	1.075680556
+1287	1287	zar_latn	zar	latn	alphabet	bible	1.59449384
+1288	1288	zas_latn	zas	latn	alphabet	bible	1.140188796
+1289	1289	zat_latn	zat	latn	alphabet	bible	1.390322507
+1290	1290	zav_latn	zav	latn	alphabet	bible	1.640193367
+1291	1291	zaw_latn	zaw	latn	alphabet	bible	1.133377523
+1292	1292	zca_latn	zca	latn	alphabet	bible	1.183223241
+1293	1293	zga_latn	zga	latn	alphabet	bible	1.037459715
+1294	1294	zho_hans	zho	hans	logography	nllb	0.9359663917979646
+1295	1295	zho_hant	zho	hant	logography	nllb	0.989382544
+1296	1296	zia_latn	zia	latn	alphabet	bible	1.387748851
+1297	1297	ziw_latn	ziw	latn	alphabet	bible	0.992407031
+1298	1298	zlm_latn	zlm	latn	alphabet	bible	1.140833352
+1299	1299	zos_latn	zos	latn	alphabet	bible	1.378286211
+1300	1300	zpc_latn	zpc	latn	alphabet	bible	1.612095724
+1301	1301	zpg_latn	zpg	latn	alphabet	bible	1.202658225
+1302	1302	zpi_latn	zpi	latn	alphabet	bible	1.075680556
+1303	1303	zpl_latn	zpl	latn	alphabet	bible	1.378267925
+1304	1304	zpm_latn	zpm	latn	alphabet	bible	1.315341364
+1305	1305	zpo_latn	zpo	latn	alphabet	bible	1.120449818
+1306	1306	zpq_latn	zpq	latn	alphabet	bible	1.420152682
+1307	1307	zpt_latn	zpt	latn	alphabet	bible	1.348632031
+1308	1308	zpu_latn	zpu	latn	alphabet	bible	1.441784188
+1309	1309	zpv_latn	zpv	latn	alphabet	bible	1.717796165
+1310	1310	zpz_latn	zpz	latn	alphabet	bible	1.401092546
+1311	1311	zsm_latn	zsm	latn	alphabet	nllb	1.143822408242538
+1312	1312	zsr_latn	zsr	latn	alphabet	bible	1.568343581
+1313	1313	ztq_latn	ztq	latn	alphabet	bible	1.081481566
+1314	1314	zty_latn	zty	latn	alphabet	bible	1.413787113
+1315	1315	zul_latn	zul	latn	alphabet	nllb	1.163840155382308
+1317	1317	zyp_latn	zyp	latn	alphabet	bible	1.254010194
