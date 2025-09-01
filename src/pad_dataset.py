@@ -374,8 +374,10 @@ def pad_dataset_to_next_tier(
     dataset_df: pd.DataFrame,
     language_code: str,
     script_code: str,
+    byte_premium_factor: float = None,
 ) -> dict[str, Any]:
-    factor = get_byte_premium_factor(language_code, script_code)
+    if byte_premium_factor is None:
+        factor = get_byte_premium_factor(language_code, script_code)
 
     load_dotenv()
     HF_token = os.getenv("HF_TOKEN") or ""

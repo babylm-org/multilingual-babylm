@@ -50,6 +50,7 @@ class HFDatasetUploader:
         create_repo_if_missing: bool = True,
         add_to_existing_data: bool = False,
         tokenizer_name: Optional[str] = None,
+        byte_premium_factor: Optional[float] = None,
     ) -> None:
         """
         Upload a BabyLM dataset to HuggingFace.
@@ -198,6 +199,7 @@ class HFDatasetUploader:
                 scripts_list=scripts_list,
                 tokens_per_group=tokens_per_group,
                 tokenizer_name=tokenizer_name,
+                byte_premium_factor=byte_premium_factor,
             )
 
         # Upload additional files (metadata, etc.)
@@ -272,7 +274,8 @@ class HFDatasetUploader:
         major_script: str,
         scripts_list: Optional[List[str]] = None,
         tokens_per_group: Optional[Dict[str, int]] = None,
-        tokenizer_name: str = None,
+        tokenizer_name: Optional[str] = None,
+        byte_premium_factor: Optional[float] = None,
     ) -> None:
         """Create (or overwrite) a README.md dataset card and upload it."""
         import json
@@ -321,7 +324,8 @@ class HFDatasetUploader:
         else:
             script_display = ", ".join(scripts_list)
 
-        byte_premium_factor = get_byte_premium_factor(language, major_script)
+        if byte_premium_factor is None:
+            byte_premium_factor = get_byte_premium_factor(language, major_script)
 
         # calculate dataset_tier, allowing for at most 1% difference from the required size
         dataset_tier = get_dataset_tier(
@@ -388,7 +392,12 @@ class HFDatasetUploader:
         except Exception as e:
             print(f"Error uploading README: {e}")
 
-    def update_all_readmes(self, repo_ids: list[str] = None, check_empty: bool = True):
+    def update_all_readmes(
+        self,
+        repo_ids: list[str] = None,
+        check_empty: bool = True,
+        byte_premium_factor: float = None,
+    ):
         """Bulk update README files for all BabyLM language datasets discovered dynamically.
 
         Discovery logic:
@@ -412,8 +421,6 @@ class HFDatasetUploader:
         print(f"Discovered {len(repo_ids)} BabyLM dataset repos to update.")
         for repo_id in repo_ids:
             language_code = repo_id.split("-")[-1]
-            if language_code < "zho":
-                continue
             tokenizer_name = tokenizers.get(language_code, None)
 
             suffix = repo_id.split("babylm-")[-1]
@@ -458,6 +465,7 @@ class HFDatasetUploader:
             dataset_size = get_dataset_size(df)
             tmp_dir = Path(f"_tmp_readme_{suffix}")
             tmp_dir.mkdir(exist_ok=True)
+
             self._create_dataset_card(
                 dataset_dir=tmp_dir,
                 repo_id=repo_id,
@@ -469,6 +477,7 @@ class HFDatasetUploader:
                 major_script=major_script,
                 tokens_per_group=tokens_per_group,
                 tokenizer_name=tokenizer_name,
+                byte_premium_factor=byte_premium_factor,
             )
             try:
                 (tmp_dir / "README.md").unlink()
@@ -559,11 +568,22 @@ if __name__ == "__main__":
         action="store_true",
         help="Don't check if repo is empty (reduce time in repo discovery)",
     )
+    parser.add_argument(
+        "--byte-premium-factor",
+        type=float,
+        default=None,
+        help="Provide byte-premium factor manually, instead of retrieving it automatically (override).",
+    )
+
     args = parser.parse_args()
     uploader = HFDatasetUploader(token=args.token)
     if args.repo_id is None:
-        uploader.update_all_readmes(check_empty=not args.no_check)
+        uploader.update_all_readmes(
+            check_empty=not args.no_check, byte_premium_factor=args.byte_premium_factor
+        )
     else:
         uploader.update_all_readmes(
-            repo_ids=[args.repo_id], check_empty=not args.no_check
+            repo_ids=[args.repo_id],
+            check_empty=not args.no_check,
+            byte_premium_factor=args.byte_premium_factor,
         )

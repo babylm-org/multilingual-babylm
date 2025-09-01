@@ -49,6 +49,7 @@ def process_dataset(
     remove_previous_childwiki_data: bool = False,
     remove_previous_childes_data: bool = False,
     remove_previous_padding: bool = False,
+    byte_premium_factor: float = None,
 ) -> Path:
     """
     Process any data source into BabyLM format.
@@ -196,6 +197,7 @@ def process_dataset(
             dataset_df=builder.dataset_table,
             language_code=language_code,
             script_code=script_code,
+            byte_premium_factor=byte_premium_factor,
         )
         builder.dataset_table = results["dataset"]
         # Keep the byte premium factor and dataset size for metadata
@@ -224,6 +226,7 @@ def process_dataset(
             repo_id=repo_id,
             create_repo_if_missing=True,
             tokenizer_name=tokenizer_name,
+            byte_premium_factor=byte_premium_factor
         )
 
     return builder.output_dir
@@ -332,6 +335,12 @@ def main():
         help="If set, remove previously added padding for the given language.",
     )
     parser.add_argument(
+        "--byte-premium-factor",
+        type=float,
+        default=None,
+        help="Provide byte-premium factor manually, instead of retrieving it automatically (override).",
+    )
+    parser.add_argument(
         "--tokenizer-name",
         type=str,
         default=None,
@@ -437,6 +446,7 @@ def main():
         remove_previous_childwiki_data=args.remove_previous_childwiki_data,
         remove_previous_childes_data=args.remove_previous_childes_data,
         remove_previous_padding=args.remove_previous_padding,
+        byte_premium_factor=args.byte_premium_factor,
     )
 
 
