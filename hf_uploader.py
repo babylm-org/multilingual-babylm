@@ -13,6 +13,7 @@ from datasets.exceptions import DatasetNotFoundError
 from dotenv import load_dotenv
 from huggingface_hub import HfApi, create_repo
 from transformers import AutoTokenizer  # type: ignore
+from pad_utils import get_byte_premium_factor, get_dataset_tier, get_dataset_size
 
 
 class HFDatasetUploader:
@@ -122,6 +123,9 @@ class HFDatasetUploader:
         df["num_tokens"] = df["text"].apply(count_tokens, tokenizer=tokenizer)
         total_tokens = int(df["num_tokens"].sum())
 
+        # get the dataset size in MB
+        dataset_size = get_dataset_size(df)
+
         assert "category" in df.columns, "category must be defined"
 
         tokens_per_category = df.groupby("category")["num_tokens"].sum().to_dict()
@@ -178,6 +182,7 @@ class HFDatasetUploader:
                 total_tokens=total_tokens,
                 tokens_per_category=tokens_per_category,
                 num_documents=num_documents,
+                dataset_size=dataset_size,
                 scripts_list=scripts_list,
                 tokens_per_group=tokens_per_group,
             )
@@ -250,6 +255,7 @@ class HFDatasetUploader:
         total_tokens: int,
         tokens_per_category: Optional[dict],
         num_documents: int,
+        dataset_size: float,
         scripts_list: Optional[List[str]] = None,
         tokens_per_group: Optional[Dict[str, int]] = None,
     ) -> None:
@@ -300,92 +306,52 @@ class HFDatasetUploader:
         else:
             script_display = ", ".join(scripts_list)
 
-        # Create README content with correct YAML indentation
-        readme_content = f"""---
-task_categories:
-- text-generation
-language:
-- {language}
-license: {config.get("license", "unknown")}
-size_categories:
-- {size_category}
-dataset_info:
-  features:
-    - name: text
-      dtype: string
-    - name: doc_id
-      dtype: string
-    - name: category
-      dtype: string
-    - name: data-source
-      dtype: string
-    - name: script
-      dtype: string
-    - name: age-estimate
-      dtype: string
-    - name: license
-      dtype: string
-    - name: misc
-      dtype: string
-    - name: num_tokens
-      dtype: int64
-    - name: language
-      dtype: string
----
+        byte_premium_factor = get_byte_premium_factor(language)
+        dataset_tier = get_dataset_tier(dataset_size, byte_premium_factor)
+        if dataset_tier is None:
+            dataset_tier = "Exceeds largest tier (100M)"
+        else:
+            # tier_10M -> 10M
+            dataset_tier = dataset_tier.split("_")[-1]
 
-# {metadata.get("dataset_name", "BabyLM Dataset")}
+        license_metadata = config.get("license", "unknown")
+        data_source = config.get("data_source", "Unknown")
 
-## Dataset Description
-
-This dataset is part of the BabyLM multilingual collection.
-
-### Dataset Summary
-
-- **Language:** {language}
-- **Script:** {script_display}
-- **Number of Documents:** {num_documents}
-- **Total Tokens:** {total_tokens}
-
-### Tokens Per Category
-
-"""
-
+        tokens_per_category_content = ""
         if tokens_per_category:
             for cat, tok in tokens_per_category.items():
-                readme_content += f"- **{cat}:** {tok} tokens\n"
+                tokens_per_category_content += f"- **{cat}:** {tok:,} tokens\n"
         else:
-            readme_content += "No category data available.\n"
+            tokens_per_category_content += "No category data available.\n"
 
         # NEW: Tokens per group section
-        readme_content += "\n### Tokens Per Group\n\n"
+        tokens_per_category_content += "\n### Tokens Per Group\n\n"
         if tokens_per_group:
             for grp, tok in tokens_per_group.items():
-                readme_content += f"- **{grp}:** {tok} tokens\n"
+                tokens_per_category_content += f"- **{grp}:** {tok:,} tokens\n"
         else:
-            readme_content += "No group data available.\n"
+            tokens_per_category_content += "No group data available.\n"
 
-        readme_content += f"""
-### Data Fields
+        with open("readme_upload.txt", "r") as f:
+            readme_content = f.read()
 
-- `text`: The document text
-- `doc_id`: Unique identifier for the document
-- `category`: Type of content (e.g., child-directed-speech, educational, etc.)
-- `data-source`: Original source of the data
-- `script`: Writing system used (ISO 15924)
-- `age-estimate`: Target age or age range
-- `license`: Data license
-- `misc`: Additional metadata (JSON string)
-- `num_tokens`: Number of tokens per item (based on white-space split)
-- `language`: Language code (ISO 639-3)
+        dataset_name = metadata.get("dataset_name", "BabyLM Dataset")
 
-### Licensing Information
-
-This dataset is licensed under: {config.get("license", "See individual files")}
-
-### Citation
-
-Please cite the original data source: {config.get("data_source", "Unknown")}
-"""
+        # format readme
+        readme_content = readme_content.format(
+            language=language,
+            license_metadata=license_metadata,
+            size_category=size_category,
+            script_display=script_display,
+            dataset_tier=dataset_tier,
+            dataset_size=dataset_size,
+            byte_premium_factor=byte_premium_factor,
+            num_documents=num_documents,
+            total_tokens=total_tokens,
+            tokens_per_category_content=tokens_per_category_content,
+            data_source=data_source,
+            dataset_name=dataset_name,
+        )
 
         # Save README
         readme_path = dataset_dir / "README.md"
@@ -405,7 +371,7 @@ Please cite the original data source: {config.get("data_source", "Unknown")}
         except Exception as e:
             print(f"Error uploading README: {e}")
 
-    def update_all_readmes(self):
+    def update_all_readmes(self, repo_ids: list[str] = None):
         """Bulk update README files for all BabyLM language datasets discovered dynamically.
 
         Discovery logic:
@@ -413,7 +379,9 @@ Please cite the original data source: {config.get("data_source", "Unknown")}
           2. Filter IDs starting with 'BabyLM-community/babylm-'.
           3. Iterate each repo and regenerate README with scripts list + grouped category counts.
         """
-        repo_ids = self._discover_babylm_repos()
+        if repo_ids is None:
+            repo_ids = self._discover_babylm_repos()
+
         if not repo_ids:
             print("No BabyLM datasets found with prefix 'BabyLM-community/babylm-'.")
             return
@@ -449,6 +417,7 @@ Please cite the original data source: {config.get("data_source", "Unknown")}
             else:
                 scripts_list = []
             tokens_per_group = self._compute_group_tokens(tokens_per_category)
+            dataset_size = get_dataset_size(df)
             tmp_dir = Path(f"_tmp_readme_{suffix}")
             tmp_dir.mkdir(exist_ok=True)
             self._create_dataset_card(
@@ -457,6 +426,7 @@ Please cite the original data source: {config.get("data_source", "Unknown")}
                 total_tokens=total_tokens,
                 tokens_per_category=tokens_per_category,
                 num_documents=len(df),
+                dataset_size=dataset_size,
                 scripts_list=scripts_list,
                 tokens_per_group=tokens_per_group,
             )
@@ -531,6 +501,12 @@ if __name__ == "__main__":
         default=None,
         help="HuggingFace token (optional, will use env if not provided).",
     )
+    parser.add_argument(
+        "--repo_id",
+        type=str,
+        default=None,
+        help="Update a specific BabyLM repo, specified with --repo_id",
+    )
     args = parser.parse_args()
     uploader = HFDatasetUploader(token=args.token)
-    uploader.update_all_readmes()
+    uploader.update_all_readmes(repo_ids=[args.repo_id])

@@ -84,6 +84,10 @@ def dataframe_to_docs(dataset_df: pd.DataFrame) -> list[dict[str, Any]]:
     return docs
 
 
+def get_byte_premium_factor(lang: str):
+    return byte_premium_factors.get(lang)
+
+
 def bytes_in_text(text: str) -> float:
     return len(text.encode("utf-8")) / 1_000_000  # Convert to MB
 
@@ -104,20 +108,24 @@ def normalize_script(script: str) -> str:
     return script
 
 
-def get_dataset_tier(dataset_size, tier_sizes, factor=1.0):
+def get_dataset_tier(dataset_size, factor):
     """
     Determine the tier based on dataset size.
     """
-    if dataset_size < tier_sizes["tier_1M"] * factor:
+    if dataset_size < eng_sizes_per_tier["tier_1M"] * factor:
         dataset_tier = "tier_1M"
-    elif dataset_size < tier_sizes["tier_10M"] * factor:
+    elif dataset_size < eng_sizes_per_tier["tier_10M"] * factor:
         dataset_tier = "tier_10M"
-    elif dataset_size < tier_sizes["tier_100M"] * factor:
+    elif dataset_size < eng_sizes_per_tier["tier_100M"] * factor:
         dataset_tier = "tier_100M"
     else:
         dataset_tier = None
         print("Dataset size exceeds the largest tier of 100M MB, no need for padding")
     return dataset_tier
+
+
+def get_dataset_size(dataset_df: pd.DataFrame, text_field: str = "text") -> float:
+    return dataset_df[text_field].apply(bytes_in_text).sum()
 
 
 def deduplicate_rows(

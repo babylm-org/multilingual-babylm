@@ -19,8 +19,9 @@ from pad_utils import (
     normalize_script,
     dataframe_to_docs,
     eng_sizes_per_tier,
-    byte_premium_factors,
+    get_byte_premium_factor,
     get_dataset_tier,
+    get_dataset_size,
 )
 
 from pad_language_specific import pad_language_specific, language_specific_pads
@@ -331,10 +332,10 @@ def pad_by_byte_factor(
         return {
             "dataset": dataset_df,
             "byte_premium_factor": factor,
-            "dataset_size": dataset_df["text"].apply(bytes_in_text).sum(),
+            "dataset_size": get_dataset_size(dataset_df),
         }
 
-    final_dataset_size = dataset_df["text"].apply(bytes_in_text).sum()
+    final_dataset_size = get_dataset_size(dataset_df)
     tier_words = dataset_tier.split("_")[-1]
 
     if final_dataset_size < eng_sizes_per_tier[dataset_tier] * factor:
@@ -374,14 +375,15 @@ def pad_dataset_to_next_tier(
     language_code: str,
     script_code: str,
 ) -> dict[str, Any]:
-    factor = byte_premium_factors.get(language_code)
+    factor = get_byte_premium_factor(language_code)
+
     load_dotenv()
     HF_token = os.getenv("HF_TOKEN") or ""
 
     if factor is not None:
         # MB-based padding (byte premium factor exists)
-        dataset_size = dataset_df["text"].apply(bytes_in_text).sum()
-        dataset_tier = get_dataset_tier(dataset_size, eng_sizes_per_tier, factor)
+        dataset_size = get_dataset_size(dataset_df)
+        dataset_tier = get_dataset_tier(dataset_size, factor)
         if dataset_tier is None:
             return {
                 "dataset": dataset_df,
@@ -407,5 +409,5 @@ def pad_dataset_to_next_tier(
         return {
             "dataset": dataset_df,
             "byte_premium_factor": None,
-            "dataset_size": dataset_df["text"].apply(bytes_in_text).sum(),
+            "dataset_size": get_dataset_size(dataset_df),
         }
