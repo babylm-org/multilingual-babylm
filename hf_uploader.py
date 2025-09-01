@@ -424,9 +424,9 @@ Please cite the original data source: {config.get("data_source", "Unknown")}
             try:
                 ds = load_dataset(repo_id, split="train", token=self.token)
                 df_obj = ds.to_pandas()  # type: ignore[attr-defined]
-                assert isinstance(df_obj, pd.DataFrame), (
-                    "Expected pandas DataFrame from dataset"
-                )
+                assert isinstance(
+                    df_obj, pd.DataFrame
+                ), "Expected pandas DataFrame from dataset"
                 df: pd.DataFrame = cast(pd.DataFrame, df_obj)
             except Exception as e:
                 print(f"  Could not load dataset: {e}")
@@ -484,7 +484,11 @@ Please cite the original data source: {config.get("data_source", "Unknown")}
         candidates: List[str] = []
         for d in all_ds:
             ds_id = getattr(d, "id", None)
-            if not isinstance(ds_id, str) or not ds_id.startswith(prefix):
+            if (
+                not isinstance(ds_id, str)
+                or not ds_id.startswith(prefix)
+                or "subtitles" in ds_id
+            ):
                 continue
             # Check archive/deprecation indicators
             tags = set(getattr(d, "tags", []) or [])
