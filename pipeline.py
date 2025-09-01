@@ -18,7 +18,11 @@ from loader import get_loader
 from pad_dataset import pad_dataset_to_next_tier, remove_padding_data
 from multilingual_res.manager import fetch_resource, remove_resource
 
-from iso639 import is_language, Lang
+try:
+    from iso639 import is_language, Lang  # type: ignore
+except Exception:
+    is_language = None  # type: ignore
+    Lang = None  # type: ignore
 
 
 def process_dataset(
@@ -147,8 +151,8 @@ def process_dataset(
             metadata_mapping = json.load(f)
     # Metadata file overrides document-level metadata
     for doc in docs:
-        # Use file_name for mapping if present, else doc_id
-        meta_key = doc.get("file_name") or doc["doc_id"]
+        # Use file_name for mapping if present, else doc-id/legacy doc_id
+        meta_key = doc.get("file_name") or doc.get("doc-id") or doc.get("doc_id")
         if meta_key in metadata_mapping:
             doc["metadata"].update(metadata_mapping[meta_key])
     # Remove 'file_name' field before passing to builder
@@ -163,17 +167,20 @@ def process_dataset(
     builder = BabyLMDatasetBuilder(dataset_config, merge_existing=not overwrite)
     builder.add_documents_from_iterable(docs, document_config_params)
     builder.create_dataset_table()
+    assert builder.dataset_table is not None
 
     # 4. Preprocess all texts (if requested)
     if preprocess_text:
         print("Preprocessing document texts...")
-        builder.dataset_table = preprocess_dataset(builder.dataset_table)
+    assert builder.dataset_table is not None
+    builder.dataset_table = preprocess_dataset(builder.dataset_table)
 
     # 5. Language filtering if enabled
     if enable_language_filtering:
         print(
             f"Filtering dataset for language {language_code} and script {script_code}..."
         )
+        assert builder.dataset_table is not None
         builder.dataset_table = filter_dataset_for_lang_and_script(
             builder.dataset_table,
             language_code=language_code,
@@ -184,6 +191,7 @@ def process_dataset(
     # 6. Pad dataset to next tier, accounting for byte premium
     if pad_opensubtitles:
         print(f"Padding dataset for {language_code} using OpenSubtitles...")
+        assert builder.dataset_table is not None
         results = pad_dataset_to_next_tier(
             dataset_df=builder.dataset_table,
             language_code=language_code,
@@ -191,8 +199,8 @@ def process_dataset(
         )
         builder.dataset_table = results["dataset"]
         # Keep the byte premium factor and dataset size for metadata
-        builder.byte_premium_factor = results["byte_premium_factor"]
-        builder.dataset_size = results["dataset_size"]
+        setattr(builder, "byte_premium_factor", results["byte_premium_factor"])  # type: ignore[attr-defined]
+        setattr(builder, "dataset_size", results["dataset_size"])  # type: ignore[attr-defined]
 
         # assume the padding dataset is filtered for language and script
         # and has been preprocessed for the subtitles category
@@ -203,6 +211,7 @@ def process_dataset(
 
     # 7. Save and create dataset
     builder.save_dataset()
+    assert builder.dataset_table is not None
     print(f"\nDataset created with {len(builder.dataset_table)} documents")
 
     # 8. Upload if requested
@@ -382,8 +391,8 @@ def main():
             f"Invalid script code '{args.script}'. Must be a valid ISO 15924 code (e.g., Latn, Cyrl, Arab, etc.)"
         )
 
-    if not is_language(args.language, "pt3"):
-        if is_language(Lang(args.language).pt3, "pt3"):
+    if is_language is not None and not is_language(args.language, "pt3"):
+        if Lang is not None and is_language(Lang(args.language).pt3, "pt3"):
             args.language = Lang(args.language).pt3  # Normalize to ISO 639-3 if needed
         else:
             raise ValueError(
