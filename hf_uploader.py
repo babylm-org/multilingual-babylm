@@ -16,6 +16,18 @@ from transformers import AutoTokenizer  # type: ignore
 from pad_utils import get_byte_premium_factor, get_dataset_tier, get_dataset_size
 
 
+
+
+# Calculate token statistics
+def count_tokens(text, tokenizer=None):
+    if not isinstance(text, str):
+        return 0
+    if tokenizer:
+        tokens = tokenizer.encode(text, add_special_tokens=False)
+        return len(tokens)
+    return len(text.split())
+
+
 class HFDatasetUploader:
     """Handle uploading BabyLM datasets to HuggingFace."""
 
@@ -104,15 +116,6 @@ class HFDatasetUploader:
             AutoTokenizer.from_pretrained(tokenizer_name) if tokenizer_name else None
         )
 
-        # Calculate token statistics
-        def count_tokens(text, tokenizer=None):
-            if not isinstance(text, str):
-                return 0
-            if tokenizer:
-                tokens = tokenizer.encode(text, add_special_tokens=False)
-                return len(tokens)
-            return len(text.split())
-
         # Fix schema issues before uploading
         if "misc" in df.columns:
             # Convert None/null values to json string
@@ -185,6 +188,7 @@ class HFDatasetUploader:
                 dataset_size=dataset_size,
                 scripts_list=scripts_list,
                 tokens_per_group=tokens_per_group,
+                tokenizer_name=tokenizer_name,
             )
 
         # Upload additional files (metadata, etc.)
@@ -258,6 +262,7 @@ class HFDatasetUploader:
         dataset_size: float,
         scripts_list: Optional[List[str]] = None,
         tokens_per_group: Optional[Dict[str, int]] = None,
+        tokenizer_name: str = None,
     ) -> None:
         """Create (or overwrite) a README.md dataset card and upload it."""
         import json
@@ -307,7 +312,8 @@ class HFDatasetUploader:
             script_display = ", ".join(scripts_list)
 
         byte_premium_factor = get_byte_premium_factor(language)
-        dataset_tier = get_dataset_tier(dataset_size, byte_premium_factor)
+        # calculate dataset_tier, allowing for at most 1% difference from the required size
+        dataset_tier = get_dataset_tier(dataset_size, byte_premium_factor, percent_tolerance = 0.01)
         if dataset_tier is None:
             dataset_tier = "Exceeds largest tier (100M)"
         else:
@@ -337,6 +343,9 @@ class HFDatasetUploader:
 
         dataset_name = metadata.get("dataset_name", "BabyLM Dataset")
 
+        if tokenizer_name is None:
+            tokenizer_name = "separate by whitespace"
+
         # format readme
         readme_content = readme_content.format(
             language=language,
@@ -351,6 +360,7 @@ class HFDatasetUploader:
             tokens_per_category_content=tokens_per_category_content,
             data_source=data_source,
             dataset_name=dataset_name,
+            tokenizer_name=tokenizer_name,
         )
 
         # Save README
@@ -382,11 +392,21 @@ class HFDatasetUploader:
         if repo_ids is None:
             repo_ids = self._discover_babylm_repos()
 
+        tokenizers = {
+            "jpn": "tohoku-nlp/bert-base-japanese",
+            "zho": "Qwen/Qwen3-0.6B",
+            "yue": "Qwen/Qwen1.5-7B-Chat",
+        }
+
         if not repo_ids:
             print("No BabyLM datasets found with prefix 'BabyLM-community/babylm-'.")
             return
+
         print(f"Discovered {len(repo_ids)} BabyLM dataset repos to update.")
         for repo_id in repo_ids:
+            language_code = repo_id.split("-")[-1]
+            tokenizer_name = tokenizers.get(language_code, None)
+
             suffix = repo_id.split("babylm-")[-1]
             print(f"Updating README for {repo_id}...")
             try:
@@ -400,7 +420,12 @@ class HFDatasetUploader:
                 print(f"  Could not load dataset: {e}")
                 continue
             if "num_tokens" not in df.columns:
-                df["num_tokens"] = df["text"].apply(lambda x: len(str(x).split()))
+                tokenizer = (
+                    AutoTokenizer.from_pretrained(tokenizer_name)
+                    if tokenizer_name
+                    else None
+                )
+                df["num_tokens"] = df["text"].apply(count_tokens, tokenizer=tokenizer)
             total_tokens = int(df["num_tokens"].sum())
             if "category" not in df.columns:
                 print("  Missing 'category' column; skipping.")
@@ -429,6 +454,7 @@ class HFDatasetUploader:
                 dataset_size=dataset_size,
                 scripts_list=scripts_list,
                 tokens_per_group=tokens_per_group,
+                tokenizer_name=tokenizer_name,
             )
             try:
                 (tmp_dir / "README.md").unlink()

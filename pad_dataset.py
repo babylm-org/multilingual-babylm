@@ -20,7 +20,7 @@ from pad_utils import (
     dataframe_to_docs,
     eng_sizes_per_tier,
     get_byte_premium_factor,
-    get_dataset_tier,
+    get_dataset_tier_to_pad,
     get_dataset_size,
 )
 
@@ -383,7 +383,7 @@ def pad_dataset_to_next_tier(
     if factor is not None:
         # MB-based padding (byte premium factor exists)
         dataset_size = get_dataset_size(dataset_df)
-        dataset_tier = get_dataset_tier(dataset_size, factor)
+        dataset_tier = get_dataset_tier_to_pad(dataset_size, factor)
         if dataset_tier is None:
             return {
                 "dataset": dataset_df,

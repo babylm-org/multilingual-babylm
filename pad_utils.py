@@ -108,9 +108,37 @@ def normalize_script(script: str) -> str:
     return script
 
 
-def get_dataset_tier(dataset_size, factor):
+
+def get_dataset_tier(dataset_size, factor, percent_tolerance):
     """
     Determine the tier based on dataset size.
+    Allow for `percent_tolerance` difference from the target tier value
+    """
+
+    def is_within_percentage(x, target, percent_tolerance):
+        return abs(x - target) <= (percent_tolerance) * abs(target)
+
+    tiers = eng_sizes_per_tier.copy()
+    target_sizes = [(name.split('_')[-1], size * factor) for name, size in tiers.items()]
+    sorted_pairs = sorted(target_sizes, key=lambda x: x[1])
+
+    for name, target in target_sizes:
+        if is_within_percentage(dataset_size, target, percent_tolerance):
+            return name
+
+    # dataset_size is below the tier threshold
+    for name, target in target_sizes:
+        if dataset_size < target:
+            return "< " + name
+
+    # dataset_size exceeds largest tier threshold
+    return "> " + sorted_pairs[-1]
+
+
+
+def get_dataset_tier_to_pad(dataset_size, factor):
+    """
+    Determine the tier to pad to based on dataset size.
     """
     if dataset_size < eng_sizes_per_tier["tier_1M"] * factor:
         dataset_tier = "tier_1M"

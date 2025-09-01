@@ -10,7 +10,7 @@ dataset_info:
   features:
     - name: text
       dtype: string
-    - name: doc_id
+    - name: doc-id
       dtype: string
     - name: category
       dtype: string
@@ -24,7 +24,7 @@ dataset_info:
       dtype: string
     - name: misc
       dtype: string
-    - name: num_tokens
+    - name: num-tokens
       dtype: int64
     - name: language
       dtype: string
@@ -34,8 +34,8 @@ dataset_info:
 
 ## Dataset Description
 
-This dataset is part of the BabyLM multilingual collection.
-For more information: babylm.github.io/multilingual
+This dataset is part of the BabyLM multilingual collection.   
+For more information: [babylm.github.io/multilingual](https://babylm.github.io/multilingual)
 
 ### Dataset Summary
 
@@ -46,6 +46,7 @@ For more information: babylm.github.io/multilingual
 - **Byte Premium Factor:** {byte_premium_factor}
 - **Number of Documents:** {num_documents}
 - **Total Tokens:** {total_tokens}
+- **Tokenizer:** {tokenizer_name}
 
 ### Tokens Per Category
 
@@ -54,14 +55,14 @@ For more information: babylm.github.io/multilingual
 ### Data Fields
 
 - `text`: The document text
-- `doc_id`: Unique identifier for the document
+- `doc-id`: Unique identifier for the document
 - `category`: Type of content (e.g., child-directed-speech, educational, etc.)
 - `data-source`: Original source of the data
 - `script`: Writing system used (ISO 15924)
 - `age-estimate`: Target age or age range
 - `license`: Data license
 - `misc`: Additional metadata (JSON string)
-- `num_tokens`: Number of tokens per item (based on white-space split)
+- `num-tokens`: Number of tokens per item (based on white-space split)
 - `language`: Language code (ISO 639-3)
 
 ### Licensing Information
