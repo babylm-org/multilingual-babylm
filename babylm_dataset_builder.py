@@ -146,8 +146,11 @@ class BabyLMDatasetBuilder:
                     print(f"Warning: Could not load existing Parquet: {e}")
             if existing_df is not None:
                 print(f"Loaded existing data with {len(existing_df)} documents.")
-                # Backward compatibility: normalize to 'doc-id'
-                existing_df = self.normalize_identifier_column(existing_df)
+                # Ensure identifier column exists
+                if "doc-id" not in existing_df.columns and "text" in existing_df.columns:
+                    existing_df["doc-id"] = existing_df["text"].apply(
+                        lambda x: hashlib.sha256(str(x).encode("utf-8")).hexdigest()
+                    )
                 self._existing_doc_ids = set(existing_df["doc-id"].astype(str))
                 self._existing_documents = existing_df.to_dict(orient="records")
             else:
@@ -192,15 +195,15 @@ class BabyLMDatasetBuilder:
         document_config_params: Optional[dict[str, Any]] = None,
     ) -> None:
         """
-    Add multiple documents from an iterable of dicts with 'text', 'doc-id' (or legacy 'doc_id'), and 'metadata'.
+    Add multiple documents from an iterable of dicts with 'text', 'doc-id', and 'metadata'.
 
         Args:
-            documents: List of dicts with keys 'text', 'doc-id' (or 'doc_id'), and 'metadata' (optional)
+            documents: List of dicts with keys 'text', 'doc-id', and 'metadata' (optional)
             default_document_config: Default DocumentConfig for documents
         """
         for doc in documents:
             text = doc["text"]
-            document_id = doc.get("doc-id") or doc.get("doc_id")
+            document_id = doc.get("doc-id")
             if document_id is None:
                 # Compute from text for robustness
                 document_id = hashlib.sha256(str(text).encode("utf-8")).hexdigest()
@@ -269,27 +272,7 @@ class BabyLMDatasetBuilder:
             }
             self.add_document(text, document_id, doc_config, additional_metadata)
 
-    def add_missing_doc_id(self, df):
-        """
-        Backward-compat shim: ensure an identifier column exists.
-        Prefer 'doc-id'; if only 'doc_id' exists, rename it; if neither, compute from text.
-        """
-        return self.normalize_identifier_column(df)
-
-    def normalize_identifier_column(self, df: pd.DataFrame) -> pd.DataFrame:
-        # If legacy name present, rename
-        if "doc-id" in df.columns:
-            return df
-        if "doc_id" in df.columns:
-            return df.rename(columns={"doc_id": "doc-id"})
-        # Else compute from text
-        print(
-            "Identifier column missing. Generating 'doc-id' from text for each record."
-        )
-        df["doc-id"] = df["text"].apply(
-            lambda x: hashlib.sha256(str(x).encode("utf-8")).hexdigest()
-        )
-        return df
+    # Migration helpers removed; assume canonical 'doc-id' moving forward.
 
     def create_dataset_table(self) -> pd.DataFrame:
         """Create the standardized BabyLM dataset table."""
@@ -318,8 +301,11 @@ class BabyLMDatasetBuilder:
             rows.append(row)
 
         df = pd.DataFrame(rows)
-        # Ensure identifier column
-        df = self.normalize_identifier_column(df)
+        # Ensure identifier column if missing (compute from text)
+        if "doc-id" not in df.columns:
+            df["doc-id"] = df["text"].apply(
+                lambda x: hashlib.sha256(str(x).encode("utf-8")).hexdigest()
+            )
         # Remove duplicates by doc-id (keep first occurrence)
         df = df.drop_duplicates(subset=["doc-id"])
         # Ensure all values in 'text' column are strings
