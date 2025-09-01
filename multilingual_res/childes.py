@@ -5,7 +5,7 @@ import os
 from datasets import load_dataset
 from dotenv import load_dotenv
 from multilingual_res.base import BaseResourceFetcher
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, cast
 
 
 class ChildesFetcher(BaseResourceFetcher):
@@ -24,7 +24,7 @@ class ChildesFetcher(BaseResourceFetcher):
     ) -> List[Dict]:
         """
         Fetch CHILDES data for a given language code and script code.
-        Returns a list of dicts with keys: text, doc_id, metadata (for DocumentConfig)
+        Returns a list of dicts with keys: text, doc-id, metadata (for DocumentConfig)
         """
         try:
             dataset = load_dataset(
@@ -36,24 +36,19 @@ class ChildesFetcher(BaseResourceFetcher):
 
         results = []
         for doc in dataset:
-            text = doc["text"]
-            if text is not None:
+            d = cast(dict, doc)
+            text = d.get("text")
+            if text:
                 metadata = {
-                    "category": doc.get("category", "child-directed-speech"),
-                    "data-source": doc.get("data-source", "unknown"),
-                    "script": doc.get("script", script_code),
-                    "age-estimate": doc.get("age-estimate", "n/a"),
-                    "license": doc.get("license", "unknown"),
+                    "category": d.get("category", "child-directed-speech"),
+                    "data-source": d.get("data-source", "unknown"),
+                    "script": d.get("script", script_code),
+                    "age-estimate": d.get("age-estimate", "n/a"),
+                    "license": d.get("license", "unknown"),
                     "misc": {"multilingual_resource": "childes"},
                 }
                 doc_id = hashlib.sha256(text.encode("utf-8")).hexdigest()
-                results.append(
-                    {
-                        "text": text,
-                        "doc_id": doc_id,
-                        "metadata": metadata,
-                    }
-                )
+                results.append({"text": text, "doc-id": doc_id, "metadata": metadata})
         print(
             f"Fetched {len(results)} documents from CHILDES for language '{language_code}'"
         )

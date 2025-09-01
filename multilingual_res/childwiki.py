@@ -5,7 +5,7 @@ import os
 from datasets import load_dataset
 from dotenv import load_dotenv
 from multilingual_res.base import BaseResourceFetcher
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, cast
 
 
 class ChildWikiFetcher(BaseResourceFetcher):
@@ -24,16 +24,17 @@ class ChildWikiFetcher(BaseResourceFetcher):
     ) -> List[Dict]:
         """
         Fetch ChildWiki data for a given language code and script code.
-        Returns a list of dicts with keys: text, doc_id, metadata (for DocumentConfig)
+        Returns a list of dicts with keys: text, doc-id, metadata (for DocumentConfig)
         """
         dataset = load_dataset("BabyLM-community/baby-wikis", split="train")
         filtered = dataset.filter(lambda x: x["lang"] == language_code)
         results = []
         for doc in filtered:
-            text = doc["content"]
-            if text is not None:
-                data_source = doc["wiki"]
-                title = doc["title"]
+            d = cast(dict, doc)
+            text = d.get("content")
+            if text:
+                data_source = d.get("wiki")
+                title = d.get("title")
                 metadata = {
                     "category": "child-wiki",
                     "data-source": data_source,
@@ -43,13 +44,7 @@ class ChildWikiFetcher(BaseResourceFetcher):
                     "misc": {"title": title, "multilingual_resource": "childwiki"},
                 }
                 doc_id = hashlib.sha256(text.encode("utf-8")).hexdigest()
-                results.append(
-                    {
-                        "text": text,
-                        "doc_id": doc_id,
-                        "metadata": metadata,
-                    }
-                )
+                results.append({"text": text, "doc-id": doc_id, "metadata": metadata})
         print(
             f"Fetched {len(results)} documents from ChildWiki for language '{language_code}'"
         )
