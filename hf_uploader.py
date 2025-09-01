@@ -119,12 +119,15 @@ class HFDatasetUploader:
 
         # assign language to documents
         df["language"] = language_code
-        df["num_tokens"] = df["text"].apply(count_tokens, tokenizer=tokenizer)
-        total_tokens = int(df["num_tokens"].sum())
+        # Normalize column names to new hyphenated format and compute tokens
+        df = self._normalize_columns_df(df)
+        if "num-tokens" not in df.columns:
+            df["num-tokens"] = df["text"].apply(count_tokens, tokenizer=tokenizer)
+        total_tokens = int(df["num-tokens"].sum())
 
         assert "category" in df.columns, "category must be defined"
 
-        tokens_per_category = df.groupby("category")["num_tokens"].sum().to_dict()
+        tokens_per_category = df.groupby("category")["num-tokens"].sum().to_dict()
         # NEW: scripts list
         scripts_list = sorted(
             {
@@ -148,14 +151,14 @@ class HFDatasetUploader:
         features = Features(
             {
                 "text": Value("string"),
-                "doc_id": Value("string"),
+                "doc-id": Value("string"),
                 "category": Value("string"),
                 "data-source": Value("string"),
                 "script": Value("string"),
                 "age-estimate": Value("string"),
                 "license": Value("string"),
                 "misc": Value("string"),
-                "num_tokens": Value("int64"),
+                "num-tokens": Value("int64"),
                 "language": Value("string"),
             }
         )
@@ -313,7 +316,7 @@ dataset_info:
   features:
     - name: text
       dtype: string
-    - name: doc_id
+    - name: doc-id
       dtype: string
     - name: category
       dtype: string
@@ -327,7 +330,7 @@ dataset_info:
       dtype: string
     - name: misc
       dtype: string
-    - name: num_tokens
+    - name: num-tokens
       dtype: int64
     - name: language
       dtype: string
@@ -368,14 +371,14 @@ This dataset is part of the BabyLM multilingual collection.
 ### Data Fields
 
 - `text`: The document text
-- `doc_id`: Unique identifier for the document
+- `doc-id`: Unique identifier for the document
 - `category`: Type of content (e.g., child-directed-speech, educational, etc.)
 - `data-source`: Original source of the data
 - `script`: Writing system used (ISO 15924)
 - `age-estimate`: Target age or age range
 - `license`: Data license
 - `misc`: Additional metadata (JSON string)
-- `num_tokens`: Number of tokens per item (based on white-space split)
+- `num-tokens`: Number of tokens per item (based on white-space split)
 - `language`: Language code (ISO 639-3)
 
 ### Licensing Information
@@ -431,13 +434,15 @@ Please cite the original data source: {config.get("data_source", "Unknown")}
             except Exception as e:
                 print(f"  Could not load dataset: {e}")
                 continue
-            if "num_tokens" not in df.columns:
-                df["num_tokens"] = df["text"].apply(lambda x: len(str(x).split()))
-            total_tokens = int(df["num_tokens"].sum())
+            # Normalize columns and ensure token counts
+            df = self._normalize_columns_df(df)
+            if "num-tokens" not in df.columns:
+                df["num-tokens"] = df["text"].apply(lambda x: len(str(x).split()))
+            total_tokens = int(df["num-tokens"].sum())
             if "category" not in df.columns:
                 print("  Missing 'category' column; skipping.")
                 continue
-            tokens_per_category = df.groupby("category")["num_tokens"].sum().to_dict()
+            tokens_per_category = df.groupby("category")["num-tokens"].sum().to_dict()
             if "script" in df.columns:
                 scripts_list = sorted(
                     {
@@ -465,6 +470,156 @@ Please cite the original data source: {config.get("data_source", "Unknown")}
                 tmp_dir.rmdir()
             except Exception:
                 pass
+
+    def migrate_all_repos_fields(self, recompute_tokens: bool = False) -> None:
+        """Bulk migrate column names in all BabyLM repos to use hyphens.
+
+        For each discovered repo:
+          - Rename 'doc_id' -> 'doc-id' (or compute from text if missing)
+          - Rename 'num_tokens' -> 'num-tokens' (or compute whitespace count if missing)
+          - Push updated split back to the hub
+          - Regenerate README with updated field names
+        """
+        from datasets import Dataset as HFDataset  # local import for type cast
+
+        repo_ids = self._discover_babylm_repos()
+        if not repo_ids:
+            print("No BabyLM datasets found to migrate.")
+            return
+        print(f"Discovered {len(repo_ids)} repos to migrate fields.")
+        for repo_id in repo_ids:
+            print(f"Migrating fields for {repo_id}...")
+            try:
+                ds = load_dataset(repo_id, split="train", token=self.token)
+            except Exception as e:
+                print(f"  Could not load dataset: {e}")
+                continue
+
+            # Ensure hyphenated columns exist
+            ds = self._ensure_hyphen_columns_dataset(
+                ds, recompute_tokens=recompute_tokens
+            )
+
+            try:
+                # Push back to hub
+                print("  Pushing updated dataset to hub...")
+                ds.push_to_hub(repo_id, token=self.token)
+            except Exception as e:
+                print(f"  Error pushing dataset: {e}")
+                # Continue to next repo, but try README anyway with local df
+            try:
+                df = ds.to_pandas()  # type: ignore[attr-defined]
+                df = self._normalize_columns_df(df)
+                if "num-tokens" not in df.columns:
+                    df["num-tokens"] = df["text"].apply(lambda x: len(str(x).split()))
+                total_tokens = int(df["num-tokens"].sum())
+                tokens_per_category = (
+                    df.groupby("category")["num-tokens"].sum().to_dict()
+                    if "category" in df.columns
+                    else {}
+                )
+                scripts_list = (
+                    sorted(
+                        {
+                            str(s).strip()
+                            for s in df.get("script", pd.Series()).astype(str).unique()
+                            if str(s).strip() and str(s).lower() != "nan"
+                        }
+                    )
+                    if "script" in df.columns
+                    else []
+                )
+                tmp_dir = Path(f"_tmp_readme_{repo_id.split('babylm-')[-1]}")
+                tmp_dir.mkdir(exist_ok=True)
+                self._create_dataset_card(
+                    dataset_dir=tmp_dir,
+                    repo_id=repo_id,
+                    total_tokens=total_tokens,
+                    tokens_per_category=tokens_per_category,
+                    num_documents=len(df),
+                    scripts_list=scripts_list,
+                    tokens_per_group=self._compute_group_tokens(tokens_per_category),
+                )
+                try:
+                    (tmp_dir / "README.md").unlink()
+                    tmp_dir.rmdir()
+                except Exception:
+                    pass
+            except Exception as e:
+                print(f"  Error updating README: {e}")
+
+    def _normalize_columns_df(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Normalize pandas DataFrame columns to use hyphenated names.
+
+        - doc_id -> doc-id (compute from text if neither exists)
+        - num_tokens -> num-tokens
+        Ensures types are strings for texty fields.
+        """
+        # Rename legacy columns if present
+        col_map = {}
+        if "doc_id" in df.columns and "doc-id" not in df.columns:
+            col_map["doc_id"] = "doc-id"
+        if "num_tokens" in df.columns and "num-tokens" not in df.columns:
+            col_map["num_tokens"] = "num-tokens"
+        if col_map:
+            df = df.rename(columns=col_map)
+        # Compute missing identifiers if needed
+        if "doc-id" not in df.columns and "text" in df.columns:
+            df["doc-id"] = df["text"].apply(
+                lambda x: hashlib.sha256(str(x).encode("utf-8")).hexdigest()
+            )
+        # Ensure common columns are strings
+        for col in [
+            "text",
+            "doc-id",
+            "category",
+            "data-source",
+            "script",
+            "age-estimate",
+            "license",
+            "misc",
+            "language",
+        ]:
+            if col in df.columns:
+                df[col] = df[col].astype(str)
+        return df
+
+    def _ensure_hyphen_columns_dataset(self, ds, recompute_tokens: bool = False):
+        """Ensure a Hugging Face Dataset has hyphenated columns.
+
+        Returns a possibly transformed dataset.
+        """
+        names = set(getattr(ds, "column_names", []))
+        # Rename legacy columns
+        rename_map: dict[str, str] = {}
+        if "doc_id" in names and "doc-id" not in names:
+            rename_map["doc_id"] = "doc-id"
+        if "num_tokens" in names and "num-tokens" not in names:
+            rename_map["num_tokens"] = "num-tokens"
+        if rename_map:
+            ds = ds.rename_columns(rename_map)
+            names = set(getattr(ds, "column_names", []))
+
+        # Compute missing doc-id
+        if "doc-id" not in names:
+            ds = ds.map(
+                lambda x: {
+                    "doc-id": hashlib.sha256(
+                        str(x.get("text", "")).encode("utf-8")
+                    ).hexdigest()
+                },
+                desc="Computing doc-id",
+            )
+            names = set(getattr(ds, "column_names", []))
+
+        # Ensure num-tokens
+        if recompute_tokens or "num-tokens" not in names:
+            ds = ds.map(
+                lambda x: {"num-tokens": len(str(x.get("text", "")).split())},
+                desc="Computing num-tokens",
+            )
+
+        return ds
 
     def _discover_babylm_repos(self, check_empty: bool = True) -> List[str]:
         """Return sorted list of active (non-archived, non-empty) BabyLM dataset repo_ids.
@@ -527,7 +682,7 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(
-        description="Bulk update BabyLM language dataset READMEs (scripts list + grouped category counts)."
+        description="Manage BabyLM language datasets on the Hub (migrate fields, update READMEs)."
     )
     parser.add_argument(
         "--token",
@@ -535,6 +690,26 @@ if __name__ == "__main__":
         default=None,
         help="HuggingFace token (optional, will use env if not provided).",
     )
+    parser.add_argument(
+        "--migrate-fields",
+        action="store_true",
+        help="Rename legacy columns (doc_id,num_tokens) to (doc-id,num-tokens) across all repos.",
+    )
+    parser.add_argument(
+        "--recompute-tokens",
+        action="store_true",
+        help="When migrating, recompute num-tokens from text instead of reusing existing.",
+    )
+    parser.add_argument(
+        "--update-readmes",
+        action="store_true",
+        help="Regenerate README cards for all repos.",
+    )
     args = parser.parse_args()
     uploader = HFDatasetUploader(token=args.token)
-    uploader.update_all_readmes()
+    ran_any = False
+    if args.migrate_fields:
+        ran_any = True
+        uploader.migrate_all_repos_fields(recompute_tokens=args.recompute_tokens)
+    if args.update_readmes or not ran_any:
+        uploader.update_all_readmes()
