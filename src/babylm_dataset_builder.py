@@ -30,17 +30,35 @@ class DocumentConfig:
         self.validate_category()
         self.validate_script()
         self.validate_misc()
+        self.validate_license()
+        self.validate_age_estimate()
+        self.validate_data_source()
 
-        # check for None values
+
+    def validate_license(self):
         if self.license is None:
             raise ValueError("License must be specified.")
+        assert isinstance(self.license_val, str)
+
+    def validate_data_source(self):
         if self.data_source is None:
             raise ValueError("Data source must be specified.")
+        assert isinstance(self.data_source, str)
+
+
+    def validate_age_estimate(self):
         if self.age_estimate is None:
             raise ValueError("Age estimate must be specified.")
+        assert isinstance(self.age_estimate, str)
+
 
     def validate_category(self):
         """Validate that category is one of the allowed values."""
+
+        if self.category is None:
+            raise ValueError("Category must be specified.")
+        assert isinstance(self.category, str)
+
         allowed_categories = {
             "child-directed-speech",
             "educational",
@@ -62,6 +80,11 @@ class DocumentConfig:
 
     def validate_script(self):
         """Validate that script is a valid ISO 15924 code."""
+
+        if self.script is None:
+            raise ValueError("Script must be specified.")
+        assert isinstance(self.script, str)
+
         if not validate_script_code(self.script):
             if not validate_script_code(get_script_code_by_name(self.script)):
                 raise ValueError(
@@ -235,22 +258,6 @@ class BabyLMDatasetBuilder:
                     "age-estimate"
                 )
                 license_val = metadata.get("license") or base_params.get("license")
-                if (
-                    category is None
-                    or data_source is None
-                    or script is None
-                    or age_estimate is None
-                    or license_val is None
-                ):
-                    raise ValueError(
-                        "Missing required document configuration fields: category, data-source, script, age-estimate, license"
-                    )
-                # Type narrow for static analysis
-                assert isinstance(category, str)
-                assert isinstance(data_source, str)
-                assert isinstance(script, str)
-                assert isinstance(age_estimate, str)
-                assert isinstance(license_val, str)
                 misc_str = json.dumps(misc) if isinstance(misc, dict) else str(misc)
                 doc_config = DocumentConfig(
                     category=category,
@@ -260,12 +267,10 @@ class BabyLMDatasetBuilder:
                     license=license_val,
                     misc=misc_str,
                 )
-
             except ValueError as e:
                 raise ValueError(
                     f"Error in configuration of document with id {document_id}: {e}"
                 )
-
             config_keys = {
                 "category",
                 "data-source",
@@ -302,7 +307,6 @@ class BabyLMDatasetBuilder:
                 "license": document_config.license,
                 "misc": document_config.misc,
             }
-
             rows.append(row)
 
         df = pd.DataFrame(rows)
