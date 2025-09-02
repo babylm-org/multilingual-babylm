@@ -34,7 +34,6 @@ class DocumentConfig:
         self.validate_age_estimate()
         self.validate_data_source()
 
-
     def validate_license(self):
         if self.license is None:
             raise ValueError("License must be specified.")
@@ -45,12 +44,10 @@ class DocumentConfig:
             raise ValueError("Data source must be specified.")
         assert isinstance(self.data_source, str)
 
-
     def validate_age_estimate(self):
         if self.age_estimate is None:
             raise ValueError("Age estimate must be specified.")
         assert isinstance(self.age_estimate, str)
-
 
     def validate_category(self):
         """Validate that category is one of the allowed values."""
