@@ -38,7 +38,7 @@ class DocumentConfig:
     def validate_license(self):
         if self.license is None:
             raise ValueError("License must be specified.")
-        assert isinstance(self.license_val, str)
+        assert isinstance(self.license, str)
 
     def validate_data_source(self):
         if self.data_source is None:
