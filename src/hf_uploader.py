@@ -39,6 +39,18 @@ class HFDatasetUploader:
 
         self.api = HfApi(token=self.token)
 
+    def create_pr(self, repo_id, pr_title, pr_description):
+        res = self.api.create_discussion(
+            repo_id=repo_id,
+            repo_type="dataset",
+            title=pr_title,
+            description=pr_description,
+            pull_request=True,
+        )
+        print(f"Creating Pull Request with url {res.url}")
+        pr_revision = f"refs/pr/{res.num}"
+        return pr_revision
+
     def upload_babylm_dataset(
         self,
         language_code: str,
@@ -51,6 +63,9 @@ class HFDatasetUploader:
         add_to_existing_data: bool = False,
         tokenizer_name: Optional[str] = None,
         byte_premium_factor: Optional[float] = None,
+        create_pr: Optional[bool] = False,
+        pr_title: Optional[str] = "Update Dataset",
+        pr_description: Optional[str] = "",
     ) -> None:
         """
         Upload a BabyLM dataset to HuggingFace.
@@ -160,6 +175,48 @@ class HFDatasetUploader:
         for g, tok in tokens_per_group.items():
             print(f"  {g}: {tok}")
 
+        if create_pr:
+            revision = self.create_pr(repo_id, pr_title, pr_description)
+
+        # Create dataset card if requested
+        if create_dataset_card:
+            num_documents = len(df)
+            self._create_dataset_card(
+                dataset_dir=dataset_dir,
+                repo_id=repo_id,
+                total_tokens=total_tokens,
+                tokens_per_category=tokens_per_category,
+                num_documents=num_documents,
+                dataset_size=dataset_size,
+                major_script=script_code,
+                scripts_list=scripts_list,
+                tokens_per_group=tokens_per_group,
+                tokenizer_name=tokenizer_name,
+                byte_premium_factor=byte_premium_factor,
+                revision=revision,
+            )
+
+        # Upload additional files (metadata, etc.)
+        metadata_files = [
+            dataset_dir / "dataset_metadata.json",
+            dataset_dir / "file_metadata.csv",  # For OpenSubtitles
+        ]
+
+        for file_path in metadata_files:
+            if file_path.exists():
+                try:
+                    self.api.upload_file(
+                        path_or_fileobj=str(file_path),
+                        path_in_repo=file_path.name,
+                        repo_id=repo_id,
+                        repo_type="dataset",
+                        token=self.token,
+                        revision=revision,
+                    )
+                    print(f"Uploaded {file_path.name}")
+                except Exception as e:
+                    print(f"Error uploading {file_path.name}: {e}")
+
         # Define the expected features explicitly
         features = Features(
             {
@@ -183,44 +240,9 @@ class HFDatasetUploader:
 
         # Push to hub
         print(f"Uploading dataset to {repo_id}...")
-        dataset_dict.push_to_hub(repo_id, token=self.token, private=private)
-
-        # Create dataset card if requested
-        if create_dataset_card:
-            num_documents = len(df)
-            self._create_dataset_card(
-                dataset_dir=dataset_dir,
-                repo_id=repo_id,
-                total_tokens=total_tokens,
-                tokens_per_category=tokens_per_category,
-                num_documents=num_documents,
-                dataset_size=dataset_size,
-                major_script=script_code,
-                scripts_list=scripts_list,
-                tokens_per_group=tokens_per_group,
-                tokenizer_name=tokenizer_name,
-                byte_premium_factor=byte_premium_factor,
-            )
-
-        # Upload additional files (metadata, etc.)
-        metadata_files = [
-            dataset_dir / "dataset_metadata.json",
-            dataset_dir / "file_metadata.csv",  # For OpenSubtitles
-        ]
-
-        for file_path in metadata_files:
-            if file_path.exists():
-                try:
-                    self.api.upload_file(
-                        path_or_fileobj=str(file_path),
-                        path_in_repo=file_path.name,
-                        repo_id=repo_id,
-                        repo_type="dataset",
-                        token=self.token,
-                    )
-                    print(f"Uploaded {file_path.name}")
-                except Exception as e:
-                    print(f"Error uploading {file_path.name}: {e}")
+        dataset_dict.push_to_hub(
+            repo_id, token=self.token, private=private, revision=revision
+        )
 
         print(
             f"Dataset successfully uploaded to https://huggingface.co/datasets/{repo_id}"
@@ -276,6 +298,7 @@ class HFDatasetUploader:
         tokens_per_group: Optional[Dict[str, int]] = None,
         tokenizer_name: Optional[str] = None,
         byte_premium_factor: Optional[float] = None,
+        revision=None,
     ) -> None:
         """Create (or overwrite) a README.md dataset card and upload it."""
         import json
@@ -387,6 +410,7 @@ class HFDatasetUploader:
                 repo_id=repo_id,
                 repo_type="dataset",
                 token=self.token,
+                revision=revision,
             )
             print("Dataset card uploaded")
         except Exception as e:
