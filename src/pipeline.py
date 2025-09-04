@@ -50,6 +50,9 @@ def process_dataset(
     remove_previous_childes_data: bool = False,
     remove_previous_padding: bool = False,
     byte_premium_factor: float = None,
+    create_pr: bool = False,
+    pr_title="Update Dataset",
+    pr_description="",
 ) -> Path:
     """
     Process any data source into BabyLM format.
@@ -227,7 +230,10 @@ def process_dataset(
             repo_id=repo_id,
             create_repo_if_missing=True,
             tokenizer_name=tokenizer_name,
-            byte_premium_factor=byte_premium_factor
+            byte_premium_factor=byte_premium_factor,
+            create_pr=create_pr,
+            pr_title=pr_title,
+            pr_description=pr_description,
         )
 
     return builder.output_dir
@@ -237,6 +243,24 @@ def main():
     parser = argparse.ArgumentParser(
         description="Process data into BabyLM format",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+
+    parser.add_argument(
+        "--create-pr",
+        action="store_true",
+        help="Create a pull request",
+    )
+    parser.add_argument(
+        "--pr-title",
+        type=str,
+        default="Update Dataset",
+        help="Pull Request Title",
+    )
+    parser.add_argument(
+        "--pr-description",
+        type=str,
+        default="",
+        help="Pull Request Title",
     )
     # Required arguments
     parser.add_argument(
@@ -448,6 +472,9 @@ def main():
         remove_previous_childes_data=args.remove_previous_childes_data,
         remove_previous_padding=args.remove_previous_padding,
         byte_premium_factor=args.byte_premium_factor,
+        create_pr=args.create_pr,
+        pr_description=args.pr_description,
+        pr_title=args.pr_title,
     )
 
 
