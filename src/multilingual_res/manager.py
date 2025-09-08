@@ -44,7 +44,8 @@ def remove_resource(
 
     processed_docs = []
     for doc in docs:
-        metadata = doc.get("metadata")
+        # Ensure metadata is a dict for safe access
+        metadata = doc.get("metadata", {})
         category = metadata.get("category")
         data_source = metadata.get("data-source")
         age_estimate = metadata.get("age-estimate")
@@ -100,13 +101,20 @@ def remove_resource(
     print("Checking documents in resource for correctness...")
 
     docs_in_resource = fetch_resource(resource_name, language_code, script_code)
-    # deduplication, some resources e.g., CHILDES contain duplicate documents
-    num_docs_in_resource = pandas.DataFrame(docs_in_resource)["text"].nunique()
+    # Deduplicate: some resources (e.g., CHILDES) contain duplicate documents
+    if not docs_in_resource:
+        num_docs_in_resource = 0
+    else:
+        df_res = pandas.DataFrame(docs_in_resource)
+        if "text" in df_res.columns:
+            num_docs_in_resource = int(df_res["text"].nunique())
+        else:
+            num_docs_in_resource = int(len(df_res))
     print(f"Number of unique documents in {resource_name}: {num_docs_in_resource}")
     if num_docs_removed > 0:
-        assert num_docs_in_resource == num_docs_removed, (
-            f"Expected to remove {num_docs_removed} but got {len(num_docs_in_resource)}"
-        )
+        assert (
+            num_docs_in_resource == num_docs_removed
+        ), f"Expected to remove {num_docs_removed} but got {num_docs_in_resource}"
         print(
             f"Number of removed documents and documents in resource {resource_name} match"
         )
