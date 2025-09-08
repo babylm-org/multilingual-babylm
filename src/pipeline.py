@@ -12,17 +12,13 @@ from typing import Optional
 from babylm_dataset_builder import BabyLMDatasetBuilder, DatasetConfig
 from hf_uploader import HFDatasetUploader
 from preprocessor import preprocess_dataset
-from language_filter import filter_dataset_for_lang_and_script
+from language_filter import filter_dataset_for_lang_and_script, update_dataset_scripts
 from language_scripts import validate_script_code
 from loader import get_loader
 from pad_dataset import pad_dataset_to_next_tier, remove_padding_data
 from multilingual_res.manager import fetch_resource, remove_resource
 
-try:
-    from iso639 import is_language, Lang  # type: ignore
-except Exception:
-    is_language = None  # type: ignore
-    Lang = None  # type: ignore
+from iso639 import is_language, Lang
 
 
 def process_dataset(
@@ -36,6 +32,8 @@ def process_dataset(
     preprocess_text: bool,
     data_type: Optional[str],
     enable_language_filtering: bool,
+    enable_script_update: bool,
+    script_update_all: bool,
     language_filter_threshold: float,
     pad_opensubtitles: bool,
     tokenizer_name: Optional[str],
@@ -49,7 +47,7 @@ def process_dataset(
     remove_previous_childwiki_data: bool = False,
     remove_previous_childes_data: bool = False,
     remove_previous_padding: bool = False,
-    byte_premium_factor: float = None,
+    byte_premium_factor: Optional[float] = None,
     create_pr: bool = False,
     pr_title="Update Dataset",
     pr_description="",
@@ -214,6 +212,33 @@ def process_dataset(
     print("Running deduplication on dataset before saving...")
     builder.deduplicate_by_text()
 
+    # 6.7 Update scripts (optional; default disabled). Default scope: newly added docs only.
+    if enable_script_update:
+        assert builder.dataset_table is not None
+        if script_update_all:
+            mask = builder.dataset_table["doc-id"].astype(str).notna()
+            scope_msg = "all documents"
+        else:
+            if hasattr(builder, "_existing_doc_ids") and isinstance(
+                builder._existing_doc_ids, set
+            ):
+                mask = (
+                    ~builder.dataset_table["doc-id"]
+                    .astype(str)
+                    .isin(builder._existing_doc_ids)
+                )
+            else:
+                # If we don't have existing ids (fresh dataset), treat all rows as new
+                mask = builder.dataset_table["doc-id"].astype(str).notna()
+            scope_msg = "newly added (incl. padding) documents only"
+
+        if mask.any():
+            print(f"Updating script annotations for {scope_msg}...")
+            updated_subset = update_dataset_scripts(
+                builder.dataset_table.loc[mask].copy()
+            )
+            builder.dataset_table.loc[mask, "script"] = updated_subset["script"].values
+
     # 7. Save and create dataset
     builder.save_dataset()
     assert builder.dataset_table is not None
@@ -340,6 +365,19 @@ def main():
         default=0.8,
         help="Minimum confidence threshold for language filtering (0.0-1.0)",
     )
+    # Script update toggle (default disabled)
+    parser.add_argument(
+        "--enable-script-update",
+        dest="enable_script_update",
+        action="store_true",
+        help="Enable script identification and updates (default: disabled)",
+    )
+    parser.add_argument(
+        "--script-update-all",
+        dest="script_update_all",
+        action="store_true",
+        help="If set (and script update is enabled), update scripts for the whole dataset. By default, only newly added documents are updated.",
+    )
     parser.add_argument(
         "--preprocess",
         "--preprocess-text",
@@ -458,6 +496,8 @@ def main():
         preprocess_text=args.preprocess_text,
         data_type=args.data_type,
         enable_language_filtering=args.enable_language_filtering,
+        enable_script_update=args.enable_script_update,
+        script_update_all=args.script_update_all,
         language_filter_threshold=args.language_filter_threshold,
         pad_opensubtitles=args.pad_opensubtitles,
         tokenizer_name=args.tokenizer_name,
