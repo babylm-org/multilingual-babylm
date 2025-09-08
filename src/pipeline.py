@@ -153,8 +153,8 @@ def process_dataset(
             metadata_mapping = json.load(f)
     # Metadata file overrides document-level metadata
     for doc in docs:
-        # Use file_name for mapping if present, else doc-id/legacy doc_id
-        meta_key = doc.get("file_name") or doc.get("doc-id") or doc.get("doc_id")
+        # Use file_name for mapping if present, else canonical 'doc-id'
+        meta_key = doc.get("file_name") or doc.get("doc-id")
         if meta_key in metadata_mapping:
             doc["metadata"].update(metadata_mapping[meta_key])
     # Remove 'file_name' field before passing to builder
