@@ -382,8 +382,8 @@ class LanguageFilter:
                 # Check if it matches expected language and script
                 lang_match = pred_lang.lower() == expected_language.lower()
                 script_match = pred_script.lower() == expected_script.lower()
-                # Backward-compat for identifier column on a Pandas Series
-                document_id = row["doc-id"] if "doc-id" in row else row["doc_id"]
+                # Use the canonical identifier column
+                document_id = row["doc-id"]
 
                 file_info = {
                     "filename": document_id + ".txt",
@@ -438,9 +438,8 @@ def filter_dataset_for_lang_and_script(
     # Only keep matching documents
 
     matching_ids = set(filter_results["match_ids"])
-    # Support either 'doc-id' or legacy 'doc_id'
-    id_col = "doc-id" if "doc-id" in dataset_table.columns else "doc_id"
-    dataset_table = dataset_table[dataset_table[id_col].isin(matching_ids)]
+    # Use canonical 'doc-id' identifier
+    dataset_table = dataset_table[dataset_table["doc-id"].isin(matching_ids)]
 
     return dataset_table
 
@@ -506,7 +505,7 @@ def update_dataset_scripts(
     - If script disagrees with the predicted script, overwrite with prediction and optionally print a warning.
 
     Args:
-        dataset_table: DataFrame with at least 'text', 'script', and identifier ('doc-id' or 'doc_id').
+    dataset_table: DataFrame with at least 'text', 'script', and identifier ('doc-id').
         min_confidence: Minimum script confidence (0-1) required to apply updates.
         min_words: Minimum words per segment for prediction.
         min_chars: Minimum characters per segment for prediction.
@@ -520,9 +519,7 @@ def update_dataset_scripts(
         return dataset_table
 
     # Identify the id column for logging
-    id_col = "doc-id" if "doc-id" in dataset_table.columns else (
-        "doc_id" if "doc_id" in dataset_table.columns else None
-    )
+    id_col = "doc-id" if "doc-id" in dataset_table.columns else None
 
     def _is_missing_script(val: Any) -> bool:
         if val is None:
