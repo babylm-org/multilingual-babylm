@@ -1,7 +1,7 @@
 import pandas as pd
 from datasets import load_dataset, get_dataset_config_names
 from iso639 import Lang
-from typing import Any
+from typing import Any, Optional
 
 from babylm_dataset_builder import BabyLMDatasetBuilder, DatasetConfig
 from preprocessor import preprocess_dataset
@@ -106,8 +106,6 @@ def pad_with_wikipedia(
     required_padding: float,
     HF_token: str,
 ):
-    from iso639 import Lang
-
     data_count = 0
     selected_rows = []
     wiki_repo = "omarkamali/wikipedia-monthly"
@@ -374,7 +372,7 @@ def pad_dataset_to_next_tier(
     dataset_df: pd.DataFrame,
     language_code: str,
     script_code: str,
-    byte_premium_factor: float = None,
+    byte_premium_factor: Optional[float] = None,
 ) -> dict[str, Any]:
     if byte_premium_factor is None:
         factor = get_byte_premium_factor(language_code, script_code)
