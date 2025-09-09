@@ -547,13 +547,22 @@ def update_dataset_scripts(
                 continue
 
             # Predict best script and pull script-specific confidence from metadata
-            _, pred_script, _overall_conf, metadata = lf.predict_document_language_script(
-                text, min_words=min_words, min_chars=min_chars, min_confidence=min_confidence
+            _, pred_script, _overall_conf, metadata = (
+                lf.predict_document_language_script(
+                    text,
+                    min_words=min_words,
+                    min_chars=min_chars,
+                    min_confidence=min_confidence,
+                )
             )
             script_conf = float(metadata.get("script_confidence", 0.0))
 
             # Validate prediction; require a known, valid ISO 15924 code
-            if not pred_script or pred_script == "unknown" or not validate_script_code(pred_script):
+            if (
+                not pred_script
+                or pred_script == "unknown"
+                or not validate_script_code(pred_script)
+            ):
                 continue
 
             current_script = row.get("script")
@@ -585,4 +594,3 @@ def update_dataset_scripts(
     )
 
     return dataset_table
-    
