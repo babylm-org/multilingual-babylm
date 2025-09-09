@@ -10,6 +10,7 @@ from typing import Dict, Optional, Any
 import fasttext
 import pandas as pd
 from huggingface_hub import hf_hub_download
+from language_scripts import validate_script_code
 
 
 class LanguageFilter:
@@ -381,8 +382,8 @@ class LanguageFilter:
                 # Check if it matches expected language and script
                 lang_match = pred_lang.lower() == expected_language.lower()
                 script_match = pred_script.lower() == expected_script.lower()
-                # Backward-compat for identifier column on a Pandas Series
-                document_id = row["doc-id"] if "doc-id" in row else row["doc_id"]
+                # Use the canonical identifier column
+                document_id = row["doc-id"]
 
                 file_info = {
                     "filename": document_id + ".txt",
@@ -437,9 +438,8 @@ def filter_dataset_for_lang_and_script(
     # Only keep matching documents
 
     matching_ids = set(filter_results["match_ids"])
-    # Support either 'doc-id' or legacy 'doc_id'
-    id_col = "doc-id" if "doc-id" in dataset_table.columns else "doc_id"
-    dataset_table = dataset_table[dataset_table[id_col].isin(matching_ids)]
+    # Use canonical 'doc-id' identifier
+    dataset_table = dataset_table[dataset_table["doc-id"].isin(matching_ids)]
 
     return dataset_table
 
@@ -489,3 +489,108 @@ def print_filtering_results(
             print(f"  ... and {len(results['errors']) - 5} more errors")
 
     print(f"{'=' * 60}")
+
+
+def update_dataset_scripts(
+    dataset_table: pd.DataFrame,
+    min_confidence: float = 0.0,
+    min_words: int = 10,
+    min_chars: int = 50,
+    warn_on_mismatch: bool = True,
+) -> pd.DataFrame:
+    """Predict and update script values only.
+
+    For each row in the dataset table:
+    - If script is missing/unknown (None, NaN, '', 'unknown', 'n/a', 'Zzzz'), set it to the predicted script.
+    - If script disagrees with the predicted script, overwrite with prediction and optionally print a warning.
+
+    Args:
+    dataset_table: DataFrame with at least 'text', 'script', and identifier ('doc-id').
+        min_confidence: Minimum script confidence (0-1) required to apply updates.
+        min_words: Minimum words per segment for prediction.
+        min_chars: Minimum characters per segment for prediction.
+        warn_on_mismatch: If True, print a warning when overwriting mismatched scripts.
+
+    Returns:
+        Updated DataFrame with scripts filled/corrected in-place and also returned for convenience.
+    """
+
+    if dataset_table is None or len(dataset_table) == 0:
+        return dataset_table
+
+    # Identify the id column for logging
+    id_col = "doc-id" if "doc-id" in dataset_table.columns else None
+
+    def _is_missing_script(val: Any) -> bool:
+        if val is None:
+            return True
+        try:
+            import math
+
+            if isinstance(val, float) and math.isnan(val):
+                return True
+        except Exception:
+            pass
+        s = str(val).strip().lower()
+        return s in {"", "unknown", "n/a", "na", "none", "unk", "zzzz"}
+
+    lf = LanguageFilter()
+
+    updates_missing = 0
+    updates_mismatch = 0
+    errors = 0
+
+    for idx, row in dataset_table.iterrows():
+        try:
+            text = row.get("text", "")
+            if not isinstance(text, str) or not text.strip():
+                continue
+
+            # Predict best script and pull script-specific confidence from metadata
+            _, pred_script, _overall_conf, metadata = (
+                lf.predict_document_language_script(
+                    text,
+                    min_words=min_words,
+                    min_chars=min_chars,
+                    min_confidence=min_confidence,
+                )
+            )
+            script_conf = float(metadata.get("script_confidence", 0.0))
+
+            # Validate prediction; require a known, valid ISO 15924 code
+            if (
+                not pred_script
+                or pred_script == "unknown"
+                or not validate_script_code(pred_script)
+            ):
+                continue
+
+            current_script = row.get("script")
+
+            if _is_missing_script(current_script):
+                dataset_table.at[idx, "script"] = pred_script
+                updates_missing += 1
+            else:
+                cur_norm = str(current_script).strip()
+                if cur_norm != pred_script:
+                    if warn_on_mismatch:
+                        doc_id_display = row.get(id_col) if id_col else idx
+                        print(
+                            f"WARNING: Script mismatch for {doc_id_display}: '{cur_norm}' -> '{pred_script}' (conf={script_conf:.3f})"
+                        )
+                    dataset_table.at[idx, "script"] = pred_script
+                    updates_mismatch += 1
+
+        except Exception as e:
+            errors += 1
+            doc_id_display = row.get(id_col) if id_col else idx
+            print(f"WARNING: Failed to update script for {doc_id_display}: {e}")
+
+    total = len(dataset_table)
+    print(
+        "Script update summary: "
+        f"total={total}, filled_missing={updates_missing}, corrected_mismatch={updates_mismatch}, "
+        f"errors={errors}"
+    )
+
+    return dataset_table

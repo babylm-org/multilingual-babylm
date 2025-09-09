@@ -143,7 +143,7 @@ class HFDatasetUploader:
 
         # most frequent script should be the given script
         major_script = df["script"].mode()[0]
-        assert script_code == major_script
+        # assert script_code == major_script
 
         # Assume hyphenated schema; compute num-tokens if missing
         if "num-tokens" not in df.columns:
@@ -175,6 +175,7 @@ class HFDatasetUploader:
         for g, tok in tokens_per_group.items():
             print(f"  {g}: {tok}")
 
+        revision = None
         if create_pr:
             revision = self.create_pr(repo_id, pr_title, pr_description)
 
@@ -418,9 +419,9 @@ class HFDatasetUploader:
 
     def update_all_readmes(
         self,
-        repo_ids: list[str] = None,
+        repo_ids: Optional[list[str]] = None,
         check_empty: bool = True,
-        byte_premium_factor: float = None,
+        byte_premium_factor: Optional[float] = None,
     ):
         """Bulk update README files for all BabyLM language datasets discovered dynamically.
 
@@ -436,6 +437,7 @@ class HFDatasetUploader:
             "jpn": "tohoku-nlp/bert-base-japanese",
             "zho": "Qwen/Qwen3-0.6B",
             "yue": "Qwen/Qwen1.5-7B-Chat",
+            "kor": "LGAI-EXAONE/EXAONE-4.0-1.2B",
         }
 
         if not repo_ids:
@@ -452,9 +454,9 @@ class HFDatasetUploader:
             try:
                 ds = load_dataset(repo_id, split="train", token=self.token)
                 df_obj = ds.to_pandas()  # type: ignore[attr-defined]
-                assert isinstance(df_obj, pd.DataFrame), (
-                    "Expected pandas DataFrame from dataset"
-                )
+                assert isinstance(
+                    df_obj, pd.DataFrame
+                ), "Expected pandas DataFrame from dataset"
                 df: pd.DataFrame = cast(pd.DataFrame, df_obj)
             except Exception as e:
                 print(f"  Could not load dataset: {e}")

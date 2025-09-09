@@ -16,7 +16,7 @@ class BaseLoader(ABC):
     @abstractmethod
     def load_data(self, source_path: Path) -> List[Dict[str, Any]]:
         """
-        Returns a list of dicts with keys: 'text', 'doc_id', 'metadata'
+        Returns a list of dicts with keys: 'text', 'doc-id', 'metadata'
         """
         pass
 
