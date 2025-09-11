@@ -3,7 +3,7 @@ from typing import Any
 import hashlib
 
 
-BYTE_PREMIUMS_PATH = "byte_coefs_20240233.tsv"
+BYTE_PREMIUMS_PATH = "resources/byte_coefs_20240233.tsv"
 
 
 eng_sizes_per_tier = {
@@ -108,15 +108,17 @@ def get_dataset_tier(dataset_size, factor, percent_tolerance):
 
     for name, target in target_sizes:
         if is_within_percentage(dataset_size, target, percent_tolerance):
-            return name
+            return name, target, tiers["tier_" + name]
 
     # dataset_size is below the tier threshold
     for name, target in target_sizes:
         if dataset_size < target:
-            return "< " + name
+            return "< " + name, target, target, tiers["tier_" + name]
 
     # dataset_size exceeds largest tier threshold
-    return "> " + sorted_pairs[-1][0]
+    name = sorted_pairs[-1][0]
+    target = sorted_pairs[-1][-1]
+    return "> " + name, target, tiers["tier_" + name]
 
 
 def get_dataset_tier_to_pad(dataset_size, factor):

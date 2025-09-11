@@ -32,11 +32,11 @@ def process_dataset(
     preprocess_text: bool,
     data_type: Optional[str],
     enable_language_filtering: bool,
-    enable_script_update: bool,
-    script_update_all: bool,
     language_filter_threshold: float,
     pad_opensubtitles: bool,
     tokenizer_name: Optional[str],
+    enable_script_update: bool = False,
+    script_update_all: bool = False,
     overwrite: bool = False,
     add_ririro_data: bool = False,
     add_glotstorybook_data: bool = False,
@@ -222,10 +222,8 @@ def process_dataset(
             if hasattr(builder, "_existing_doc_ids") and isinstance(
                 builder._existing_doc_ids, set
             ):
-                mask = (
-                    ~builder.dataset_table["doc-id"]
-                    .astype(str)
-                    .isin(builder._existing_doc_ids)
+                mask = ~builder.dataset_table["doc-id"].astype(str).isin(
+                    builder._existing_doc_ids
                 )
             else:
                 # If we don't have existing ids (fresh dataset), treat all rows as new

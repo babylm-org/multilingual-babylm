@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 from typing import Optional, List, Dict, cast
 
+import yaml
 import hashlib
 import pandas as pd
 from datasets import Dataset, DatasetDict, load_dataset, Features, Value
@@ -15,7 +16,8 @@ from huggingface_hub import HfApi, create_repo
 from transformers import AutoTokenizer  # type: ignore
 from pad_utils import get_byte_premium_factor, get_dataset_tier, get_dataset_size
 
-TEMPLATE_PATH = "readme_template.txt"
+TEMPLATE_PATH = Path("resources") / "readme_template.txt"
+CONTRIBUTORS_PATH = Path("resources") / "contributors.yaml"
 
 
 # Calculate token statistics
@@ -142,7 +144,7 @@ class HFDatasetUploader:
         df["language"] = language_code
 
         # most frequent script should be the given script
-        major_script = df["script"].mode()[0]
+        # major_script = df["script"].mode()[0]
         # assert script_code == major_script
 
         # Assume hyphenated schema; compute num-tokens if missing
@@ -191,6 +193,7 @@ class HFDatasetUploader:
                 dataset_size=dataset_size,
                 major_script=script_code,
                 scripts_list=scripts_list,
+                language_code=language_code,
                 tokens_per_group=tokens_per_group,
                 tokenizer_name=tokenizer_name,
                 byte_premium_factor=byte_premium_factor,
@@ -295,6 +298,7 @@ class HFDatasetUploader:
         num_documents: int,
         dataset_size: float,
         major_script: str,
+        language_code: str,
         scripts_list: Optional[List[str]] = None,
         tokens_per_group: Optional[Dict[str, int]] = None,
         tokenizer_name: Optional[str] = None,
@@ -352,7 +356,7 @@ class HFDatasetUploader:
             byte_premium_factor = get_byte_premium_factor(language, major_script)
 
         # calculate dataset_tier, allowing for at most 1% difference from the required size
-        dataset_tier = get_dataset_tier(
+        dataset_tier, expected_size, _ = get_dataset_tier(
             dataset_size, byte_premium_factor, percent_tolerance=0.01
         )
         license_metadata = config.get("license", "unknown")
@@ -373,13 +377,30 @@ class HFDatasetUploader:
         else:
             tokens_per_category_content += "No group data available.\n"
 
-        with open(TEMPLATE_PATH, "r") as f:
+        with TEMPLATE_PATH.open("r") as f:
             readme_content = f.read()
 
         dataset_name = metadata.get("dataset_name", "BabyLM Dataset")
 
         if tokenizer_name is None:
             tokenizer_name = "separate by whitespace"
+
+        with CONTRIBUTORS_PATH.open("r") as f:
+            contributors = yaml.safe_load(f)
+
+        contributors_lang = contributors.get(language_code)
+        if contributors_lang is None:
+            contributors_readme = "n/a"
+        else:
+            contributors_readme = ""
+            contributors_lang = sorted(contributors_lang, key=lambda x: x["name"])
+            for contributor in contributors_lang:
+                if contributor.get("mail") is not None:
+                    contributors_readme += (
+                        f"* {contributor['name']} ({contributor['mail']})\n"
+                    )
+                else:
+                    contributors_readme += f"* {contributor['name']}\n"
 
         # format readme
         readme_content = readme_content.format(
@@ -389,6 +410,7 @@ class HFDatasetUploader:
             script_display=script_display,
             dataset_tier=dataset_tier,
             dataset_size=dataset_size,
+            expected_size=expected_size,
             byte_premium_factor=byte_premium_factor,
             num_documents=num_documents,
             total_tokens=total_tokens,
@@ -396,6 +418,7 @@ class HFDatasetUploader:
             data_source=data_source,
             dataset_name=dataset_name,
             tokenizer_name=tokenizer_name,
+            contributors_readme=contributors_readme,
         )
 
         # Save README
@@ -454,9 +477,9 @@ class HFDatasetUploader:
             try:
                 ds = load_dataset(repo_id, split="train", token=self.token)
                 df_obj = ds.to_pandas()  # type: ignore[attr-defined]
-                assert isinstance(
-                    df_obj, pd.DataFrame
-                ), "Expected pandas DataFrame from dataset"
+                assert isinstance(df_obj, pd.DataFrame), (
+                    "Expected pandas DataFrame from dataset"
+                )
                 df: pd.DataFrame = cast(pd.DataFrame, df_obj)
             except Exception as e:
                 print(f"  Could not load dataset: {e}")
@@ -501,6 +524,7 @@ class HFDatasetUploader:
                 dataset_size=dataset_size,
                 scripts_list=scripts_list,
                 major_script=major_script,
+                language_code=language_code,
                 tokens_per_group=tokens_per_group,
                 tokenizer_name=tokenizer_name,
                 byte_premium_factor=byte_premium_factor,

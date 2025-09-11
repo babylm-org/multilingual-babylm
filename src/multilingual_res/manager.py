@@ -112,9 +112,9 @@ def remove_resource(
             num_docs_in_resource = int(len(df_res))
     print(f"Number of unique documents in {resource_name}: {num_docs_in_resource}")
     if num_docs_removed > 0:
-        assert (
-            num_docs_in_resource == num_docs_removed
-        ), f"Expected to remove {num_docs_removed} but got {num_docs_in_resource}"
+        assert num_docs_in_resource == num_docs_removed, (
+            f"Expected to remove {num_docs_removed} but got {num_docs_in_resource}"
+        )
         print(
             f"Number of removed documents and documents in resource {resource_name} match"
         )
