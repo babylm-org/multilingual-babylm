@@ -57,6 +57,7 @@ def main():
             tokenizer_name = None
 
         script = dataset_df["script"].mode()[0]  # most frequent value
+        print(f'Using script {script}')
         # or define script manually
         # script = "Latn"
 
@@ -73,6 +74,13 @@ def main():
         # add/remove multilingual resources if desired
         remove_previous_multiling_data = False
         add_multilingual_data = False
+
+        # pull request functionality
+        create_pr = False
+        pr_title = "My PR"
+        pr_description = "PR Description"
+
+        print('Running pipeline')
 
         process_dataset(
             language_code=lang,
@@ -98,6 +106,11 @@ def main():
             remove_previous_childwiki_data=remove_previous_multiling_data,
             remove_previous_childes_data=remove_previous_multiling_data,
             remove_previous_padding=remove_previous_padding,
+            enable_script_update=False, 
+            script_update_all=False,
+            create_pr=create_pr,
+            pr_title=pr_title,
+            pr_description=pr_description,            
         )
         print("Done")
 
