@@ -83,6 +83,7 @@ def pad_with_opensubtitles(
         for row in padding_dataset:
             if not isinstance(row, dict):
                 continue
+            row["category"] = "padding-opensubtitles"
             text = row.get("text", "")
             num = bytes_in_text(text)
             data_count += num
