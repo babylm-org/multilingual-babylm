@@ -53,6 +53,8 @@ def main():
             tokenizer_name = "Qwen/Qwen3-0.6B"
         elif lang == "yue":
             tokenizer_name = "Qwen/Qwen1.5-7B-Chat"
+        elif lang == "kor":
+            tokenizer_name = "LGAI-EXAONE/EXAONE-4.0-1.2B"
         else:
             tokenizer_name = None
 

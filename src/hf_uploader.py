@@ -18,6 +18,7 @@ from pad_utils import get_byte_premium_factor, get_dataset_tier, get_dataset_siz
 
 TEMPLATE_PATH = Path("resources") / "readme_template.txt"
 CONTRIBUTORS_PATH = Path("resources") / "contributors.yaml"
+DATA_SOURCES_PATH = Path("resources") / "data_sources.yaml"
 
 
 # Calculate token statistics
@@ -158,7 +159,7 @@ class HFDatasetUploader:
         assert "category" in df.columns, "category must be defined"
 
         tokens_per_category = df.groupby("category")["num-tokens"].sum().to_dict()
-        # NEW: scripts list
+        # scripts list
         scripts_list = sorted(
             {
                 str(s).strip()
@@ -166,7 +167,7 @@ class HFDatasetUploader:
                 if str(s).strip() and str(s).lower() != "nan"
             }
         )
-        # NEW: group category counts
+        # group category counts
         tokens_per_group = self._compute_group_tokens(tokens_per_category)
 
         print(f"Total tokens in dataset: {total_tokens:,}")
@@ -346,7 +347,7 @@ class HFDatasetUploader:
             size_category = "100M<n<1B"
 
         language = config.get("language_code", "unknown")
-        # NEW script list handling
+        # Script list handling
         if not scripts_list or len(scripts_list) == 0:
             script_display = "Unknown"
         else:
@@ -369,7 +370,7 @@ class HFDatasetUploader:
         else:
             tokens_per_category_content += "No category data available.\n"
 
-        # NEW: Tokens per group section
+        # Tokens per group section
         tokens_per_category_content += "\n### Tokens Per Group\n\n"
         if tokens_per_group:
             for grp, tok in tokens_per_group.items():
@@ -385,6 +386,7 @@ class HFDatasetUploader:
         if tokenizer_name is None:
             tokenizer_name = "separate by whitespace"
 
+        # create contributors section
         with CONTRIBUTORS_PATH.open("r") as f:
             contributors = yaml.safe_load(f)
 
@@ -401,6 +403,32 @@ class HFDatasetUploader:
                     )
                 else:
                     contributors_readme += f"* {contributor['name']}\n"
+
+        # create data sources section
+        with DATA_SOURCES_PATH.open("r") as f:
+            sources = yaml.safe_load(f)
+        sources_lang = sources.get(language_code)
+        if sources_lang is None:
+            sources_lang = "n/a"
+        else:
+            sources_df = pd.DataFrame(sources_lang)
+            group_readmes = []
+            for category, group in sources_df.groupby("category"):
+                group_readme = f"#### {category}\n"
+                group_items = []
+                for _, source in group.iterrows():
+                    item = f"- {source['name']}"
+                    if "link" in source:
+                        item += f"\n\t - source: {source['link']}"
+                    if "description" in source:
+                        item += f"\n\t - description: {source['description']}"
+                    if "citation" in source:
+                        item += f"\n\t - citation: {source['citation']}"
+                    group_items.append(item)
+                group_readme += "\n".join(group_items)
+                group_readmes.append(group_readme)
+
+            data_sources_readme = "\n\n".join(group_readmes)
 
         # format readme
         readme_content = readme_content.format(
@@ -419,6 +447,7 @@ class HFDatasetUploader:
             dataset_name=dataset_name,
             tokenizer_name=tokenizer_name,
             contributors_readme=contributors_readme,
+            data_sources_readme=data_sources_readme,
         )
 
         # Save README

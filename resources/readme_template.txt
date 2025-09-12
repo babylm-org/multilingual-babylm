@@ -70,6 +70,10 @@ More information at: [babylm.github.io/multilingual](https://babylm.github.io/mu
 
 Please see license in individual documents
 
-### Data Contributors
+### Data Sources & Attribution
+
+{data_sources_readme}
+
+### Data Curators
 
 {contributors_readme}
