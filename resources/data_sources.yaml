@@ -92,10 +92,6 @@ zho:
   - category: Conversational
     link: http://ojs.aaai.org/index.php/AAAI/article/view/17649
     name: NaturalConv
-  - glotstorybooks:
-    - category: Books
-      link: https://arxiv.org/abs/2310.16248
-      name: GlotStoryBooks HongKong
 
 
 nld:
