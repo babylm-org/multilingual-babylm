@@ -9,3 +9,4 @@ output
 tmp_datasets
 prep_subtitles
 preprocessed_*
+_tmp_readme_*
