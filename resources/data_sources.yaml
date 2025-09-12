@@ -1,13 +1,16 @@
 
 # multilingual resources
-# wikis are excluded due to alot of variability
+
+# these multilingual resources should not be included in the language-specific sections bellow
+# as they will be automatically detected and added, if the resource is present.
+# wikis are excluded due to alot of variability, and sould be added individually below
 
 ririro: 
   - category: Books
     link: https://ririro.com/  
     name: Ririro Story Collection
 
-glotstorybooks:
+glotstorybook:
   - category: Books
     link: https://arxiv.org/abs/2310.16248
     name: GlotStoryBooks Collection
@@ -16,8 +19,6 @@ childes:
   - category: 'Transcription'
     link: https://talkbank.org/childes/
     name: CHILDES
-
-
 
 # Language-Specific
 # template:
@@ -179,6 +180,9 @@ ell:
   - category: Transcription
     link: https://inventory.clarin.gr/corpus/871
     name: Babiniotis Archive
+  - category: Books/Wikis/News
+    link: https://el.vikidia.org/
+    name: Child Wiki
 
 ita:
   - category: Books/Wikis/News

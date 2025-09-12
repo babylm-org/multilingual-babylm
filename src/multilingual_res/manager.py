@@ -12,6 +12,17 @@ from typing import Any, Optional
 import re
 import json
 
+wikinames = {
+    "vikidia",
+    "grundschulwiki",
+    "wikikids",
+    "mini-klexikon",
+    "kiwithek",
+    "klexikon",
+    "txikipedia",
+    "wikimini",
+}
+
 
 def fetch_resource(
     resource_name: str, language_code: str, script_code: Optional[str] = None
@@ -62,21 +73,14 @@ def remove_resource(
 
         if resource_name == "ririro" and data_source == "Ririro":
             continue
-        elif resource_name == "glotstorybook" and data_source == "GlotStoryBook":
+        elif resource_name == "glotstorybook" and data_source in [
+            "GlotStoryBook",
+            "https://huggingface.co/datasets/cis-lmu/GlotStoryBook",
+        ]:
             continue
 
         elif resource_name == "childwiki":
-            wikis = {
-                "vikidia",
-                "grundschulwiki",
-                "wikikids",
-                "mini-klexikon",
-                "kiwithek",
-                "klexikon",
-                "txikipedia",
-                "wikimini",
-            }
-            if category == "child-wiki" and data_source in wikis:
+            if category == "child-wiki" and data_source in wikinames:
                 continue
 
         elif resource_name == "childes":
@@ -125,3 +129,55 @@ def remove_resource(
     print(f"{'=' * 60}\n")
 
     return processed_docs
+
+
+def contains_resource(resource_name: str, dataset_df: pandas.DataFrame) -> bool:
+    # check misc-related field, encoding multilingual_resources
+    for misc in dataset_df["misc"].array:
+        try:
+            misc = json.loads(misc)
+        except json.JSONDecodeError:
+            misc = {}
+
+        multilingual_resource = misc.get("multilingual_resource", "n/a")
+        if multilingual_resource == resource_name:
+            return True
+
+    # fall back to manual checking for outdated multilingual resource data
+    if resource_name == "ririro" and any(dataset_df["data-source"] == "Ririro"):
+        return True
+
+    elif resource_name == "glotstorybook":
+        if (
+            dataset_df["data-source"]
+            .isin(
+                [
+                    "GlotStoryBook",
+                    "https://huggingface.co/datasets/cis-lmu/GlotStoryBook",
+                ]
+            )
+            .any()
+        ):
+            return True
+
+    elif resource_name == "childwiki":
+        child_wikies = dataset_df[dataset_df["category"] == "child-wiki"]
+        if child_wikies["data-source"].isin(wikinames).aby():
+            return True
+
+    elif resource_name == "childes":
+        condition = dataset_df["category"] == "child-directed-speech"
+
+        condition &= (dataset_df["data-source"].str.lower() == "childes") | (
+            dataset_df["data-source"].str.match(r"(CHILDES\s*-)?\s*\S+\/\d+")
+        )
+        condition &= (
+            (dataset_df["age-estimate"] == "n/a")
+            | (dataset_df["age-estimate"].str.contains(";"))
+            | (dataset_df["age-estimate"] == "nan")
+            | (dataset_df["age-estimate"].isna())
+        )
+        if condition.any():
+            return True
+
+    return False

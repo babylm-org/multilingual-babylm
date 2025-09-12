@@ -15,6 +15,7 @@ from dotenv import load_dotenv
 from huggingface_hub import HfApi, create_repo
 from transformers import AutoTokenizer  # type: ignore
 from pad_utils import get_byte_premium_factor, get_dataset_tier, get_dataset_size
+from multilingual_res.manager import contains_resource
 
 TEMPLATE_PATH = Path("resources") / "readme_template.txt"
 CONTRIBUTORS_PATH = Path("resources") / "contributors.yaml"
@@ -152,32 +153,6 @@ class HFDatasetUploader:
         if "num-tokens" not in df.columns:
             df["num-tokens"] = df["text"].apply(count_tokens, tokenizer=tokenizer)
         total_tokens = int(df["num-tokens"].sum())
-
-        # get the dataset size in MB
-        dataset_size = get_dataset_size(df)
-
-        assert "category" in df.columns, "category must be defined"
-
-        tokens_per_category = df.groupby("category")["num-tokens"].sum().to_dict()
-        # scripts list
-        scripts_list = sorted(
-            {
-                str(s).strip()
-                for s in df.get("script", pd.Series()).astype(str).unique()
-                if str(s).strip() and str(s).lower() != "nan"
-            }
-        )
-        # group category counts
-        tokens_per_group = self._compute_group_tokens(tokens_per_category)
-
-        print(f"Total tokens in dataset: {total_tokens:,}")
-        print("Tokens per category:")
-        for cat, tok in tokens_per_category.items():
-            print(f"  {cat}: {tok}")
-        print("Tokens per group:")
-        for g, tok in tokens_per_group.items():
-            print(f"  {g}: {tok}")
-
         revision = None
         if create_pr:
             revision = self.create_pr(repo_id, pr_title, pr_description)
@@ -186,16 +161,12 @@ class HFDatasetUploader:
         if create_dataset_card:
             num_documents = len(df)
             self._create_dataset_card(
+                df=df,
                 dataset_dir=dataset_dir,
                 repo_id=repo_id,
-                total_tokens=total_tokens,
-                tokens_per_category=tokens_per_category,
                 num_documents=num_documents,
-                dataset_size=dataset_size,
                 major_script=script_code,
-                scripts_list=scripts_list,
                 language_code=language_code,
-                tokens_per_group=tokens_per_group,
                 tokenizer_name=tokenizer_name,
                 byte_premium_factor=byte_premium_factor,
                 revision=revision,
@@ -292,16 +263,12 @@ class HFDatasetUploader:
 
     def _create_dataset_card(
         self,
+        df: pd.DataFrame,
         dataset_dir: Path,
         repo_id: str,
-        total_tokens: int,
-        tokens_per_category: Optional[dict],
         num_documents: int,
-        dataset_size: float,
         major_script: str,
         language_code: str,
-        scripts_list: Optional[List[str]] = None,
-        tokens_per_group: Optional[Dict[str, int]] = None,
         tokenizer_name: Optional[str] = None,
         byte_premium_factor: Optional[float] = None,
         revision=None,
@@ -323,6 +290,22 @@ class HFDatasetUploader:
         # Determine size category based on number of documents
         num_documents = metadata.get("num_documents") or num_documents  # type: ignore
         md_num_docs = metadata.get("num_documents")
+        # get the dataset size in MB
+        dataset_size = get_dataset_size(df)
+        assert "category" in df.columns, "category must be defined"
+        tokens_per_category = df.groupby("category")["num-tokens"].sum().to_dict()
+        # group category counts
+        tokens_per_group = self._compute_group_tokens(tokens_per_category)
+        total_tokens = int(df["num-tokens"].sum())
+        # scripts list
+        scripts_list = sorted(
+            {
+                str(s).strip()
+                for s in df.get("script", pd.Series()).astype(str).unique()
+                if str(s).strip() and str(s).lower() != "nan"
+            }
+        )
+        # calculate num docs
         if isinstance(md_num_docs, int):
             num_documents = md_num_docs
         elif isinstance(md_num_docs, str) and md_num_docs.isdigit():
@@ -330,6 +313,7 @@ class HFDatasetUploader:
                 num_documents = int(md_num_docs)
             except ValueError:
                 pass
+
         # size category
         if num_documents < 1_000:
             size_category = "n<1K"
@@ -347,6 +331,7 @@ class HFDatasetUploader:
             size_category = "100M<n<1B"
 
         language = config.get("language_code", "unknown")
+
         # Script list handling
         if not scripts_list or len(scripts_list) == 0:
             script_display = "Unknown"
@@ -362,7 +347,9 @@ class HFDatasetUploader:
         )
         license_metadata = config.get("license", "unknown")
         data_source = config.get("data_source", "Unknown")
+        dataset_name = metadata.get("dataset_name", "BabyLM Dataset")
 
+        # Tokens per group section
         tokens_per_category_content = ""
         if tokens_per_category:
             for cat, tok in tokens_per_category.items():
@@ -370,7 +357,6 @@ class HFDatasetUploader:
         else:
             tokens_per_category_content += "No category data available.\n"
 
-        # Tokens per group section
         tokens_per_category_content += "\n### Tokens Per Group\n\n"
         if tokens_per_group:
             for grp, tok in tokens_per_group.items():
@@ -378,18 +364,12 @@ class HFDatasetUploader:
         else:
             tokens_per_category_content += "No group data available.\n"
 
-        with TEMPLATE_PATH.open("r") as f:
-            readme_content = f.read()
-
-        dataset_name = metadata.get("dataset_name", "BabyLM Dataset")
-
         if tokenizer_name is None:
             tokenizer_name = "separate by whitespace"
 
         # create contributors section
         with CONTRIBUTORS_PATH.open("r") as f:
             contributors = yaml.safe_load(f)
-
         contributors_lang = contributors.get(language_code)
         if contributors_lang is None:
             contributors_readme = "n/a"
@@ -409,10 +389,16 @@ class HFDatasetUploader:
             sources = yaml.safe_load(f)
         sources_lang = sources.get(language_code)
         if sources_lang is None:
-            sources_lang = "n/a"
+            data_sources_readme = "n/a"
         else:
             sources_df = pd.DataFrame(sources_lang)
             group_readmes = []
+            for multilingual_resource in ["childes", "ririro", "glotstorybook"]:
+                if contains_resource(multilingual_resource, df):
+                    sources_df = pd.concat(
+                        [sources_df, pd.DataFrame(sources[multilingual_resource])],
+                        axis=0,
+                    )
             for category, group in sources_df.groupby("category"):
                 group_readme = f"#### {category}\n"
                 group_items = []
@@ -430,7 +416,18 @@ class HFDatasetUploader:
 
             data_sources_readme = "\n\n".join(group_readmes)
 
+        # print statistics
+        print(f"Total tokens in dataset: {total_tokens:,}")
+        print("Tokens per category:")
+        for cat, tok in tokens_per_category.items():
+            print(f"  {cat}: {tok}")
+        print("Tokens per group:")
+        for g, tok in tokens_per_group.items():
+            print(f"  {g}: {tok}")
+
         # format readme
+        with TEMPLATE_PATH.open("r") as f:
+            readme_content = f.read()
         readme_content = readme_content.format(
             language=language,
             license_metadata=license_metadata,
@@ -520,41 +517,19 @@ class HFDatasetUploader:
                     else None
                 )
                 df["num-tokens"] = df["text"].apply(count_tokens, tokenizer=tokenizer)
-            total_tokens = int(df["num-tokens"].sum())
-            if "category" not in df.columns:
-                print("  Missing 'category' column; skipping.")
-                continue
-            tokens_per_category = df.groupby("category")["num-tokens"].sum().to_dict()
-            if "script" in df.columns:
-                scripts_list = sorted(
-                    {
-                        str(s).strip()
-                        for s in df["script"].astype(str).unique()
-                        if str(s).strip() and str(s).lower() != "nan"
-                    }
-                )
-            else:
-                scripts_list = []
 
             # median script value is the dominating script
             major_script = df["script"].mode()[0]
-
-            tokens_per_group = self._compute_group_tokens(tokens_per_category)
-            dataset_size = get_dataset_size(df)
             tmp_dir = Path(f"_tmp_readme_{suffix}")
             tmp_dir.mkdir(exist_ok=True)
 
             self._create_dataset_card(
+                df=df,
                 dataset_dir=tmp_dir,
                 repo_id=repo_id,
-                total_tokens=total_tokens,
-                tokens_per_category=tokens_per_category,
                 num_documents=len(df),
-                dataset_size=dataset_size,
-                scripts_list=scripts_list,
                 major_script=major_script,
                 language_code=language_code,
-                tokens_per_group=tokens_per_group,
                 tokenizer_name=tokenizer_name,
                 byte_premium_factor=byte_premium_factor,
             )
