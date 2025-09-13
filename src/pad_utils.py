@@ -2,6 +2,7 @@ import pandas as pd
 from typing import Any
 import hashlib
 
+from loguru import logger
 
 BYTE_PREMIUMS_PATH = "resources/byte_coefs_20240233.tsv"
 
@@ -55,7 +56,7 @@ def get_byte_premium_factor(lang: str, script: str):
     lang_entries = all_data_df[all_data_df["lang"] == lang]
     num_lang_entries = len(lang_entries)
     if num_lang_entries == 0:
-        print(
+        logger.info(
             "No pre-calculated byte-premium factor, see instructions on README on how to calculate it."
         )
         return None
@@ -133,7 +134,9 @@ def get_dataset_tier_to_pad(dataset_size, factor):
         dataset_tier = "tier_100M"
     else:
         dataset_tier = None
-        print("Dataset size exceeds the largest tier of 100M MB, no need for padding")
+        logger.info(
+            "Dataset size exceeds the largest tier of 100M MB, no need for padding"
+        )
     return dataset_tier
 
 

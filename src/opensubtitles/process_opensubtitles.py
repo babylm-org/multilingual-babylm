@@ -9,7 +9,7 @@ import sys
 import json
 from pathlib import Path
 
-from opensubtitles_processor import OpenSubtitlesProcessor
+from opensubtitles.opensubtitles_processor import OpenSubtitlesProcessor
 from preprocessor import SubtitlePreprocessor
 
 

@@ -23,6 +23,8 @@ wikinames = {
     "wikimini",
 }
 
+from loguru import logger
+
 
 def fetch_resource(
     resource_name: str, language_code: str, script_code: Optional[str] = None
@@ -99,10 +101,10 @@ def remove_resource(
 
         processed_docs.append(doc)
 
-    print(f"\n{'=' * 60}")
+    logger.info(f"\n{'=' * 60}")
     num_docs_removed = len(docs) - len(processed_docs)
-    print(f"Removed {num_docs_removed} documents from {resource_name} resource.")
-    print("Checking documents in resource for correctness...")
+    logger.info(f"Removed {num_docs_removed} documents from {resource_name} resource.")
+    logger.info("Checking documents in resource for correctness...")
 
     docs_in_resource = fetch_resource(resource_name, language_code, script_code)
     # Deduplicate: some resources (e.g., CHILDES) contain duplicate documents
@@ -114,19 +116,23 @@ def remove_resource(
             num_docs_in_resource = int(df_res["text"].nunique())
         else:
             num_docs_in_resource = int(len(df_res))
-    print(f"Number of unique documents in {resource_name}: {num_docs_in_resource}")
+    logger.info(
+        f"Number of unique documents in {resource_name}: {num_docs_in_resource}"
+    )
     if num_docs_removed > 0:
         assert num_docs_in_resource == num_docs_removed, (
             f"Expected to remove {num_docs_removed} but got {num_docs_in_resource}"
         )
-        print(
+        logger.info(
             f"Number of removed documents and documents in resource {resource_name} match"
         )
     else:
-        print(f"No documents were removed, resource {resource_name} is not present")
+        logger.info(
+            f"No documents were removed, resource {resource_name} is not present"
+        )
 
-    print(f"Remaining documents: {len(processed_docs)}")
-    print(f"{'=' * 60}\n")
+    logger.info(f"Remaining documents: {len(processed_docs)}")
+    logger.info(f"{'=' * 60}\n")
 
     return processed_docs
 

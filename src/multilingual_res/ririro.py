@@ -24,6 +24,8 @@ from pydantic import BaseModel
 from multilingual_res.base import BaseResourceFetcher
 from typing import Optional, List, Dict
 
+from loguru import logger
+
 RIRIRO_LANGS = {
     "en": {"url": "https://ririro.com/", "script": "Latn"},
     "nl": {"url": "https://ririro.com/nl/", "script": "Latn"},
@@ -186,11 +188,11 @@ class RiriroFetcher(BaseResourceFetcher):
                     Lang(language_code).pt1 if Lang is not None else language_code
                 )
             except Exception:
-                print(f"Ririro not available for language: {language_code}")
+                logger.info(f"Ririro not available for language: {language_code}")
                 return []
         lang_info = RIRIRO_LANGS.get(lang_key)
         if not lang_info:
-            print(f"Ririro not available for language: {language_code}")
+            logger.info(f"Ririro not available for language: {language_code}")
             return []
         main_url = lang_info["url"]
         script = script_code if script_code else lang_info["script"]
@@ -229,9 +231,9 @@ class RiriroFetcher(BaseResourceFetcher):
                     {"text": content, "doc-id": doc_id, "metadata": metadata}
                 )
             except Exception as e:
-                print(f"  Error fetching {url}: {e}")
+                logger.info(f"  Error fetching {url}: {e}")
             time.sleep(1)
-        print(
+        logger.info(
             f"Fetched {len(results)} documents from Ririro for language '{language_code}'"
         )
         return results

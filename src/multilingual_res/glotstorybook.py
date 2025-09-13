@@ -8,6 +8,8 @@ from dotenv import load_dotenv
 from multilingual_res.base import BaseResourceFetcher
 from typing import List, Dict, cast
 
+from loguru import logger
+
 
 class GlotStorybookFetcher(BaseResourceFetcher):
     def __init__(self):
@@ -74,7 +76,7 @@ class GlotStorybookFetcher(BaseResourceFetcher):
                 }
                 doc_id = hashlib.sha256(text.encode("utf-8")).hexdigest()
                 results.append({"text": text, "doc-id": doc_id, "metadata": metadata})
-        print(
+        logger.info(
             f"Fetched {len(results)} documents from GlotStoryBook for language '{language_code}'"
         )
         return results

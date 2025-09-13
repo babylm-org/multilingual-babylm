@@ -13,6 +13,8 @@ import hashlib
 import pandas as pd
 from language_scripts import validate_script_code, get_script_code_by_name
 
+from loguru import logger
+
 
 @dataclass
 class DocumentConfig:
@@ -158,14 +160,14 @@ class BabyLMDatasetBuilder:
                 try:
                     existing_df = pd.read_csv(csv_path)
                 except Exception as e:
-                    print(f"Warning: Could not load existing CSV: {e}")
+                    logger.info(f"Warning: Could not load existing CSV: {e}")
             elif parquet_path.exists():
                 try:
                     existing_df = pd.read_parquet(parquet_path)
                 except Exception as e:
-                    print(f"Warning: Could not load existing Parquet: {e}")
+                    logger.info(f"Warning: Could not load existing Parquet: {e}")
             if existing_df is not None:
-                print(f"Loaded existing data with {len(existing_df)} documents.")
+                logger.info(f"Loaded existing data with {len(existing_df)} documents.")
                 # Ensure identifier column exists
                 if (
                     "doc-id" not in existing_df.columns
@@ -177,7 +179,7 @@ class BabyLMDatasetBuilder:
                 self._existing_doc_ids = set(existing_df["doc-id"].astype(str))
                 self._existing_documents = existing_df.to_dict(orient="records")
             else:
-                print("Existing dataset not found for merge.")
+                logger.info("Existing dataset not found for merge.")
 
     def calculate_dataset_size_mb(self) -> float:
         """
@@ -335,13 +337,13 @@ class BabyLMDatasetBuilder:
         self.dataset_table.to_csv(csv_path, index=False)
         self.dataset_table.to_parquet(parquet_path, index=False)
 
-        print("Dataset table saved to:")
-        print(f"  - {csv_path}")
-        print(f"  - {parquet_path}")
+        logger.info("Dataset table saved to:")
+        logger.info(f"  - {csv_path}")
+        logger.info(f"  - {parquet_path}")
 
         # Print dataset size in MB
         size_mb = self.calculate_dataset_size_mb()
-        print(f"Final dataset size: {size_mb:.2f} MB (UTF-8 bytes)")
+        logger.info(f"Final dataset size: {size_mb:.2f} MB (UTF-8 bytes)")
 
         metadata = {
             "dataset_name": self.dataset_config.dataset_name,
@@ -355,7 +357,7 @@ class BabyLMDatasetBuilder:
         with open(self.metadata_path, "w", encoding="utf-8") as f:
             json.dump(self.metadata, f, indent=2, ensure_ascii=False)
 
-        print(f"Metadata saved to {self.metadata_path}")
+        logger.info(f"Metadata saved to {self.metadata_path}")
 
     def get_upload_ready_dataset(self) -> dict:
         """
@@ -378,7 +380,7 @@ class BabyLMDatasetBuilder:
         """
 
         if self.dataset_table is None or "text" not in self.dataset_table:
-            print("No dataset_table or 'text' column to deduplicate.")
+            logger.info("No dataset_table or 'text' column to deduplicate.")
             return
         before = len(self.dataset_table)
         # Compute hash for each text
@@ -389,6 +391,6 @@ class BabyLMDatasetBuilder:
         self.dataset_table = self.dataset_table.drop_duplicates(subset=["text_hash"])
         self.dataset_table = self.dataset_table.drop(columns=["text_hash"])
         after = len(self.dataset_table)
-        print(
+        logger.info(
             f"Deduplicated dataset: removed {before - after} duplicates, {after} remain."
         )

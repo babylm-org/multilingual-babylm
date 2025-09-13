@@ -20,6 +20,9 @@ from multilingual_res.manager import fetch_resource, remove_resource
 
 from iso639 import is_language, Lang
 
+from loguru import logger
+from logging_utils import setup_logger
+
 
 def process_dataset(
     language_code: str,
@@ -76,7 +79,8 @@ def process_dataset(
     Returns:
         Path to output directory
     """
-    print(f"Processing data for {language_code}...")
+
+    logger.info(f"Processing data for {language_code}...")
 
     docs = []
     # 0. Load data using loader if both data_path and data_type are provided
@@ -86,25 +90,25 @@ def process_dataset(
 
     # 0.5 Remove previously added resources if requested
     if remove_previous_ririro_data:
-        print(
+        logger.info(
             f"Removing previously added Ririro resource for language: {language_code}"
         )
         docs = remove_resource("ririro", docs, language_code, script_code)
 
     if remove_previous_glotstorybook_data:
-        print(
+        logger.info(
             f"Removing previously added GlotStoryBook resource for language: {language_code}"
         )
         docs = remove_resource("glotstorybook", docs, language_code, script_code)
 
     if remove_previous_childwiki_data:
-        print(
+        logger.info(
             f"Removing previously added ChildWiki resource for language: {language_code}"
         )
         docs = remove_resource("childwiki", docs, language_code, script_code)
 
     if remove_previous_childes_data:
-        print(
+        logger.info(
             f"Removing previously added Childes resource for language: {language_code}"
         )
         docs = remove_resource("childes", docs, language_code, script_code)
@@ -115,40 +119,40 @@ def process_dataset(
 
     # 1.0 Optionally fetch Ririro resource
     if add_ririro_data:
-        print(f"Fetching Ririro resource for language: {language_code}")
+        logger.info(f"Fetching Ririro resource for language: {language_code}")
         ririro_docs = fetch_resource("ririro", language_code, script_code)
         docs.extend(ririro_docs)
 
     # 1.1 Optionally fetch GlotStoryBook resource
     if add_glotstorybook_data:
-        print(f"Fetching GlotStoryBook resource for language: {language_code}")
+        logger.info(f"Fetching GlotStoryBook resource for language: {language_code}")
         glotstorybook_docs = fetch_resource("glotstorybook", language_code, script_code)
         docs.extend(glotstorybook_docs)
 
     # 1.2 Optionally fetch ChildWiki resource
     if add_childwiki_data:
-        print(f"Fetching ChildWiki resource for language: {language_code}")
+        logger.info(f"Fetching ChildWiki resource for language: {language_code}")
         childwiki_docs = fetch_resource("childwiki", language_code, script_code)
         docs.extend(childwiki_docs)
 
     # 1.3 Optionally fetch Childes resource
     if add_childes_data:
-        print(f"Fetching Childes resource for language: {language_code}")
+        logger.info(f"Fetching Childes resource for language: {language_code}")
         childes_docs = fetch_resource("childes", language_code, script_code)
         docs.extend(childes_docs)
 
     if len(docs) == 0:
-        print(
+        logger.info(
             "No documents found. Please provide valid data_path and/or add multilingual resources. Aborting ..."
         )
         return Path()
 
-    print(f"Loaded {len(docs)} documents from data source(s)")
+    logger.info(f"Loaded {len(docs)} documents from data source(s)")
 
     # 2. Load metadata file if provided and merge
     metadata_mapping = {}
     if metadata_file and metadata_file.exists():
-        print(f"Loading metadata from {metadata_file}")
+        logger.info(f"Loading metadata from {metadata_file}")
         with open(metadata_file, "r", encoding="utf-8") as f:
             metadata_mapping = json.load(f)
     # Metadata file overrides document-level metadata
@@ -163,7 +167,7 @@ def process_dataset(
             del doc["file_name"]
 
     # 3. Build dataset
-    print("Building dataset...")
+    logger.info("Building dataset...")
     dataset_config = DatasetConfig(language_code=language_code)
     # Zzzz : default ISO 15924 value for Unknown or Unencoded
     builder = BabyLMDatasetBuilder(dataset_config, merge_existing=not overwrite)
@@ -173,13 +177,13 @@ def process_dataset(
 
     # 4. Preprocess all texts (if requested)
     if preprocess_text:
-        print("Preprocessing document texts...")
+        logger.info("Preprocessing document texts...")
     assert builder.dataset_table is not None
     builder.dataset_table = preprocess_dataset(builder.dataset_table)
 
     # 5. Language filtering if enabled
     if enable_language_filtering:
-        print(
+        logger.info(
             f"Filtering dataset for language {language_code} and script {script_code}..."
         )
         assert builder.dataset_table is not None
@@ -192,7 +196,7 @@ def process_dataset(
 
     # 6. Pad dataset to next tier, accounting for byte premium
     if pad_opensubtitles:
-        print(f"Padding dataset for {language_code} using OpenSubtitles...")
+        logger.info(f"Padding dataset for {language_code} using OpenSubtitles...")
         assert builder.dataset_table is not None
         results = pad_dataset_to_next_tier(
             dataset_df=builder.dataset_table,
@@ -209,7 +213,7 @@ def process_dataset(
         # and has been preprocessed for the subtitles category
 
     # 6.5. Deduplicate by exact text before saving
-    print("Running deduplication on dataset before saving...")
+    logger.info("Running deduplication on dataset before saving...")
     builder.deduplicate_by_text()
 
     # 6.7 Update scripts (optional; default disabled). Default scope: newly added docs only.
@@ -231,7 +235,7 @@ def process_dataset(
             scope_msg = "newly added (incl. padding) documents only"
 
         if mask.any():
-            print(f"Updating script annotations for {scope_msg}...")
+            logger.info(f"Updating script annotations for {scope_msg}...")
             updated_subset = update_dataset_scripts(
                 builder.dataset_table.loc[mask].copy()
             )
@@ -240,11 +244,11 @@ def process_dataset(
     # 7. Save and create dataset
     builder.save_dataset()
     assert builder.dataset_table is not None
-    print(f"\nDataset created with {len(builder.dataset_table)} documents")
+    logger.info(f"\nDataset created with {len(builder.dataset_table)} documents")
 
     # 8. Upload if requested
     if upload and repo_id:
-        print(f"\nUploading to HuggingFace: {repo_id}")
+        logger.info(f"\nUploading to HuggingFace: {repo_id}")
         uploader = HFDatasetUploader()
         uploader.upload_babylm_dataset(
             language_code=language_code,
@@ -482,6 +486,9 @@ def main():
         document_config_params["license"] = args.license
     if args.misc:
         document_config_params["misc"] = args.misc
+
+    logfile_path: str = "logs/log_pipeline.txt"
+    setup_logger(logfile_path)
 
     process_dataset(
         language_code=args.language,

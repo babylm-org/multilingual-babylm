@@ -6,7 +6,8 @@ preprocessed_output
 .env
 babylm_datasets
 output
-tmp_datasets
+logs
 prep_subtitles
 preprocessed_*
+_tmp_datasets
 _tmp_readme_*

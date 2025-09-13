@@ -17,6 +17,9 @@ from transformers import AutoTokenizer  # type: ignore
 from pad_utils import get_byte_premium_factor, get_dataset_tier, get_dataset_size
 from multilingual_res.manager import contains_resource
 
+from loguru import logger
+from logging_utils import setup_logger
+
 TEMPLATE_PATH = Path("resources") / "readme_template.txt"
 CONTRIBUTORS_PATH = Path("resources") / "contributors.yaml"
 DATA_SOURCES_PATH = Path("resources") / "data_sources.yaml"
@@ -51,7 +54,7 @@ class HFDatasetUploader:
             description=pr_description,
             pull_request=True,
         )
-        print(f"Creating Pull Request with url {res.url}")
+        logger.info(f"Creating Pull Request with url {res.url}")
         pr_revision = f"refs/pr/{res.num}"
         return pr_revision
 
@@ -86,7 +89,7 @@ class HFDatasetUploader:
         # Optionally ensure repository exists
         if create_repo_if_missing:
             try:
-                print(f"Checking repository {repo_id}...")
+                logger.info(f"Checking repository {repo_id}...")
                 create_repo(
                     repo_id=repo_id,
                     repo_type="dataset",
@@ -94,9 +97,9 @@ class HFDatasetUploader:
                     token=self.token,
                     exist_ok=True,
                 )
-                print(f"Repository {repo_id} ready.")
+                logger.info(f"Repository {repo_id} ready.")
             except Exception as e:
-                print(f"Error with repository: {e}")
+                logger.info(f"Error with repository: {e}")
                 return
 
         # Find dataset files
@@ -120,18 +123,18 @@ class HFDatasetUploader:
                 # to_pandas is available at runtime; ignore static checker complaints
                 prev_data = prev_ds.to_pandas()  # type: ignore[attr-defined]
                 if isinstance(prev_data, pd.DataFrame) and isinstance(df, pd.DataFrame):
-                    print(
+                    logger.info(
                         f"Merging with existing data from {repo_id} (rows: {len(prev_data)})..."
                     )
                     df = pd.concat([prev_data, df], ignore_index=True)
-                    print("Running deduplication on merged dataset...")
+                    logger.info("Running deduplication on merged dataset...")
                     df = self._deduplicate_by_text(df)
                 else:
                     raise TypeError(
                         "Both previous data and new data must be pandas DataFrames."
                     )
             except DatasetNotFoundError:
-                print("Previous data not found")
+                logger.info("Previous data not found")
 
         tokenizer = (
             AutoTokenizer.from_pretrained(tokenizer_name) if tokenizer_name else None
@@ -152,7 +155,7 @@ class HFDatasetUploader:
         # Assume hyphenated schema; compute num-tokens if missing
         if "num-tokens" not in df.columns:
             df["num-tokens"] = df["text"].apply(count_tokens, tokenizer=tokenizer)
-        total_tokens = int(df["num-tokens"].sum())
+
         revision = None
         if create_pr:
             revision = self.create_pr(repo_id, pr_title, pr_description)
@@ -189,9 +192,9 @@ class HFDatasetUploader:
                         token=self.token,
                         revision=revision,
                     )
-                    print(f"Uploaded {file_path.name}")
+                    logger.info(f"Uploaded {file_path.name}")
                 except Exception as e:
-                    print(f"Error uploading {file_path.name}: {e}")
+                    logger.info(f"Error uploading {file_path.name}: {e}")
 
         # Define the expected features explicitly
         features = Features(
@@ -215,12 +218,12 @@ class HFDatasetUploader:
         dataset_dict = DatasetDict({"train": dataset})
 
         # Push to hub
-        print(f"Uploading dataset to {repo_id}...")
+        logger.info(f"Uploading dataset to {repo_id}...")
         dataset_dict.push_to_hub(
             repo_id, token=self.token, private=private, revision=revision
         )
 
-        print(
+        logger.info(
             f"Dataset successfully uploaded to https://huggingface.co/datasets/{repo_id}"
         )
 
@@ -256,7 +259,7 @@ class HFDatasetUploader:
         )
         df = df.drop_duplicates(subset=["text_hash"]).drop(columns=["text_hash"])
         after = len(df)
-        print(
+        logger.info(
             f"Deduplicated merged dataset: removed {before - after} duplicates, {after} remain."
         )
         return df
@@ -417,13 +420,13 @@ class HFDatasetUploader:
             data_sources_readme = "\n\n".join(group_readmes)
 
         # print statistics
-        print(f"Total tokens in dataset: {total_tokens:,}")
-        print("Tokens per category:")
+        logger.info(f"Total tokens in dataset: {total_tokens:,}")
+        logger.info("Tokens per category:")
         for cat, tok in tokens_per_category.items():
-            print(f"  {cat}: {tok}")
-        print("Tokens per group:")
+            logger.info(f"  {cat}: {tok}")
+        logger.info("Tokens per group:")
         for g, tok in tokens_per_group.items():
-            print(f"  {g}: {tok}")
+            logger.info(f"  {g}: {tok}")
 
         # format readme
         with TEMPLATE_PATH.open("r") as f:
@@ -462,9 +465,9 @@ class HFDatasetUploader:
                 token=self.token,
                 revision=revision,
             )
-            print("Dataset card uploaded")
+            logger.info("Dataset card uploaded")
         except Exception as e:
-            print(f"Error uploading README: {e}")
+            logger.info(f"Error uploading README: {e}")
 
     def update_all_readmes(
         self,
@@ -490,16 +493,18 @@ class HFDatasetUploader:
         }
 
         if not repo_ids:
-            print("No BabyLM datasets found with prefix 'BabyLM-community/babylm-'.")
+            logger.info(
+                "No BabyLM datasets found with prefix 'BabyLM-community/babylm-'."
+            )
             return
 
-        print(f"Discovered {len(repo_ids)} BabyLM dataset repos to update.")
+        logger.info(f"Discovered {len(repo_ids)} BabyLM dataset repos to update.")
         for repo_id in repo_ids:
             language_code = repo_id.split("-")[-1]
             tokenizer_name = tokenizers.get(language_code, None)
 
             suffix = repo_id.split("babylm-")[-1]
-            print(f"Updating README for {repo_id}...")
+            logger.info(f"Updating README for {repo_id}...")
             try:
                 ds = load_dataset(repo_id, split="train", token=self.token)
                 df_obj = ds.to_pandas()  # type: ignore[attr-defined]
@@ -508,7 +513,7 @@ class HFDatasetUploader:
                 )
                 df: pd.DataFrame = cast(pd.DataFrame, df_obj)
             except Exception as e:
-                print(f"  Could not load dataset: {e}")
+                logger.info(f"  Could not load dataset: {e}")
                 continue
             if "num-tokens" not in df.columns:
                 tokenizer = (
@@ -554,7 +559,7 @@ class HFDatasetUploader:
         try:
             all_ds = self.api.list_datasets(author="BabyLM-community")
         except Exception as e:
-            print(f"Error listing datasets: {e}")
+            logger.info(f"Error listing datasets: {e}")
             return []
         candidates: List[str] = []
         for d in all_ds:
@@ -574,7 +579,7 @@ class HFDatasetUploader:
             if "archived" in tags or "deprecated" in tags:
                 archived_flag = True
             if archived_flag:
-                print(f"Skipping archived/deprecated dataset: {ds_id}")
+                logger.info(f"Skipping archived/deprecated dataset: {ds_id}")
                 continue
             candidates.append(ds_id)
         active: List[str] = []
@@ -588,12 +593,12 @@ class HFDatasetUploader:
                     )  # local import to avoid top-level clash
 
                     if len(cast(HFDataset, ds)) == 0:  # type: ignore[arg-type]
-                        print(f"Skipping empty dataset: {repo_id}")
+                        logger.info(f"Skipping empty dataset: {repo_id}")
                         continue
                 except Exception as e:
-                    print(f"Skipping dataset (load failed): {repo_id} ({e})")
+                    logger.info(f"Skipping dataset (load failed): {repo_id} ({e})")
                     continue
-            print(f"Discovered repo: {repo_id}")
+            logger.info(f"Discovered repo: {repo_id}")
             active.append(repo_id)
 
         return active
@@ -631,6 +636,9 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     uploader = HFDatasetUploader(token=args.token)
+
+    setup_logger("logs/hf_uploader.txt")
+
     if args.repo_id is None:
         uploader.update_all_readmes(
             check_empty=not args.no_check, byte_premium_factor=args.byte_premium_factor

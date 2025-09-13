@@ -8,6 +8,8 @@ from pad_utils import (
     deduplicate_rows,
 )
 
+from loguru import logger
+
 
 def pad_nso(
     required_padding_in_mb, language_code="nso", script_code="Latn", HF_token=None
@@ -37,7 +39,7 @@ def pad_nso(
     ]
     dataset_all = []
     repo_id = "allenai/wmt22_african"
-    print(f"Padding dataset for language {language_code} using {repo_id}")
+    logger.info(f"Padding dataset for language {language_code} using {repo_id}")
     for p in pairs:
         dataset_pad = load_dataset(repo_id, p, split="train", trust_remote_code=True)
         dataset_pad = dataset_pad.to_pandas()["translation"].apply(lambda x: x["nso"])
@@ -81,7 +83,7 @@ language_specific_pads = {
 def pad_language_specific(
     required_padding_in_mb, language_code, script_code, HF_token=None
 ):
-    print("Padding using language-specific data for language:", language_code)
+    logger.info("Padding using language-specific data for language:", language_code)
     padding_function = language_specific_pads.get(language_code)
     if padding_function:
         return padding_function(

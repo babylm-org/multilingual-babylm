@@ -7,6 +7,8 @@ from dotenv import load_dotenv
 from multilingual_res.base import BaseResourceFetcher
 from typing import List, Dict, Optional, cast
 
+from loguru import logger
+
 
 class ChildesFetcher(BaseResourceFetcher):
     def __init__(self):
@@ -31,7 +33,7 @@ class ChildesFetcher(BaseResourceFetcher):
                 "BabyLM-community/formatted-CHILDES", language_code, split="train"
             )
         except ValueError:
-            print(f"CHILDES not available for language: {language_code}")
+            logger.info(f"CHILDES not available for language: {language_code}")
             return []
 
         results = []
@@ -49,7 +51,7 @@ class ChildesFetcher(BaseResourceFetcher):
                 }
                 doc_id = hashlib.sha256(text.encode("utf-8")).hexdigest()
                 results.append({"text": text, "doc-id": doc_id, "metadata": metadata})
-        print(
+        logger.info(
             f"Fetched {len(results)} documents from CHILDES for language '{language_code}'"
         )
         return results

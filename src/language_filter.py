@@ -12,6 +12,8 @@ import pandas as pd
 from huggingface_hub import hf_hub_download
 from language_scripts import validate_script_code
 
+from loguru import logger
+
 
 class LanguageFilter:
     """Language and script filter using GlotLID v3."""
@@ -450,45 +452,45 @@ def print_filtering_results(
     """Print filtering results summary."""
     stats = results["statistics"]
 
-    print(f"\n{'=' * 60}")
-    print("LANGUAGE FILTERING RESULTS")
-    print(f"{'=' * 60}")
-    print(f"Expected Language: {expected_language}")
-    print(f"Expected Script: {expected_script}")
-    print()
-    print(f"Total files processed: {stats['total_processed']}")
-    print(f"Matching files: {stats['matching']}")
-    print(f"Mismatched files: {stats['mismatched']}")
-    print(f"Errors: {stats['errors']}")
+    logger.info(f"\n{'=' * 60}")
+    logger.info("LANGUAGE FILTERING RESULTS")
+    logger.info(f"{'=' * 60}")
+    logger.info(f"Expected Language: {expected_language}")
+    logger.info(f"Expected Script: {expected_script}")
+    logger.info()
+    logger.info(f"Total files processed: {stats['total_processed']}")
+    logger.info(f"Matching files: {stats['matching']}")
+    logger.info(f"Mismatched files: {stats['mismatched']}")
+    logger.info(f"Errors: {stats['errors']}")
 
     if stats["total_processed"] > 0:
         match_rate = (stats["matching"] / stats["total_processed"]) * 100
-        print(f"Match rate: {match_rate:.1f}%")
+        logger.info(f"Match rate: {match_rate:.1f}%")
 
     # Show breakdown of mismatched languages
-    print("\nMismatched files breakdown:")
+    logger.info("\nMismatched files breakdown:")
     for key, count in stats.items():
         if key.startswith("mismatched_") and key != "mismatched":
             lang_script = key.replace("mismatched_", "")
-            print(f"  {lang_script}: {count} files")
+            logger.info(f"  {lang_script}: {count} files")
 
     # Show some examples of mismatched files
     if results["mismatched"]:
-        print("\nExamples of mismatched files:")
+        logger.info("\nExamples of mismatched files:")
         for i, file_info in enumerate(results["mismatched"][:5]):
-            print(
+            logger.info(
                 f"  {file_info['filename']}: {file_info['predicted_language']}_{file_info['predicted_script']} "
                 f"(confidence: {file_info['confidence']:.3f})"
             )
 
     if results["errors"]:
-        print("\nErrors:")
+        logger.info("\nErrors:")
         for error in results["errors"][:5]:
-            print(f"  {error}")
+            logger.info(f"  {error}")
         if len(results["errors"]) > 5:
-            print(f"  ... and {len(results['errors']) - 5} more errors")
+            logger.info(f"  ... and {len(results['errors']) - 5} more errors")
 
-    print(f"{'=' * 60}")
+    logger.info(f"{'=' * 60}")
 
 
 def update_dataset_scripts(
@@ -575,7 +577,7 @@ def update_dataset_scripts(
                 if cur_norm != pred_script:
                     if warn_on_mismatch:
                         doc_id_display = row.get(id_col) if id_col else idx
-                        print(
+                        logger.info(
                             f"WARNING: Script mismatch for {doc_id_display}: '{cur_norm}' -> '{pred_script}' (conf={script_conf:.3f})"
                         )
                     dataset_table.at[idx, "script"] = pred_script
@@ -584,10 +586,10 @@ def update_dataset_scripts(
         except Exception as e:
             errors += 1
             doc_id_display = row.get(id_col) if id_col else idx
-            print(f"WARNING: Failed to update script for {doc_id_display}: {e}")
+            logger.info(f"WARNING: Failed to update script for {doc_id_display}: {e}")
 
     total = len(dataset_table)
-    print(
+    logger.info(
         "Script update summary: "
         f"total={total}, filled_missing={updates_missing}, corrected_mismatch={updates_mismatch}, "
         f"errors={errors}"

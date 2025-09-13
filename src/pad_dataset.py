@@ -12,6 +12,8 @@ from dotenv import load_dotenv
 import warnings
 from copy import deepcopy
 
+from loguru import logger
+
 from pad_utils import (
     bytes_in_text,
     check_if_required_padding_met,
@@ -55,10 +57,14 @@ def remove_padding_data(docs: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
         filtered_docs.append(doc)
 
-    print(f"Removed {len(docs) - len(filtered_docs)} padding documents from dataset.")
-    print(f"Document categories removed: {categories_removed}")
-    print(f"Document categories kept: {categories_kept}")
-    print(f'Data-sources kept for category "subtitles" : {sources_kept_subtitles}')
+    logger.info(
+        f"Removed {len(docs) - len(filtered_docs)} padding documents from dataset."
+    )
+    logger.info(f"Document categories removed: {categories_removed}")
+    logger.info(f"Document categories kept: {categories_kept}")
+    logger.info(
+        f'Data-sources kept for category "subtitles" : {sources_kept_subtitles}'
+    )
 
     return filtered_docs
 
@@ -72,7 +78,7 @@ def pad_with_opensubtitles(
     selected_rows = []
     iso_639_1_code = Lang(language_code).pt1
     repo_id = f"BabyLM-community/babylm-{iso_639_1_code}-subtitles"
-    print(
+    logger.info(
         f"Loading OpenSubtitles data for language: {language_code} using repo: {repo_id}"
     )
     try:
@@ -97,7 +103,7 @@ def pad_with_opensubtitles(
         selected_rows, data_count = deduplicate_rows(selected_rows)
         return selected_rows, data_count, repo_id
     except Exception as e:
-        print(f"OpenSubtitles dataset not found or error for {repo_id}: {e}")
+        logger.info(f"OpenSubtitles dataset not found or error for {repo_id}: {e}")
         return [], 0, repo_id
 
 
@@ -129,13 +135,15 @@ def pad_with_wikipedia(
             s for s in all_subsets if s.split(".")[-1] == lang_code_lower
         ]
         if not matching_subsets:
-            print(f"Wikipedia: No matching subset found for language {language_code}")
+            logger.info(
+                f"Wikipedia: No matching subset found for language {language_code}"
+            )
             return [], 0, wiki_repo
     last_subset = None
     try:
         for wiki_subset in matching_subsets:
             last_subset = wiki_subset
-            print(
+            logger.info(
                 f"Loading Wikipedia data for language: {language_code}, subset: {wiki_subset}"
             )
             wiki_dataset = load_dataset(
@@ -173,7 +181,7 @@ def pad_with_wikipedia(
             return [], 0, wiki_repo
     except Exception as e:
         msg = f"Wikipedia dataset not found or error for {wiki_repo}/{last_subset}: {e}"
-        print(msg)
+        logger.info(msg)
         if last_subset is not None:
             return [], 0, f"{wiki_repo}/{last_subset}"
         else:
@@ -195,7 +203,7 @@ def pad_with_fineweb_c(
     try:
         for fineweb_subset in matching_subsets:
             last_subset = fineweb_subset
-            print(
+            logger.info(
                 f"Loading fineweb-c data for language: {language_code}, subset: {fineweb_subset}"
             )
             fineweb_dataset = load_dataset(
@@ -240,7 +248,7 @@ def pad_with_fineweb_c(
             return [], 0, fineweb_repo
     except Exception as e:
         msg = f"fineweb-c dataset not found or error for {fineweb_repo}/{last_subset}: {e}"
-        print(msg)
+        logger.info(msg)
         if last_subset is not None:
             return [], 0, f"{fineweb_repo}/{last_subset}"
         else:
@@ -327,7 +335,7 @@ def pad_by_byte_factor(
         dataset_df = pd.concat([dataset_df, dataset_padding_df], ignore_index=True)
         dataset_df.reset_index(drop=True, inplace=True)
     else:
-        print("No padding data could be loaded from any resource.")
+        logger.info("No padding data could be loaded from any resource.")
         return {
             "dataset": dataset_df,
             "byte_premium_factor": factor,
@@ -338,30 +346,30 @@ def pad_by_byte_factor(
     tier_words = dataset_tier.split("_")[-1]
 
     if final_dataset_size < eng_sizes_per_tier[dataset_tier] * factor:
-        print(
+        logger.info(
             f"Warning: Final dataset size {final_dataset_size:.3f} MB is less than required {eng_sizes_per_tier[dataset_tier] * factor:.3f} MB for tier {dataset_tier}."
         )
-        print(
+        logger.info(
             f"Missing {eng_sizes_per_tier[dataset_tier] * factor - final_dataset_size:.3f} MB"
         )
 
-    print(f"\n{'=' * 60}")
-    print("PADDING RESULTS")
-    print(f"{'=' * 60}")
-    print(
+    logger.info(f"\n{'=' * 60}")
+    logger.info("PADDING RESULTS")
+    logger.info(f"{'=' * 60}")
+    logger.info(
         f"Padding language: {language_code} with data from OpenSubtitles, FineWeb-C, and Wikipedia to tier {tier_words} words"
     )
-    print(
+    logger.info(
         f"Downloaded data from repos: {', '.join(used_resources) if used_resources else 'None'}"
     )
-    print(f"Initial dataset size: {dataset_size:.3f} MB")
-    print(f"Byte Premium factor for {language_code}: {factor}")
-    print(
+    logger.info(f"Initial dataset size: {dataset_size:.3f} MB")
+    logger.info(f"Byte Premium factor for {language_code}: {factor}")
+    logger.info(
         f"Required dataset size to match {tier_words} words of English ({eng_sizes_per_tier[dataset_tier]} MB) is {eng_sizes_per_tier[dataset_tier] * factor:.3f} MB"
     )
-    print(f"Padding data size: {data_count:.3f} MB")
-    print(f"Final dataset size after padding: {final_dataset_size:.3f} MB")
-    print(f"{'=' * 60}\n")
+    logger.info(f"Padding data size: {data_count:.3f} MB")
+    logger.info(f"Final dataset size after padding: {final_dataset_size:.3f} MB")
+    logger.info(f"{'=' * 60}\n")
     return {
         "dataset": dataset_df,
         "byte_premium_factor": factor,
@@ -406,7 +414,7 @@ def pad_dataset_to_next_tier(
             HF_token,
         )
     else:
-        print(f"Byte premium factor not found for {language_code}")
+        logger.info(f"Byte premium factor not found for {language_code}")
         return {
             "dataset": dataset_df,
             "byte_premium_factor": None,
