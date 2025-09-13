@@ -132,7 +132,7 @@ def remove_resource(
         )
 
     logger.info(f"Remaining documents: {len(processed_docs)}")
-    logger.info(f"{'=' * 60}\n")
+    logger.info(f"\n{'=' * 60}")
 
     return processed_docs
 

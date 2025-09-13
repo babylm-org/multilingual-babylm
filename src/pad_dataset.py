@@ -355,7 +355,7 @@ def pad_by_byte_factor(
 
     logger.info(f"\n{'=' * 60}")
     logger.info("PADDING RESULTS")
-    logger.info(f"{'=' * 60}")
+    logger.info(f"\n{'=' * 60}")
     logger.info(
         f"Padding language: {language_code} with data from OpenSubtitles, FineWeb-C, and Wikipedia to tier {tier_words} words"
     )
@@ -369,7 +369,7 @@ def pad_by_byte_factor(
     )
     logger.info(f"Padding data size: {data_count:.3f} MB")
     logger.info(f"Final dataset size after padding: {final_dataset_size:.3f} MB")
-    logger.info(f"{'=' * 60}\n")
+    logger.info(f"\n{'=' * 60}")
     return {
         "dataset": dataset_df,
         "byte_premium_factor": factor,

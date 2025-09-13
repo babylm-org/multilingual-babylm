@@ -454,7 +454,7 @@ def print_filtering_results(
 
     logger.info(f"\n{'=' * 60}")
     logger.info("LANGUAGE FILTERING RESULTS")
-    logger.info(f"{'=' * 60}")
+    logger.info(f"\n{'=' * 60}")
     logger.info(f"Expected Language: {expected_language}")
     logger.info(f"Expected Script: {expected_script}")
     logger.info()
@@ -490,7 +490,7 @@ def print_filtering_results(
         if len(results["errors"]) > 5:
             logger.info(f"  ... and {len(results['errors']) - 5} more errors")
 
-    logger.info(f"{'=' * 60}")
+    logger.info(f"\n{'=' * 60}")
 
 
 def update_dataset_scripts(
