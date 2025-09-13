@@ -458,6 +458,14 @@ def main():
         help="If set, remove Childes previously added resource for the given language.",
     )
 
+    parser.add_argument(
+        "--logfile",
+        type=str,
+        help="logging filepath",
+        default="logs/log_pipeline.txt"
+    )
+
+
     args = parser.parse_args()
 
     if not validate_script_code(args.script):
@@ -487,8 +495,8 @@ def main():
     if args.misc:
         document_config_params["misc"] = args.misc
 
-    logfile_path: str = "logs/log_pipeline.txt"
-    setup_logger(logfile_path)
+    
+    setup_logger(args.logfile)
 
     process_dataset(
         language_code=args.language,

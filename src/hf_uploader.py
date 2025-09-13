@@ -633,11 +633,18 @@ if __name__ == "__main__":
         default=None,
         help="Provide byte-premium factor manually, instead of retrieving it automatically (override).",
     )
+    parser.add_argument(
+        "--logfile",
+        type=str,
+        help="logging filepath",
+        default="logs/log_update_readmes.txt"
+    )
+
 
     args = parser.parse_args()
     uploader = HFDatasetUploader(token=args.token)
 
-    setup_logger("logs/hf_uploader.txt")
+    setup_logger(args.logfile)
 
     if args.repo_id is None:
         uploader.update_all_readmes(
