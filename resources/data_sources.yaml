@@ -9,16 +9,19 @@ ririro:
   - category: Books
     link: https://ririro.com/  
     name: Ririro Story Collection
+    description: Collection of children storybooksSo
 
 glotstorybook:
   - category: Books
     link: https://arxiv.org/abs/2310.16248
     name: GlotStoryBooks Collection
+    description: Collection of children storybooks
 
 childes:
   - category: 'Transcription'
     link: https://talkbank.org/childes/
     name: CHILDES
+    description: Transcription of child directed language conversations
 
 # Language-Specific
 # template:
@@ -33,66 +36,85 @@ ara:
   - category: Books
     link: https://www.sciencedirect.com/science/article/pii/S235234092500188X
     name: Arabic Book Corpus
+    description: Collection of children stories
   - category: Wiki
     link: https://ar.vikidia.org/
     name: Children's Wiki
+    description: Online encyclopedia based on wiki, adapted for children
   - category: Transcription
     link: https://aclanthology.org/2020.lrec-1.165/
     name: Habibi Corpus (El-Haj, 2020)
+    description: Song lyrics in a variety of dialects
   - category: Transcription
     link: https://magichub.com/datasets/yemeni-arabic-conversational-speech-corpus/
     name: Yemeni Arabic Conversational Speech Corpus - MagicHub
+    description: Adult speech conversation
   - category: Transcription
     link: https://magichub.com/datasets/egyptian-arabic-conversational-speech-corpus/
     name: Egyptian Arabic Conversational Speech Corpus - MagicHub
+    description: Adult speech conversation
 
 bul:
   - category: Books
     link: https://chitanka.info/
     name: Chitanka
+    description: Collection of children storybooks
 
 yue:
   - category: Books
     link: https://hambaanglaang.hk/about-us-2/
     name: Hambaanglaang project
+    description: Collection of stories designed for children across five proficiency levels
 
 zho:
   - category: Books
     link: http://quangushi.com/
     name: Quangushi (full stories)
+    description: Collection of children’s stories
   - category: Reading comprehension
     link: https://aclanthology.org/C16-1167/
     name: CFT reading comprehension dataset
+    description: Collection of children’s stories from a reading comprehension dataset
   - category: Reading comprehension
     link: https://aclanthology.org/2020.coling-main.589/
     name: CMRC-2019 reading comprehension dataset
+    description: Collection of children’s stories from a reading comprehension dataset
   - category: Wiki
     link: https://en.wikibooks.org/wiki/Wikijunior:Languages/Mandarin_Chinese
     name: WikiJunior
+    description: Age-appropriate non-fiction books for children
   - category: Wiki
     link: https://en.wikibooks.org/wiki/Chinese_(Mandarin)
     name: Wikibooks
+    description: Age-appropriate non-fiction books for children
   - category: Educational material (exam style)
     link: https://arxiv.org/abs/2305.12474
     name: GAOKAO
+    description: Dataset including subjective and objective questions from exams from 2010 to 2024
   - category: Educational material (exam style)
     link: https://dl.acm.org/doi/10.1609/aaai.v38i17.29914
     name: CK-12
+    description: Dataset covering most comprehensive knowledge points in Chinese K12 field
   - category: Educational material (exam style)
     link: https://figshare.com/articles/dataset/28667489
     name: CSQ
+    description: Chinese Science Question dataset
   - category: Educational material (exam style)
     link: https://aclanthology.org/2022.findings-emnlp.137/
     name: FCGEC
+    description: A human-annotated corpus based on multi-choice grammatical error problems
   - category: Educational material (exam style)
     link: https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0309717
     name: Primary school students’ compositions
-  - category: Conversational
+    description: A hierarchical corpus of primary school students’ compositions 
+  - category: Transcription
     link: https://aclanthology.org/2025.acl-long.614/
     name: "ChildMandarin: A Comprehensive Mandarin Speech Dataset for Young Children Aged 3-5"
-  - category: Conversational
+    description: Transcriptions of children's conversations  
+  - category: Transcription
     link: http://ojs.aaai.org/index.php/AAAI/article/view/17649
     name: NaturalConv
+    description: A multi-turn topic-driven adult conversation dataset 
 
 
 nld:
