@@ -121,15 +121,19 @@ nld:
   - category: Educational (school exams)
     link: https://www.alleexamens.nl/
     name: AlleExamens
+    description: Texts of all high school exams from 1999 to 2024
   - category: Educational materials
     link: https://www.wikiwijs.nl/
     name: WikiWijs
+    description: Educational materials for both primary and high school level
   - category: Educational materials
     link: https://www.klascement.net/
     name: KlasCement
+    description: Flemish educational materials
   - category: Educational materials
     link: https://www.clinjournal.org/clinj/article/view/50
     name: BasiLex
+    description: Collection of children’s media, children’s books and educational materials
 
 fra:
   - category: Wiki
