@@ -37,7 +37,7 @@ ara:
     link: https://www.sciencedirect.com/science/article/pii/S235234092500188X
     name: Arabic Book Corpus
     description: Collection of children stories
-  - category: Wiki
+  - category: Wikis
     link: https://ar.vikidia.org/
     name: Children's Wiki
     description: Online encyclopedia based on wiki, adapted for children
@@ -79,11 +79,11 @@ zho:
     link: https://aclanthology.org/2020.coling-main.589/
     name: CMRC-2019 reading comprehension dataset
     description: Collection of children’s stories from a reading comprehension dataset
-  - category: Wiki
+  - category: Wikis
     link: https://en.wikibooks.org/wiki/Wikijunior:Languages/Mandarin_Chinese
     name: WikiJunior
     description: Age-appropriate non-fiction books for children
-  - category: Wiki
+  - category: Wikis
     link: https://en.wikibooks.org/wiki/Chinese_(Mandarin)
     name: Wikibooks
     description: Age-appropriate non-fiction books for children
@@ -136,320 +136,409 @@ nld:
     description: Collection of children’s media, children’s books and educational materials
 
 fra:
-  - category: Wiki
+  - category: Wikis
     link: https://fr.wikisource.org/wiki/Cat%C3%A9gorie:Litt%C3%A9rature_jeunesse
     name: Wikisource – Littérature jeunesse
+    description: Age-appropriate books for children
   - category: Transcription
     link: https://www.youtube.com/@CaillouFrench
     name: Caillou Français – WildBrain
+    description: Subtitles from the popular animated series Caillou
   - category: Conversational
     link: https://huggingface.co/datasets/OpenLLM-France/Claire-Dialogue-French-0.1
     name: Claire-Dialogue-French-0.1 (PFC_free, OFROM, CLAPI, ORFEO_coralrom, ParisStories, CFPP, ACSYNT, ORFEO_reunions_de_travail)
+    description: Collection of adult spontaneous everyday conversations, guided one-one interviews, and workplace meetings
 
 deu:
-  - category: Wiki
+  - category: Wikis
     link: https://klexikon.zum.de/wiki/Klexikon:Willkommen_im_Klexikon
     name: Klexikon
-  - category: Wiki
+    description: Online encyclopedia based on wiki, adapted for children
+  - category: Wikis
     link: https://miniklexikon.zum.de
     name: MiniKlexikon
-  - category: Wiki
+    description: Online encyclopedia based on wiki, adapted for children
+  - category: Wikis
     link: https://kiwithek.kidsweb.at/index.php/Hauptseite
     name: Kiwithek
-  - category: Wiki
+    description: Online encyclopedia based on wiki, adapted for children (Austrian German)
+  - category: Wikis
     link: https://en.wikibooks.org/wiki/German
     name: Wikibooks (German)
-  - category: Wiki
+    description: Age-appropriate books for children
+  - category: Wikis
     link: https://en.wikibooks.org/wiki/Wikijunior:Languages/German
     name: Wikijunior (German)
+    description: Online encyclopedia based on wiki, adapted for children
   - category: Books
     link: https://www.gutenberg.org/
     name: Project Gutenberg
+    description: Collection of books for children and young adults
   - category: Magazine
     link: n/a
     name: Fluter
+    description: Archives of the Fluter magazine
   - category: Transcription
     link: https://catalog.ldc.upenn.edu/LDC97T15
     name: CallHome corpus (German)
+    description: Transcribed telephone conversations between adults
   - category: Reported Dreams
     link: https://www.sciencedirect.com/science/article/pii/S1053810008001116?via%3Dihub
     name: Dreambank
+    description: Large corpus of dream reports by adults and children
 
 ell:
   - category: Education
     link: https://inventory.clarin.gr/corpus/1075
     name: Primary School Books
+    description: Collection of books aimed at grades 1-6 (ages 6-12)
   - category: Education
     link: https://inventory.clarin.gr/corpus/908
     name: CGL Modern Greek Texts corpus
+    description: Collection of textbooks taught through grades 7-12 (ages 13-18) in the public school system
   - category: Education
     link: https://inventory.clarin.gr/corpus/763
     name: Pedagogical Greek L2
+    description: Collection of textbook addressed to indigenous populations/minorities learning Greek as L2
   - category: Books
     link: https://www.openbook.gr/
     name: OpenBook GR
+    description: Selection of e-books for children and young adults
   - category: Books
     link: https://free-ebooks.gr/tag/16?
     name: Free Ebooks (children)
+    description: Selection of e-books for children and young adults
   - category: Books
     link: https://paidika-paramythia.gr
     name: Paidika-Paramythia
+    description: Collection of children stories
   - category: Transcription
     link: https://inventory.clarin.gr/corpus/1055
     name: Child Speech
+    description: Transcriptions of children’s speech with a focus on narration
   - category: Transcription
     link: https://inventory.clarin.gr/corpus/496
     name: Greek Student Chat Dataset
+    description: Collection of chats among students (grades 4-18) in online collaborative learning environments 
   - category: Transcription
     link: https://inventory.clarin.gr/corpus/888
     name: Corpus of written transcripts of everyday conversations of the Department of Linguistics 
+    description: Collection of everyday conversations between adults
   - category: Transcription
     link: https://inventory.clarin.gr/corpus/871
     name: Babiniotis Archive
-  - category: Books/Wikis/News
+    description: Collection of everyday conversations between adults
+  - category: Wikis
     link: https://el.vikidia.org/
     name: Child Wiki
+    description: Online encyclopedia based on wiki, adapted for children
 
 ita:
-  - category: Books/Wikis/News
+  - category: Books
     link: https://www.biancoeneroedizioni.it/
     name: Biancoenero Edizioni
-  - category: Books/Wikis/News
+    description: Collection of books from the independent Italian publishing house Biancoenero Edizioni
+  - category: Books
     link: https://children.logoslibrary.eu/
     name: Logos
-  - category: Books/Wikis/News
+    description: Collection of children's stories
+  - category: Books
     link: https://aclanthology.org/2024.clicit-1.46/
     name: Fairy tales (Italian)
-  - category: Books/Wikis/News
+    description: Collection offairy tales curated in the study by Fusco et al., 2024
+  - category: Books
     link: https://www.gutenberg.org/
     name: Project Gutenberg
-  - category: Books/Wikis/News
+    description: Collection of books for children and young adults
+  - category: Wikis
     link: https://it.wikibooks.org/wiki/Italiano
     name: Wikibooks (Italian)
-  - category: Books/Wikis/News
+    description: Age-appropriate books for children
+  - category: Wikis
     link: https://en.wikibooks.org/wiki/Wikijunior:Languages/Italian
     name: Wikijunior (Italian)
+    description: Online encyclopedia based on wiki, adapted for children
   - category: Educational
     link: https://www.invalsi.it/invalsi/index.php
     name: INVALSI
+    description: Exam tests in Italian and Math at both primary and secondary levels
   - category: Educational
     link: https://www.mim.gov.it/
     name: Esami di Stato
+    description: Archive of national high school final exams
   - category: Educational
     link: https://www.youtube.com/@calimeroitaliano2815
     name: YouTube – Calimero
+    description: YouTube video transcripts from the animated cartoon Calimero
   - category: Educational (songs)
     link: https://arxiv.org/abs/2503.09481
     name: Zecchino D’Oro
+    description: Collection of children’s songs from the Zecchino D’Oro archive
   - category: Educational
     link: https://aclanthology.org/2025.coling-main.281/
     name: Terence and Teacher
+    description: Text simplification datasets curated by Brunato et al., 2015
   - category: Educational
     link: https://aclanthology.org/2024.readi-1.4.pdf
     name: MLSP2024
+    description: Lexical simplification dataset developed for the MLSP2024 shared task by Shardlow et al., 2024
   - category: Transcription
     link: https://pmc.ncbi.nlm.nih.gov/articles/PMC5822718/
     name: "Children’s Acquisition of Nouns and Verbs in Italian: Contrasting The Roles of Frequency and Positional Salience in Maternal Language"
+    description: Child-directed transcripts collected by Longobardi et al., 2015
   - category: Transcription
     link: https://riviste.unimi.it/index.php/promoitals/article/view/5049
     name: "L’INSEGNAMENTO DELLA GRAMMATICA NELLA CLASSE MULTILINGUEUn esperimento di focus on form nella scuola primaria"
+    description: Child-directed transcripts collected by Whittle and Nuzzo, 2015
   - category: Transcription
     link: https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2022.1056816/full
     name: "Editorial: Are there different types of child-directed speech? Dynamic variations according to individual and contextual factors"
+    description: Child-directed transcripts collected by Spinelli et al., 2023
   - category: Transcription
     link: https://magichub.com/datasets/
     name: MagicHub
+    description: Transcribed adult conversational speech
   - category: Transcription
     link: https://aclanthology.org/L14-1693/
     name: VolIP
+    description: Dataset of telephone conversations curated by Alfano et al., 2014
 
 jpn:
-  - category: Books/Wikis/News
+  - category: Wikis
     link: https://ja.wikibooks.org/wiki/%E3%83%A1%E3%82%A4%E3%83%B3%E3%83%9A%E3%83%BC%E3%82%B8
     name: Wikibooks (Japanese)
-  - category: Books/Wikis/News
+    description: Age-appropriate books for children
+  - category: Wikis
     link: https://ja.wikibooks.org/wiki/Wikijunior:%E3%83%A1%E3%82%A4%E3%83%B3%E3%83%9A%E3%83%BC%E3%82%B8
     name: Wikijunior (Japanese)
-# which one of the two?
-  - category: Books/Wikis/News
-    link: https://www.aozora.gr.jp/
-    name: Aozora Bunko
-  - category: Books/Wikis/News
+    description: Online encyclopedia based on wiki, adapted for children 
+  - category: Wikis
     link: https://huggingface.co/datasets/globis-university/aozorabunko-clean
     name: Aozora Bunko (cleaned)
+    description: Japanese digital library that provides access to literary works in the public domain
 
-fas:
-  - category: Books/Wikis/News
+fas: 
+  - category: Educational #to be adjusted in the paper
     link: https://arxiv.org/abs/2502.10361
     name: FineWeb2-HQ
+    description: A high-quality, multilingual dataset built on top of FineWeb2 (Penedo et al., 2025) filtered for educational content
 
 pol:
-  - category: Books/Wikis/News
+  - category: Books
     link: https://wolnelektury.pl/
     name: Wolne Lektury
-  - category: Books/Wikis/News
+    description: Collection of Polish ebooks that contain child-directed/child-available content
+  - category: Wikis
     link: n/a
     name: Wikibooks
-  - category: Books/Wikis/News
+    description: Age-appropriate books for children
+  - category: Wikis
     link: n/a
     name: WikiJunior
-  - category: Books/Wikis/News
+    description: Online encyclopedia based on wiki, adapted for children
+  - category: Wikis
     link: n/a
     name: Wikikids
+    description: Online encyclopedia based on wiki, adapted for children
 
 por:
-  - category: Books/Wikis/News
+  - category: Books
     link: https://sol.sbc.org.br/index.php/dsw/article/view/17416
     name: PPORTAL Public Domain Portuguese-language Literature Dataset
+    description: Dataset curated in the study by Silva et al., 2021
   - category: Transcription
     link: https://sites.google.com/view/tarsila-c4ai/coraa-versions
     name: CORAA
-  - category: Books/Wikis/News
+    description: Collection of natural speech data
+  - category: Wikis
     link: https://pt.vikidia.org/
     name: Child Wiki
+    description: Online encyclopedia based on wiki, adapted for children
 
 ron:
-  - category: Books/Wikis/News
+  - category: Books
     link: https://aclanthology.org/2024.lrec-main.1429/
     name: LEMI – Romanian children’s literature corpus
-  - category: Books/Wikis/News
+    description: Corpus curated in the study by Chitez et al., 2024
+  - category: Books
     link:
       - https://lmidriganciochina.github.io/romaniancorpus/
       - https://aclanthology.org/2020.lrec-1.402/
     name: Romanian Language Corpus (collected)
+    description: Dataset by Midrigan Ciochina et al., 2020
 
-afr:
-  - category: Books/Wikis/News
+afr: #adjust category here as well -> in the paper
+  - category: Educational
     link: https://aclanthology.org/L14-1675/
     name: QED (Afrikaans, isiXhosa, isiZulu)
-  - category: Books/Wikis/News
+    description: Dataset curated in the study by Abdelali et al., 2014
+  - category: Educational
     link: https://openhumanitiesdata.metajnl.com/articles/10.5334/johd.108
     name: High School Exam (all 5 South African languages)
-  - category: Books/Wikis/News
+    description: Collection of high school exams curated by Sibeko and Zaanen, 2023
+  - category: Wikis
     link: n/a
     name: Wikipedia
-  - category: Books/Wikis/News
+    description: Online encyclopedia
+  - category: Books
     link: https://aclanthology.org/2024.lrec-main.1464/
     name: isiXhosa T2X (cross-lingual relevance)
+    description: Dataset curated in the study by Meyer and Buys, 2024
 
-sot:
-  - category: Books/Wikis/News
+sot: #adjust category here as well -> in the paper
+  - category: Educational
     link: https://repo.sadilar.org/items/b32cfc43-ea19-4465-a8f6-c2953d93eaba
     name: Autshumato English–Sesotho Parallel Corpus (Sesotho)
-  - category: Books/Wikis/News
+    description: Sentences from the Parallel Corpus curated in the study by McKellar, 2022
+  - category: Educational
     link: https://openhumanitiesdata.metajnl.com/articles/10.5334/johd.108
     name: High School Exam (all 5 South African languages)
-  - category: Books/Wikis/News
+    description: Collection of high school exams curated by Sibeko and Zaanen, 2023
+  - category: Wikis
     link: n/a
     name: Wikipedia
-  - category: Books/Wikis/News
+    description: Online encyclopedia
+  - category: Educational
     link: https://aclanthology.org/L14-1675/
     name: QED (Afrikaans, isiXhosa, isiZulu)
+    description: Dataset curated in the study by Abdelali et al., 2014
 
-nso:
-  - category: Books/Wikis/News
+nso: #adjust category here as well -> in the paper
+  - category: News
     link: http://aclanthology.org/2023.rail-1.3/
     name: Sepedi Vukenzele
-  - category: Books/Wikis/News
+    description: Collection of government news articles collected by Lastrucci et al., 2023
+  - category: Educational
     link: https://aclanthology.org/2022.wmt-1.72/
     name: Sepedi WMT22
-  - category: Books/Wikis/News
+    description: Collection of the highest quality Sepedi sentences curated in the study by Adelani et al., 2022
+  - category: Educational
     link: https://openhumanitiesdata.metajnl.com/articles/10.5334/johd.108
     name: High School Exam (all 5 South African languages)
-  - category: Books/Wikis/News
+    description: Collection of high school exams curated by Sibeko and Zaanen, 2023
+  - category: Wikis
     link: n/a
     name: Wikipedia
+    description: Online encyclopedia
 
-xho:
-  - category: Books/Wikis/News
+xho: #adjust category here as well -> in the paper
+  - category: Books
     link: https://aclanthology.org/2024.lrec-main.1464/
     name: isiXhosa T2X
-  - category: Books/Wikis/News
+    description: Dataset curated in the study by Meyer and Buys, 2024
+  - category: Educational
     link: https://aclanthology.org/L14-1675/
     name: QED (Afrikaans, isiXhosa, isiZulu)
-  - category: Books/Wikis/News
+    description: Dataset curated in the study by Abdelali et al., 2014
+  - category: Educational
     link: https://openhumanitiesdata.metajnl.com/articles/10.5334/johd.108
     name: High School Exam (all 5 South African languages)
-  - category: Books/Wikis/News
+    description: Collection of high school exams curated by Sibeko and Zaanen, 2023
+  - category: Wikis
     link: n/a
     name: Wikipedia
+    description: Online encyclopedia
 
 zul:
-  - category: Books/Wikis/News
+  - category: Educational
     link: https://aclanthology.org/L14-1675/
     name: QED (Afrikaans, isiXhosa, isiZulu)
-  - category: Books/Wikis/News
+    description: Dataset curated in the study by Abdelali et al., 2014
+  - category: Educational
     link: https://openhumanitiesdata.metajnl.com/articles/10.5334/johd.108
     name: High School Exam (all 5 South African languages)
-  - category: Books/Wikis/News
+    description: Collection of high school exams curated by Sibeko and Zaanen, 2023
+  - category: Wikis
     link: n/a
     name: Wikipedia
+    description: Online encyclopedia
 
 ind:
   - category: Note
     link: n/a
     name: NusaCrowd
+    description: Dataset curated in the study by Cahyawijaya et al., 2023a
   - category: Note
     link: n/a
     name: SEACrowd
-  - category: Books/Wiki/News
+    description: Dataset curated in the study by Lovenia et al., 2024
+  - category: Transcription
     link: https://magichub.com/datasets/indonesian-conversational-speech-corpus/
     name: ASR-INDOCSC
-  - category: Books/Wiki/News
+    description: Dataset of daily conversational speech from children in Indonesia
+  - category: Books
     link: https://repositori.kemdikbud.go.id/
     name: Books from Ministry of Education & Culture
-  - category: Books/Wiki/News
+    description: Books obtained from a repository provided by the Ministry of Education & Culture
+  - category: News
     link: https://bobo.grid.id/
     name: Bobo children’s magazine
-  - category: Books/Wiki/News
+    description: Collection of child-targeted articles
+  - category: Books #not sure whether to categorize it like that or Educational
     link: https://aclanthology.org/2023.eacl-main.57/
     name: NusaX
-  - category: Books/Wiki/News
+    description: Manually curated dataset in the study by Winata et al., 2023
+  - category: Books #not sure whether to categorize it like that or Educational
     link: https://aclanthology.org/2023.ijcnlp-main.60/
     name: NusaWrites
-  - category: Books/Wiki/News
+    description: Manually curated dataset in the study by Cahyawijaya et al., 2023b
+  - category: Books #not sure whether to categorize it like that or Educational
     link: https://aclanthology.org/2025.sealp-1.8/
     name: NusaDialogue
-  - category: Books/Wiki/News
+    description: Manually curated dataset in the study by Purwarianti et al., 2025
+  - category: Wikis
     link: n/a
     name: Wikipedia
-  - category: Books/Wiki/News
+    description: Online encyclopedia 
+  - category: Books #not sure whether to categorize it like that or Educational
     link: https://proceedings.neurips.cc/paper_files/paper/2023/file/d49042a5d49818711c401d34172f9900-Paper-Datasets_and_Benchmarks.pdf
     name: MADLAD-400
+    description: Dataset curated in the study by Kudugunta et al., 2023
 
 spa:
-  - category: Books/Wiki/News
+  - category: Books
     link: https://www.elejandria.com/coleccion/
     name: Elejandría collection
-  - category: Books/Wiki/News
+    description: Collection of children’s books
+  - category: Books
     link: https://children.logoslibrary.eu/
     name: Logos Group
-  - category: Books/Wiki/News
+    description: Collection of children’s books
+  - category: Books
     link: https://www.argentina.gob.ar/educacion/historiasxleer
     name: Children’s literature – Ministry of Education (Argentina)
-  - category: Books/Wiki/News
+    description: Collection of children’s books
+  - category: Books
     link: https://v1.maguared.gov.co/serie-leer-es-mi-cuento-todos-los-titulos/
     name: Children’s literature – Ministry of Education (Colombia)
-  - category: Books/Wiki/News
+    description: Collection of children’s books
+  - category: Books 
     link: https://planeamiento.edusalta.gov.ar/
     name: Children’s literature – Government of Salta (Argentina)
-  - category: Books/Wiki/News
+    description: Collection of children’s books
+  - category: Books
     link: https://www.educ.ar/
     name: Educational website
-  - category: Books/Wiki/News
+    description: Collection of children’s stories
+  - category: Transcriptions #change and adjust in the paper 
     link: https://magichub.com/datasets/
     name: MagicHub
-  - category: Books/Wiki/News
+    description: 
+  - category: Transcriptions #change and adjust in the paper
     link: https://spintx.org/
     name: SpinTX video archive
+    description: Transcripts collected from the Spanish in Texas Corpus
 
 ukr:
   - category: Books/Wiki/News
     link: https://github.com/Dandelliony/pluperfect_grac
     name: GRAC
-  - category: Books/Wiki/News
+    description: Developmentally plausible dataset curated in the study by Shvedova and Lukashevskyi, 2024
+  - category: Wikis
     link: https://uk.wikisource.org/wiki/%D0%93%D0%BE%D0%BB%D0%BE%D0%B2%D0%BD%D0%B0_%D1%81%D1%82%D0%BE%D1%80%D1%96%D0%BD%D0%BA%D0%B0
     name: Wikisource (Ukrainian)
-  - category: Books/Wiki/News
+    description: Set of fairy tales and fiction books from Wikimedia Foundation, 2025
+  - category: Educational
     link: https://huggingface.co/blog/davanstrien/fineweb-c
     name: FineWeb-C
+    description: Contemporary language use dataset
