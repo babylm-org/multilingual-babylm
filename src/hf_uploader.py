@@ -594,7 +594,6 @@ class HFDatasetUploader:
             candidates.append(ds_id)
         active: List[str] = []
         for repo_id in sorted(set(candidates)):
-            if repo_id < "BabyLM-community/babylm-rus": continue
             if check_empty:
                 try:
                     ds = load_dataset(repo_id, split="train", token=self.token)
