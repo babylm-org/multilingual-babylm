@@ -459,12 +459,8 @@ def main():
     )
 
     parser.add_argument(
-        "--logfile",
-        type=str,
-        help="logging filepath",
-        default="logs/log_pipeline.txt"
+        "--logfile", type=str, help="logging filepath", default="logs/log_pipeline.txt"
     )
-
 
     args = parser.parse_args()
 
@@ -495,7 +491,6 @@ def main():
     if args.misc:
         document_config_params["misc"] = args.misc
 
-    
     setup_logger(args.logfile)
 
     process_dataset(

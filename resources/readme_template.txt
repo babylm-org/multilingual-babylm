@@ -77,3 +77,8 @@ Please see license in individual documents
 ### Data Curators
 
 {contributors_readme}
+
+
+### Comments 
+
+{comments_readme}

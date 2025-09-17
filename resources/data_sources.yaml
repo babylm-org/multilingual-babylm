@@ -9,7 +9,7 @@ ririro:
   - category: Books
     link: https://ririro.com/  
     name: Ririro Story Collection
-    description: Collection of children storybooksSo
+    description: Collection of children storybooks
 
 glotstorybook:
   - category: Books
@@ -29,8 +29,8 @@ childes:
 #     - category: one of the categories in the paper, or more precise
 #       link: link to the resource
 #       name: name of the resource
-#       citation: John Smith et al., 2025, Journal of ... 
 #       description: brief description of the resource
+#       citation: John Smith et al., 2025, Journal of ... 
 
 ara:
   - category: Books

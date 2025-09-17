@@ -20,9 +20,11 @@ from multilingual_res.manager import contains_resource
 from loguru import logger
 from logging_utils import setup_logger
 
+# readme resources paths
 TEMPLATE_PATH = Path("resources") / "readme_template.txt"
 CONTRIBUTORS_PATH = Path("resources") / "contributors.yaml"
 DATA_SOURCES_PATH = Path("resources") / "data_sources.yaml"
+REPO_COMMENTS_PATH = Path("resources") / "repo_comments.yaml"
 
 
 # Calculate token statistics
@@ -390,6 +392,7 @@ class HFDatasetUploader:
         # create data sources section
         with DATA_SOURCES_PATH.open("r") as f:
             sources = yaml.safe_load(f)
+
         sources_lang = sources.get(language_code)
         if sources_lang is None:
             data_sources_readme = "n/a"
@@ -418,6 +421,11 @@ class HFDatasetUploader:
                 group_readmes.append(group_readme)
 
             data_sources_readme = "\n\n".join(group_readmes)
+
+        # create repo comments section
+        with REPO_COMMENTS_PATH.open("r") as f:
+            comments = yaml.safe_load(f)
+        comments_readme = comments.get(language_code)
 
         # print statistics
         logger.info(f"Total tokens in dataset: {total_tokens:,}")
@@ -448,6 +456,7 @@ class HFDatasetUploader:
             tokenizer_name=tokenizer_name,
             contributors_readme=contributors_readme,
             data_sources_readme=data_sources_readme,
+            comments_readme=comments_readme,
         )
 
         # Save README
@@ -637,9 +646,8 @@ if __name__ == "__main__":
         "--logfile",
         type=str,
         help="logging filepath",
-        default="logs/log_update_readmes.txt"
+        default="logs/log_update_readmes.txt",
     )
-
 
     args = parser.parse_args()
     uploader = HFDatasetUploader(token=args.token)

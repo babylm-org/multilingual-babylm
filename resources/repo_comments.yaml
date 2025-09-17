@@ -1,0 +1,32 @@
+---
+ace: null 
+afr: null
+ara: > 
+  This dataset is defined for the macro-language ara. 
+  With the addition of more dialectal developmentally plausible data we envision a separate BabyLM dataset for each dialect, 
+  as well as a combined repo, like this one.  
+ban: null
+bug: null
+bul: null
+ell: null
+eus: null
+fas: null
+fra: null
+ind: null
+ita: null
+jap: null
+jav: null
+mak: null
+min: null
+nld: null
+nso: null
+por: null
+ron: null
+sot: null
+spa: null
+sun: null
+ukr: null
+xho: null
+yue: null
+zho: null
+zul: null
