@@ -145,6 +145,10 @@ def contains_resource(resource_name: str, dataset_df: pandas.DataFrame) -> bool:
         except json.JSONDecodeError:
             misc = {}
 
+        if not isinstance(misc, dict):
+            logger.warning(f"document misc value is not a dictionary but {type(misc)} : {misc}")
+            return False
+
         multilingual_resource = misc.get("multilingual_resource", "n/a")
         if multilingual_resource == resource_name:
             return True

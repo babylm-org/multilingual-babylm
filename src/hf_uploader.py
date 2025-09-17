@@ -348,7 +348,7 @@ class HFDatasetUploader:
 
         # calculate dataset_tier, allowing for at most 1% difference from the required size
         dataset_tier, expected_size, _ = get_dataset_tier(
-            dataset_size, byte_premium_factor, percent_tolerance=0.01
+            dataset_size, byte_premium_factor, percent_tolerance=0.02
         )
         license_metadata = config.get("license", "unknown")
         data_source = config.get("data_source", "Unknown")
@@ -572,6 +572,7 @@ class HFDatasetUploader:
             return []
         candidates: List[str] = []
         for d in all_ds:
+            
             ds_id = getattr(d, "id", None)
             if (
                 not isinstance(ds_id, str)
@@ -593,6 +594,7 @@ class HFDatasetUploader:
             candidates.append(ds_id)
         active: List[str] = []
         for repo_id in sorted(set(candidates)):
+            if repo_id < "BabyLM-community/babylm-rus": continue
             if check_empty:
                 try:
                     ds = load_dataset(repo_id, split="train", token=self.token)

@@ -107,14 +107,14 @@ def get_dataset_tier(dataset_size, factor, percent_tolerance):
     ]
     sorted_pairs = sorted(target_sizes, key=lambda x: x[1])
 
-    for name, target in target_sizes:
+    for name, target in sorted_pairs:
         if is_within_percentage(dataset_size, target, percent_tolerance):
             return name, target, tiers["tier_" + name]
 
     # dataset_size is below the tier threshold
-    for name, target in target_sizes:
+    for name, target in sorted_pairs:
         if dataset_size < target:
-            return "< " + name, target, target, tiers["tier_" + name]
+            return "< " + name, target, tiers["tier_" + name]
 
     # dataset_size exceeds largest tier threshold
     name = sorted_pairs[-1][0]
