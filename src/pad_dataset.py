@@ -77,7 +77,7 @@ def pad_with_opensubtitles(
     data_count = 0
     selected_rows = []
     iso_639_1_code = Lang(language_code).pt1
-    repo_id = f"BabyLM-community/babylm-{iso_639_1_code}-subtitles"
+    repo_id = f"account-anonymized/babylm-{iso_639_1_code}-subtitles"
     logger.info(
         f"Loading OpenSubtitles data for language: {language_code} using repo: {repo_id}"
     )

@@ -20,14 +20,7 @@ def process_dataframe(dataset_df: pd.DataFrame, lang) -> pd.DataFrame:
 def main():
     logfile_path: str = "logs/log_update_dataset.txt"
     setup_logger(logfile_path)
-
-    data_uploader = HFDatasetUploader(token=HF_TOKEN)
-    repos = data_uploader._discover_babylm_repos(check_empty=False)
-    # ignore subtitles repos
-    repos = [repo for repo in repos if "subtitles" not in repo]
-
-    # or define a single repo
-    # repos = ["BabyLM-Community/babylm-eng"]
+    repos = ["account-anonymized/babylm-eng"]
 
     for repo in repos:
         lang = repo.split("-")[-1]

@@ -1,6 +1,6 @@
 # pipeline.py
 """
-Main pipeline script for processing various data sources into BabyLM datasets.
+Main pipeline script for processing various data sources into BabyBabelLM datasets.
 """
 
 from pathlib import Path

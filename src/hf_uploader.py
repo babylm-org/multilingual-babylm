@@ -1,10 +1,10 @@
 """
-HuggingFace dataset uploader for BabyLM datasets.
+HuggingFace dataset uploader for BabyBabelLM datasets.
 """
 
 import os
 from pathlib import Path
-from typing import Optional, List, Dict, cast
+from typing import Optional, Dict
 
 import yaml
 import hashlib
@@ -18,7 +18,6 @@ from pad_utils import get_byte_premium_factor, get_dataset_tier, get_dataset_siz
 from multilingual_res.manager import contains_resource
 
 from loguru import logger
-from logging_utils import setup_logger
 
 # readme resources paths
 TEMPLATE_PATH = Path("resources") / "readme_template.txt"
@@ -478,189 +477,3 @@ class HFDatasetUploader:
         except Exception as e:
             logger.info(f"Error uploading README: {e}")
 
-    def update_all_readmes(
-        self,
-        repo_ids: Optional[list[str]] = None,
-        check_empty: bool = True,
-        byte_premium_factor: Optional[float] = None,
-    ):
-        """Bulk update README files for all BabyLM language datasets discovered dynamically.
-
-        Discovery logic:
-          1. List all datasets for author 'BabyLM-community'. (Token required to include private repos.)
-          2. Filter IDs starting with 'BabyLM-community/babylm-'.
-          3. Iterate each repo and regenerate README with scripts list + grouped category counts.
-        """
-        if repo_ids is None:
-            repo_ids = self._discover_babylm_repos(check_empty=check_empty)
-
-        tokenizers = {
-            "jpn": "tohoku-nlp/bert-base-japanese",
-            "zho": "Qwen/Qwen3-0.6B",
-            "yue": "Qwen/Qwen1.5-7B-Chat",
-            "kor": "LGAI-EXAONE/EXAONE-4.0-1.2B",
-        }
-
-        if not repo_ids:
-            logger.info(
-                "No BabyLM datasets found with prefix 'BabyLM-community/babylm-'."
-            )
-            return
-
-        logger.info(f"Discovered {len(repo_ids)} BabyLM dataset repos to update.")
-        for repo_id in repo_ids:
-            language_code = repo_id.split("-")[-1]
-            tokenizer_name = tokenizers.get(language_code, None)
-
-            suffix = repo_id.split("babylm-")[-1]
-            logger.info(f"Updating README for {repo_id}...")
-            try:
-                ds = load_dataset(repo_id, split="train", token=self.token)
-                df_obj = ds.to_pandas()  # type: ignore[attr-defined]
-                assert isinstance(df_obj, pd.DataFrame), (
-                    "Expected pandas DataFrame from dataset"
-                )
-                df: pd.DataFrame = cast(pd.DataFrame, df_obj)
-            except Exception as e:
-                logger.info(f"  Could not load dataset: {e}")
-                continue
-            if "num-tokens" not in df.columns:
-                tokenizer = (
-                    AutoTokenizer.from_pretrained(tokenizer_name)
-                    if tokenizer_name
-                    else None
-                )
-                df["num-tokens"] = df["text"].apply(count_tokens, tokenizer=tokenizer)
-
-            # median script value is the dominating script
-            major_script = df["script"].mode()[0]
-            tmp_dir = Path(f"_tmp_readme_{suffix}")
-            tmp_dir.mkdir(exist_ok=True)
-
-            self._create_dataset_card(
-                df=df,
-                dataset_dir=tmp_dir,
-                repo_id=repo_id,
-                num_documents=len(df),
-                major_script=major_script,
-                language_code=language_code,
-                tokenizer_name=tokenizer_name,
-                byte_premium_factor=byte_premium_factor,
-            )
-            try:
-                (tmp_dir / "README.md").unlink()
-                tmp_dir.rmdir()
-            except Exception:
-                pass
-
-    # Migration helpers removed: migration is complete and schema is canonical.
-
-    def _discover_babylm_repos(self, check_empty: bool = True) -> List[str]:
-        """Return sorted list of active (non-archived, non-empty) BabyLM dataset repo_ids.
-
-        Filtering steps:
-          1. List all datasets for author 'BabyLM-community' (token ensures private visibility).
-          2. Keep ids starting with 'BabyLM-community/babylm-'.
-          3. Exclude repos marked archived/deprecated (by tag or cardData flag).
-          4. Exclude repos whose train split cannot be loaded or has zero rows.
-        """
-        prefix = "BabyLM-community/babylm-"
-        try:
-            all_ds = self.api.list_datasets(author="BabyLM-community")
-        except Exception as e:
-            logger.info(f"Error listing datasets: {e}")
-            return []
-        candidates: List[str] = []
-        for d in all_ds:
-            ds_id = getattr(d, "id", None)
-            if (
-                not isinstance(ds_id, str)
-                or not ds_id.startswith(prefix)
-                or "subtitles" in ds_id
-            ):
-                continue
-            # Check archive/deprecation indicators
-            tags = set(getattr(d, "tags", []) or [])
-            card_data = getattr(d, "cardData", {}) or {}
-            archived_flag = False
-            if isinstance(card_data, dict) and card_data.get("archived") is True:
-                archived_flag = True
-            if "archived" in tags or "deprecated" in tags:
-                archived_flag = True
-            if archived_flag:
-                logger.info(f"Skipping archived/deprecated dataset: {ds_id}")
-                continue
-            candidates.append(ds_id)
-        active: List[str] = []
-        for repo_id in sorted(set(candidates)):
-            if check_empty:
-                try:
-                    ds = load_dataset(repo_id, split="train", token=self.token)
-                    # Quickly assess emptiness (cast for type checker)
-                    from datasets import (
-                        Dataset as HFDataset,
-                    )  # local import to avoid top-level clash
-
-                    if len(cast(HFDataset, ds)) == 0:  # type: ignore[arg-type]
-                        logger.info(f"Skipping empty dataset: {repo_id}")
-                        continue
-                except Exception as e:
-                    logger.info(f"Skipping dataset (load failed): {repo_id} ({e})")
-                    continue
-            logger.info(f"Discovered repo: {repo_id}")
-            active.append(repo_id)
-
-        return active
-
-
-if __name__ == "__main__":
-    import argparse
-
-    parser = argparse.ArgumentParser(
-        description="Manage BabyLM language datasets on the Hub (update READMEs)."
-    )
-    parser.add_argument(
-        "--token",
-        type=str,
-        default=None,
-        help="HuggingFace token (optional, will use env if not provided).",
-    )
-    parser.add_argument(
-        "--repo-id",
-        type=str,
-        default=None,
-        help="Update a specific BabyLM repo, specified with --repo_id",
-    )
-    parser.add_argument(
-        "--no-check",
-        action="store_true",
-        help="Don't check if repo is empty (reduce time in repo discovery)",
-    )
-    parser.add_argument(
-        "--byte-premium-factor",
-        type=float,
-        default=None,
-        help="Provide byte-premium factor manually, instead of retrieving it automatically (override).",
-    )
-    parser.add_argument(
-        "--logfile",
-        type=str,
-        help="logging filepath",
-        default="logs/log_update_readmes.txt",
-    )
-
-    args = parser.parse_args()
-    uploader = HFDatasetUploader(token=args.token)
-
-    setup_logger(args.logfile)
-
-    if args.repo_id is None:
-        uploader.update_all_readmes(
-            check_empty=not args.no_check, byte_premium_factor=args.byte_premium_factor
-        )
-    else:
-        uploader.update_all_readmes(
-            repo_ids=[args.repo_id],
-            check_empty=not args.no_check,
-            byte_premium_factor=args.byte_premium_factor,
-        )
