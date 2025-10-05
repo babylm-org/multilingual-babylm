@@ -1,6 +1,6 @@
 # text_preprocessor.py
 """
-General text preprocessing utilities for BabyLM datasets.
+General text preprocessing utilities for BabyBabelLM datasets.
 """
 
 import re
