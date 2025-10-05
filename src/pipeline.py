@@ -27,20 +27,20 @@ from logging_utils import setup_logger
 def process_dataset(
     language_code: str,
     script_code: str,
-    data_path: Optional[Path],
-    document_config_params: dict,
-    metadata_file: Optional[Path],
-    upload: bool,
-    repo_id: Optional[str],
-    preprocess_text: bool,
-    data_type: Optional[str],
-    enable_language_filtering: bool,
-    language_filter_threshold: float,
-    pad_opensubtitles: bool,
-    tokenizer_name: Optional[str],
+    data_path: str,
+    data_type: str,
+    document_config_params: dict = dict(),
+    metadata_file: Optional[str] = None,
+    upload: bool = False,
+    repo_id: Optional[str] = None,
+    preprocess_text: bool = False,
+    enable_language_filtering: bool = False,
+    language_filter_threshold: float = 0.8,
+    pad_opensubtitles: bool = False,
+    tokenizer_name: Optional[str] = None,
     enable_script_update: bool = False,
     script_update_all: bool = False,
-    overwrite: bool = False,
+    merge: bool = False,
     add_ririro_data: bool = False,
     add_glotstorybook_data: bool = False,
     add_childwiki_data: bool = False,
@@ -54,6 +54,7 @@ def process_dataset(
     create_pr: bool = False,
     pr_title="Update Dataset",
     pr_description="",
+    log_file=None,
 ) -> Path:
     """
     Process any data source into BabyLM format.
@@ -71,7 +72,7 @@ def process_dataset(
         language_filter_threshold: Minimum confidence for language filtering
         pad_opensubtitles: Whether to pad dataset with OpenSubtitles
         tokenizer_name: Name of the tokenizer to use for token counting (for languages like Chinese, Japanese and Korean)
-        overwrite: Whether to overwrite existing dataset instead of merging
+        merge: Whether to merge existing dataset instead of overwriting
         add_ririro_data: Whether to add Ririro resource for the language
         add_glotstorybook_data: Whether to add GlotStoryBook resource for the language
         add_childwiki_data: Whether to add ChildWiki resource for the language
@@ -80,7 +81,18 @@ def process_dataset(
         Path to output directory
     """
 
+    # create dataset builder object
+    dataset_config = DatasetConfig(language_code=language_code)
+    builder = BabyLMDatasetBuilder(dataset_config, merge_existing=merge)
+
+    # setup logging
+    logging_path = log_file if log_file is not None else builder.output_dir / "log.txt"
+    print(logging_path)
+    setup_logger(logging_path)
+
     logger.info(f"Processing data for {language_code}...")
+
+    data_path = Path(data_path)
 
     docs = []
     # 0. Load data using loader if both data_path and data_type are provided
@@ -151,6 +163,10 @@ def process_dataset(
 
     # 2. Load metadata file if provided and merge
     metadata_mapping = {}
+
+    if metadata_file is not None:
+        metadata_file = Path(metadata_file)
+
     if metadata_file and metadata_file.exists():
         logger.info(f"Loading metadata from {metadata_file}")
         with open(metadata_file, "r", encoding="utf-8") as f:
@@ -168,9 +184,6 @@ def process_dataset(
 
     # 3. Build dataset
     logger.info("Building dataset...")
-    dataset_config = DatasetConfig(language_code=language_code)
-    # Zzzz : default ISO 15924 value for Unknown or Unencoded
-    builder = BabyLMDatasetBuilder(dataset_config, merge_existing=not overwrite)
     builder.add_documents_from_iterable(docs, document_config_params)
     builder.create_dataset_table()
     assert builder.dataset_table is not None
@@ -412,9 +425,9 @@ def main():
         help="Name of the tokenizer to use for token counting (for languages like Chinese, Japanese and Korean)",
     )
     parser.add_argument(
-        "--overwrite",
+        "--merge",
         action="store_true",
-        help="Overwrite existing dataset instead of merging",
+        help="Merge existing dataset instead of overwriting",
     )
     parser.add_argument(
         "--add-ririro-data",
@@ -458,9 +471,7 @@ def main():
         help="If set, remove Childes previously added resource for the given language.",
     )
 
-    parser.add_argument(
-        "--logfile", type=str, help="logging filepath", default="logs/log_pipeline.txt"
-    )
+    parser.add_argument("--logfile", type=str, help="logging filepath", default=None)
 
     args = parser.parse_args()
 
@@ -491,8 +502,6 @@ def main():
     if args.misc:
         document_config_params["misc"] = args.misc
 
-    setup_logger(args.logfile)
-
     process_dataset(
         language_code=args.language,
         script_code=args.script,
@@ -509,7 +518,7 @@ def main():
         language_filter_threshold=args.language_filter_threshold,
         pad_opensubtitles=args.pad_opensubtitles,
         tokenizer_name=args.tokenizer_name,
-        overwrite=args.overwrite,
+        merge=args.merge,
         add_ririro_data=args.add_ririro_data,
         add_glotstorybook_data=args.add_glotstorybook_data,
         add_childwiki_data=args.add_childwiki_data,
@@ -523,6 +532,7 @@ def main():
         create_pr=args.create_pr,
         pr_description=args.pr_description,
         pr_title=args.pr_title,
+        log_file=args.logfile,
     )
 
 

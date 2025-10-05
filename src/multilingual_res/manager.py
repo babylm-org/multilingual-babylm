@@ -146,7 +146,9 @@ def contains_resource(resource_name: str, dataset_df: pandas.DataFrame) -> bool:
             misc = {}
 
         if not isinstance(misc, dict):
-            logger.warning(f"document misc value is not a dictionary but {type(misc)} : {misc}")
+            logger.warning(
+                f"document misc value is not a dictionary but {type(misc)} : {misc}"
+            )
             return False
 
         multilingual_resource = misc.get("multilingual_resource", "n/a")

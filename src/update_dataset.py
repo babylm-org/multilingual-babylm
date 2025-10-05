@@ -104,7 +104,7 @@ def main():
             language_filter_threshold=0.0,
             pad_opensubtitles=pad,
             tokenizer_name=tokenizer_name,
-            overwrite=True,  # overwrite existing dataset in babylm_datasets/ , otherwise append
+            merge=False,  # merge with existing dataset in babylm_datasets/ if True , else overwrite
             add_ririro_data=add_multilingual_data,
             add_glotstorybook_data=add_multilingual_data,
             add_childwiki_data=add_multilingual_data,
