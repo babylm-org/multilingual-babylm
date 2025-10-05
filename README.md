@@ -1,4 +1,4 @@
-# BabyLM Multilingual Dataset Pipeline
+# BabyBabelLM Multilingual Dataset Pipeline
 
 A modular pipeline for processing various data sources into standardized BabyLM-like multilingual datasets.
 
@@ -43,6 +43,7 @@ We also welcome contributions to the pipeline code in the form of Github pull re
 │   └── repo_comments.yaml          # Additional comments for each language repo
 ├── scripts
 │   ├── examples.sh                 # Some examples for using the pipeline
+│   ├── test.sh                     # Simple test of the pipeline
 │   └── process_opensubtitles.sh    # Process OpenSubtitles data
 └── src
     ├── babylm_dataset_builder.py   # BabyLM dataset builder
@@ -80,7 +81,7 @@ HF_TOKEN=your_huggingface_token_here
 
 ## Usage
 Below we include some scripts for basic usage of the pipeline. 
-- Some more usage examples can also be found at `resources/usage_examples`.
+- Some more usage examples can also be found at `scripts/example_usage.sh`.
 - For a template script of updating a dataset using the pipeline see also: `src/update_dataset.py`.
 
 
@@ -163,7 +164,7 @@ For more advanced options, below we give detailed descriptions of each command-l
 - `--byte-premium-factor`: Byte-premium factor override (float). Byte-premium factors are automatically pulled from the resources directory. To override, or in case of a missing factor, you can use this argument. 
 - `--tokenizer-name`: Tokenizer name for token counting (for languages like Chinese, Japanese, Korean)
 - `--merge`: Merge existing dataset instead of overwriting
-- `--logfile`: Logging filepath
+- `--logfile`: Logging filepath, default is inside the dataset output directory
 - `--enable-language-filtering`: Enable language and script filtering using GlotLID v3
 - `--language-filter-threshold`: Minimum confidence threshold for language filtering (0.0–1.0, default 0.8)
 
