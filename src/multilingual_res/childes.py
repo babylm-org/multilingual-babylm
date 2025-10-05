@@ -30,7 +30,7 @@ class ChildesFetcher(BaseResourceFetcher):
         """
         try:
             dataset = load_dataset(
-                "BabyLM-community/formatted-CHILDES", language_code, split="train"
+                "account-anonymized/formatted-CHILDES", language_code, split="train"
             )
         except ValueError:
             logger.info(f"CHILDES not available for language: {language_code}")

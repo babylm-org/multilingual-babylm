@@ -44,7 +44,7 @@ do
     # Set upload arguments if UPLOAD is true
     UPLOAD_ARGS=""
     if [ "$UPLOAD" = true ]; then
-        UPLOAD_ARGS="--upload --repo-id BabyLM-community/babylm-${lang}-subtitles"
+        UPLOAD_ARGS="--upload --repo-id account-anonymized/babylm-${lang}-subtitles"
     fi
     python process_opensubtitles.py \
         --language $lang \

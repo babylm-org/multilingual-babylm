@@ -28,7 +28,7 @@ class ChildWikiFetcher(BaseResourceFetcher):
         Fetch ChildWiki data for a given language code and script code.
         Returns a list of dicts with keys: text, doc-id, metadata (for DocumentConfig)
         """
-        dataset = load_dataset("BabyLM-community/baby-wikis", split="train")
+        dataset = load_dataset("account-anonymized/baby-wikis", split="train")
         filtered = dataset.filter(lambda x: x["lang"] == language_code)
         results = []
         for doc in filtered:

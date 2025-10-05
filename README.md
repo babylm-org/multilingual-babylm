@@ -144,7 +144,7 @@ For more advanced options, below we give detailed descriptions of each command-l
 - `--remove-previous-padding`: Remove previously added padding for the given language
 - `--pad, --pad-opensubtitles`: Enable padding with OpenSubtitles, FineWeb-C, Wikipedia, or language-specific resources
 
-  > For padding, we use primarly subtitle data from the coressponding HF repo: `BabyLM-community/babylm-{lang_code}-subtitles`, where lang_code is the ISO 639-1 code for the language specified in `--language`. If subtitle data is not available or runs out, we use data from Wikipedia and FineWeb-C. Finally, some language-specific language resources can be defined and used in `src/pad_language_specific.py`.
+  > For padding, we use primarly subtitle data from the coressponding HF repo: `account-anonymized/babylm-{lang_code}-subtitles`, where lang_code is the ISO 639-1 code for the language specified in `--language`. If subtitle data is not available or runs out, we use data from Wikipedia and FineWeb-C. Finally, some language-specific language resources can be defined and used in `src/pad_language_specific.py`.
   > 
   > To calculate the required padding dataset size for a 100M words of English equivalent dataset, we use Byte Premium factors [(paper link)](https://aclanthology.org/2024.sigul-1.1.pdf).
 
