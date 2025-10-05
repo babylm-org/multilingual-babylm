@@ -1,10 +1,7 @@
 ---
 ace: null 
 afr: null
-ara: > 
-  This dataset is defined for the macro-language ara. 
-  With the addition of more dialectal developmentally plausible data we envision a separate BabyLM dataset for each dialect, 
-  as well as a combined repo, like this one.  
+ara: null
 ban: null
 bug: null
 bul: null

@@ -1,9 +1,4 @@
-
 # multilingual resources
-
-# these multilingual resources should not be included in the language-specific sections bellow
-# as they will be automatically detected and added, if the resource is present.
-# wikis are excluded due to alot of variability, and sould be added individually below
 
 ririro: 
   - category: Books
@@ -23,14 +18,7 @@ childes:
     name: CHILDES
     description: Transcription of child directed language conversations
 
-# Language-Specific
-# template:
-#   iso: 
-#     - category: one of the categories in the paper, or more precise
-#       link: link to the resource
-#       name: name of the resource
-#       description: brief description of the resource
-#       citation: John Smith et al., 2025, Journal of ... 
+# language specific
 
 ara:
   - category: Books
@@ -324,7 +312,7 @@ jpn:
     description: Japanese digital library that provides access to literary works in the public domain
 
 fas: 
-  - category: Educational #to be adjusted in the paper
+  - category: Educational 
     link: https://arxiv.org/abs/2502.10361
     name: FineWeb2-HQ
     description: A high-quality, multilingual dataset built on top of FineWeb2 (Penedo et al., 2025) filtered for educational content
@@ -373,7 +361,7 @@ ron:
     name: Romanian Language Corpus (collected)
     description: Dataset by Midrigan Ciochina et al., 2020
 
-afr: #adjust category here as well -> in the paper
+afr: 
   - category: Educational
     link: https://aclanthology.org/L14-1675/
     name: QED (Afrikaans, isiXhosa, isiZulu)
@@ -391,7 +379,7 @@ afr: #adjust category here as well -> in the paper
     name: isiXhosa T2X (cross-lingual relevance)
     description: Dataset curated in the study by Meyer and Buys, 2024
 
-sot: #adjust category here as well -> in the paper
+sot: 
   - category: Educational
     link: https://repo.sadilar.org/items/b32cfc43-ea19-4465-a8f6-c2953d93eaba
     name: Autshumato English–Sesotho Parallel Corpus (Sesotho)
@@ -409,7 +397,7 @@ sot: #adjust category here as well -> in the paper
     name: QED (Afrikaans, isiXhosa, isiZulu)
     description: Dataset curated in the study by Abdelali et al., 2014
 
-nso: #adjust category here as well -> in the paper
+nso: 
   - category: News
     link: http://aclanthology.org/2023.rail-1.3/
     name: Sepedi Vukenzele
@@ -427,7 +415,7 @@ nso: #adjust category here as well -> in the paper
     name: Wikipedia
     description: Online encyclopedia
 
-xho: #adjust category here as well -> in the paper
+xho: 
   - category: Books
     link: https://aclanthology.org/2024.lrec-main.1464/
     name: isiXhosa T2X
@@ -480,15 +468,15 @@ ind:
     link: https://bobo.grid.id/
     name: Bobo children’s magazine
     description: Collection of child-targeted articles
-  - category: Books #not sure whether to categorize it like that or Educational
+  - category: Books 
     link: https://aclanthology.org/2023.eacl-main.57/
     name: NusaX
     description: Manually curated dataset in the study by Winata et al., 2023
-  - category: Books #not sure whether to categorize it like that or Educational
+  - category: Books 
     link: https://aclanthology.org/2023.ijcnlp-main.60/
     name: NusaWrites
     description: Manually curated dataset in the study by Cahyawijaya et al., 2023b
-  - category: Books #not sure whether to categorize it like that or Educational
+  - category: Books 
     link: https://aclanthology.org/2025.sealp-1.8/
     name: NusaDialogue
     description: Manually curated dataset in the study by Purwarianti et al., 2025
@@ -496,7 +484,7 @@ ind:
     link: n/a
     name: Wikipedia
     description: Online encyclopedia 
-  - category: Books #not sure whether to categorize it like that or Educational
+  - category: Books 
     link: https://proceedings.neurips.cc/paper_files/paper/2023/file/d49042a5d49818711c401d34172f9900-Paper-Datasets_and_Benchmarks.pdf
     name: MADLAD-400
     description: Dataset curated in the study by Kudugunta et al., 2023
@@ -526,11 +514,11 @@ spa:
     link: https://www.educ.ar/
     name: Educational website
     description: Collection of children’s stories
-  - category: Transcriptions #change and adjust in the paper 
+  - category: Transcriptions 
     link: https://magichub.com/datasets/
     name: MagicHub
     description: 
-  - category: Transcriptions #change and adjust in the paper
+  - category: Transcriptions 
     link: https://spintx.org/
     name: SpinTX video archive
     description: Transcripts collected from the Spanish in Texas Corpus
