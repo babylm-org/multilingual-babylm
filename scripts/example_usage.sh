@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Example 1: Process any text files with command-line global metadata
-time python pipeline.py \
+python src/pipeline.py \
     --language eng \
     --script Latn \
     --data-path "./my_text_files" \
@@ -14,7 +14,7 @@ time python pipeline.py \
   
 # Example 2: Process dataset from file with a format of: json, jsonl, csv, or HF dataset
 # command-line metadata can still be used, but are overridden by document-specific metadata
-time python pipeline.py \
+python src/pipeline.py \
     --language eng \
     --script Latn \
     --data-path "./my_dataset.json" \
@@ -47,7 +47,7 @@ EOF
 
 # provide directory of text files, document-specific metadata is provided in the json metadata file
 # command-line metadata can still be used, but are overridden by document-specific metadata
-time python pipeline.py \
+python src/pipeline.py \
     --language eng \
     --script Latn \
     --data-path "./mixed_texts_example" \
@@ -57,7 +57,7 @@ time python pipeline.py \
 
 
 # Example 4: Add pre-processing and language filtering
-time python pipeline.py \
+python src/pipeline.py \
     --language eng \
     --script Latn \
     --data-path "./my_dataset.json" \
@@ -68,7 +68,7 @@ time python pipeline.py \
 
 
 # Example 5: Process, filter and upload a dataset
-time python pipeline.py \
+python src/pipeline.py \
     --language ind \
     --script Latn \
     --data-path ./articles_cleaned.json \
@@ -83,7 +83,7 @@ time python pipeline.py \
 
 # Example 6: Pad dataset with OpenSubtitles data
 # taking into account byte premiums
-time python pipeline.py \
+python src/pipeline.py \
     --language ind \
     --script Latn \
     --data-path ./articles_cleaned.json \
@@ -98,7 +98,7 @@ time python pipeline.py \
 # ========== Examples for specific datasets ==========
 
 # Example 7: Process subtitles
-time python pipeline.py \
+python src/pipeline.py \
     --language deu \
     --script Latn \
     --data-path "./german_subs" \
@@ -111,7 +111,7 @@ time python pipeline.py \
 
 
 # Example 8: Process CHILDES transcripts
-time python pipeline.py \
+python src/pipeline.py \
     --language nld \
     --script Latn \
     --data-path "./childes_dutch" \
@@ -132,7 +132,7 @@ cat > edu_metadata.json << EOF
 }
 EOF
 
-time python pipeline.py \
+python src/pipeline.py \
     --language eng \
     --script Latn \
     --data-path "./k12_texts" \
@@ -142,7 +142,7 @@ time python pipeline.py \
     --metadata-file "./edu_metadata.json"
 
 # Example 10: Add multilingual resources (Ririro, GlotStoryBook, ChildWiki)
-time python pipeline.py \
+python src/pipeline.py \
     --language eng \
     --script Latn \
     --data-path "./my_text_files" \
@@ -154,7 +154,7 @@ time python pipeline.py \
     --license "cc-by"
 
 # Example 11: Only add GlotStoryBook and ChildWiki resources for Indonesian
-time python pipeline.py \
+python src/pipeline.py \
     --language ind \
     --script Latn \
     --data-path "./articles_cleaned_txt" \
@@ -165,7 +165,7 @@ time python pipeline.py \
     --license "cc-by"
 
 # Example 12: Only add multilingual resources (no data-path or data-type)
-time python pipeline.py \
+python src/pipeline.py \
     --language kor \
     --script Kore \
     --add-ririro-data \

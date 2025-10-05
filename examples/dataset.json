@@ -6,7 +6,7 @@
         "script": "Latn",
         "age-estimate": "8-10",
         "license": "cc-by-sa",
-        "misc": ""
+        "misc": "{}"
     },
     {
         "text": "CHAPTER I.\nDown the Rabbit-Hole\n\n\nAlice was beginning to get very tired of sitting by her sister on the\nbank, and of having nothing to do: once or twice she had peeped into\nthe book her sister was reading, but it had no pictures or\nconversations in it, “and what is the use of a book,” thought Alice\n“without pictures or conversations?”\n\nSo she was considering in her own mind (as well as she could, for the\nhot day made her feel very sleepy and stupid), whether the pleasure of\nmaking a daisy-chain would be worth the trouble of getting up and\npicking the daisies, when suddenly a White Rabbit with pink eyes ran\nclose by her.\n\nThere was nothing so _very_ remarkable in that; nor did Alice think it\nso _very_ much out of the way to hear the Rabbit say to itself, “Oh\ndear! Oh dear! I shall be late!” (when she thought it over afterwards,\nit occurred to her that she ought to have wondered at this, but at the\ntime it all seemed quite natural); but when the Rabbit actually _took a\nwatch out of its waistcoat-pocket_, and looked at it, and then hurried\non, Alice started to her feet, for it flashed across her mind that she\nhad never before seen a rabbit with either a waistcoat-pocket, or a\nwatch to take out of it, and burning with curiosity, she ran across the\nfield after it, and fortunately was just in time to see it pop down a\nlarge rabbit-hole under the hedge.",
@@ -15,7 +15,7 @@
         "script": "Latn",
         "age-estimate": "4-6",
         "license": "cc-by-sa",
-        "misc": ""
+        "misc": "{}"
     },
     {
         "text": "*MOT:\tLara.\n*MOT:\tdon't do that.\n*MOT:\tstop it.\n*CHI:\tI want a bobble [cries].\n*MOT:\tyou want a bobble?\n*MOT:\twell.\n*MOT:\twhere have all your bobbles gone?\n*MOT:\tdon't you bite it.\n*MOT:\touch.\n*MOT:\twhy've you suddenly started being naughty?\n*CHI:\tmy baby seat.\n*MOT:\tyou've suddenly started being naughty now, haven't you?\n*MOT:\tnow Amy's awake.\n*MOT:\thaven't you?\n*CHI:\tis that your baby?\n*MOT:\tno.\n*MOT:\tit's your baby.\n*MOT:\tshe's asleep now.\n*CHI:\tput her to bed then.\n*MOT:\tcome on.\n*MOT:\there you are.\n*MOT:\tgo to sleep baby.\n*CHI:\tgo to sleep babe.\n*CHI:\tdon't wake her up.\n*MOT:\twe won't.\n*CHI:\twe can't get her, can we?\n",
@@ -24,15 +24,6 @@
         "script": "Latn",
         "age-estimate": "2-4",
         "license": "cc-by-sa",
-        "misc": ""
-    },
-    {
-        "text": "¡Qué hermosa era!\n\nPero ¡qué sello de dolor sobre su frente! ¡Qué lúgubre oscuridad en\nsus bellos ojos! ¡Qué trágica expresión en todo su semblante! Algo muy\ntriste había en el fondo de su alma.\n\nY, sin embargo, no era una de aquellas mujeres excepcionales,\nextravagantes, de corte romántico, que viven fuera del mundo devorando\nalgún pesar o representando alguna tragedia...\n\nEra una mujer a la moda, una elegante mujer, de porte distinguido, cuya\nmenor palabra dejaba traslucir una de esas reinas de la conversación\ny del buen gusto que tienen por trono una butaca de su gabinete, una\ncarretela en el Prado o un palco en la Ópera; pero que callan fuera de\nsu elemento, o sea fuera del círculo de sus iguales.\n\nCon la llegada del día se alegró algo la encantadora viajera, y ya\nconsistiese en que mi circunspección de toda la noche y la gravedad de\nmi fisonomía le inspirasen buena idea de mi persona, ya en que quisiera\nrecompensar al hombre a quien no había dejado dormir, fue el caso que\ninició a su vez las cuestiones de ordenanza:\n\n--¿Dónde va usted?\n\n--¡Va a hacer buen día!\n\n--¡Qué hermoso paisaje!\n\nA lo que yo contesté más extensamente que ella me había contestado a mí.\n\nAlmorzamos en Colmenar.\n\nLos viajeros del _interior_ y de la _rotonda_ eran personas poco\ntratables.\n\nMi compañera se redujo a hablar conmigo.\n\nExcusado es decir que yo estuve enteramente consagrado a ella y que la\natendí en la mesa como a una persona real.\n",
-        "category": "child-directed-speech",
-        "data-source": "CHILDES",
-        "script": "Latn",
-        "age-estimate": "2-4",
-        "license": "cc-by-sa",
-        "misc": ""
+        "misc": "{}"
     }
 ]
