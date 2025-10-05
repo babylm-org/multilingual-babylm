@@ -572,7 +572,6 @@ class HFDatasetUploader:
             return []
         candidates: List[str] = []
         for d in all_ds:
-            
             ds_id = getattr(d, "id", None)
             if (
                 not isinstance(ds_id, str)

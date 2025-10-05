@@ -233,6 +233,12 @@ ell:
     name: Child Wiki
     description: Online encyclopedia based on wiki, adapted for children
 
+heb: 
+  - category: Transcription
+    link: "https://github.com/NLU-BGU/tafberta/"
+    name: "HTBerman corpus (Anita Gelboim and Elior Sulem, 2025)"
+    description: CHILDES in Hebrew script
+
 ita:
   - category: Books
     link: https://www.biancoeneroedizioni.it/
