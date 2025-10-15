@@ -35,7 +35,7 @@ dataset_info:
 ## Dataset Description
 
 This dataset is part of the BabyLM multilingual collection.   
-More information at: [babylm.github.io/multilingual](https://babylm.github.io/multilingual)
+More information at: [babylm.github.io/babybabellm](https://babylm.github.io/babybabellm/)
 
 ### Dataset Summary
 
